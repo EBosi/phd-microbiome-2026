@@ -1,0 +1,17 @@
+.Rhistory
+.RData
+.Rproj.user/
+.quarto/
+
+*.html
+*.log
+*.tmp
+
+data/
+outputs/
+results/
+work/
+.snakemake/
+
+Miniforge3-Linux-x86_64.sh
+

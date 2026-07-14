@@ -1,0 +1,77 @@
+package	source	purpose	required
+python	conda-forge	AmpWrap runtime and helper scripts	yes
+pip	conda-forge	Python package installer available inside the course environment	yes
+ampwrap	GitHub:LDoni/AmpWrap	Course workflow CLI installed with AmpWrap setup.sh	yes
+snakemake	bioconda	AmpWrap workflow engine	yes
+snakemake-minimal	bioconda	Snakemake command-line runtime dependency	yes
+fastqc	bioconda	Raw and trimmed read quality control	yes
+multiqc	bioconda	Aggregate FastQC and workflow QC reports	yes
+cutadapt	bioconda	Primer trimming in AmpWrap short-read workflow	yes
+openjdk	conda-forge	FastQC runtime	yes
+bioawk	bioconda	FASTQ command-line inspection during Bash exercises	yes
+seqkit	bioconda	FASTQ and sequence-table inspection used by AmpWrap	yes
+pigz	conda-forge	Parallel gzip support for FASTQ files	yes
+pbzip2	conda-forge	Parallel bzip2 support for compressed data	yes
+jq	conda-forge	JSON inspection for reports and manifests	yes
+git	conda-forge	Clone AmpWrap and course material	yes
+wget	conda-forge	Download installers or small datasets	yes
+curl	conda-forge	Download installers or small datasets	yes
+pandas	conda-forge	AmpWrap Python reporting utilities	yes
+numpy	conda-forge	AmpWrap Python reporting utilities	yes
+biopython	conda-forge	Sequence parsing utilities	yes
+emu	bioconda	Long-read 16S assignment support from AmpWrap	yes
+minimap2	bioconda	Long-read alignment support from AmpWrap	yes
+nanofilt	bioconda	Nanopore read filtering support from AmpWrap	yes
+nanoget	bioconda	Nanopore read summary support from AmpWrap	yes
+porechop	bioconda	Nanopore adapter trimming support from AmpWrap	yes
+porechop_abi	bioconda	Nanopore adapter trimming support from AmpWrap	yes
+yacrd	bioconda	Long-read read correction/filtering support from AmpWrap	yes
+r-base	conda-forge	R runtime used by RStudio and Rscript	yes
+rstudio-desktop	conda-forge	RStudio IDE for Ubuntu and WSLg	yes
+quarto	conda-forge	Render and edit Quarto course material	yes
+pandoc	conda-forge	R Markdown and Quarto rendering support	yes
+bioconductor-dada2	bioconda	ASV inference and DADA2 functions used by AmpWrap	yes
+bioconductor-biomformat	bioconda	BIOM import/export from AmpWrap outputs	yes
+bioconductor-phyloseq	bioconda	Core microbiome object and analysis workflow	yes
+bioconductor-biostrings	bioconda	DNA sequence handling for taxonomy scripts	yes
+bioconductor-decipher	bioconda	Alternative taxonomy assignment support in AmpWrap	yes
+bioconductor-metagenomeseq	bioconda	CSS normalization in existing R lessons	yes
+bioconductor-shortread	bioconda	Read handling dependency for DADA2 stack	yes
+bioconductor-rsamtools	bioconda	Sequence file handling dependency for Bioconductor stack	yes
+bioconductor-multtest	bioconda	Dependency used by phyloseq/metagenomeSeq workflows	yes
+r-ggplot2	conda-forge	Core plotting package	yes
+r-dplyr	conda-forge	Data manipulation in R lessons	yes
+r-tidyr	conda-forge	Tidy table reshaping	yes
+r-readr	conda-forge	Read tabular outputs	yes
+r-tibble	conda-forge	Tidy table representation	yes
+r-stringr	conda-forge	String handling for metadata and taxonomy	yes
+r-forcats	conda-forge	Factor handling for ordered plotting	yes
+r-vegan	conda-forge	Ecology statistics, ordination, and RDA support	yes
+r-ape	conda-forge	Phylogenetic utilities used by microbiome packages	yes
+r-maps	conda-forge	World map plotting in existing lesson	yes
+r-formattable	conda-forge	Table display in existing lesson	yes
+r-ggrepel	conda-forge	Non-overlapping labels in plots	yes
+r-ggside	conda-forge	Side density plots in beta diversity figure	yes
+r-ggpubr	conda-forge	Publication-style ggplot helpers	yes
+r-gridbase	conda-forge	Grid graphics bridge used by existing lesson	yes
+r-plyr	conda-forge	Rarefaction helper code in existing lesson	yes
+r-reshape2	conda-forge	Melt rarefaction tables in existing lesson	yes
+r-patchwork	conda-forge	Combine ggplot panels in new course material	yes
+r-cowplot	conda-forge	Combine ggplot panels in new course material	yes
+r-pheatmap	conda-forge	Heatmap visualization for taxa tables	yes
+r-viridis	conda-forge	Color scales for abundance plots	yes
+r-rcolorbrewer	conda-forge	Color palettes for taxonomy plots	yes
+r-knitr	conda-forge	R Markdown execution	yes
+r-rmarkdown	conda-forge	R Markdown rendering	yes
+r-remotes	conda-forge	Install ranacapa from GitHub	yes
+r-biocmanager	conda-forge	Bioconductor helper for post-create diagnostics	yes
+r-shiny	conda-forge	ranacapa dependency	yes
+r-shinythemes	conda-forge	ranacapa dependency	yes
+r-heatmaply	conda-forge	ranacapa dependency	yes
+r-markdown	conda-forge	ranacapa dependency	yes
+r-plotly	conda-forge	ranacapa dependency	yes
+r-dt	conda-forge	ranacapa dependency	yes
+r-scales	conda-forge	ranacapa dependency	yes
+r-magrittr	conda-forge	ranacapa dependency	yes
+MiscMetabar	CRAN	Miscellaneous metabarcoding utilities loaded by course material	yes
+ranacapa	GitHub:gauravsk/ranacapa	Functions loaded by existing course material	yes
