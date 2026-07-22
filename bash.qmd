@@ -1,154 +1,750 @@
 ---
-title: "Bash essenziale"
+title: "Bash essenziale per il metabarcoding"
+subtitle: "Una lezione pratica di 60 minuti per chi parte da zero"
+description: "Terminale, percorsi, organizzazione dei file, controllo dei FASTQ compressi, pipe, log e ambienti Conda."
 ---
 
-::: {.lang-block .lang-it}
-## Obiettivo
+Bash non è una lista di comandi da imparare a memoria. È un modo preciso e riproducibile per dire al computer **dove sono i dati**, **quale programma deve usarli** e **dove devono finire i risultati**.
 
-Imparare il minimo indispensabile per sapere dove ci troviamo, ispezionare i FASTQ e capire dove AmpWrap scrive i risultati.
+Questa lezione dura circa **60 minuti** ed è pensata per chi non ha mai usato un terminale. Lavoreremo su un piccolo progetto di esempio con file FASTQ compressi, organizzato come un'analisi reale.
 
-## 1. Orientarsi / Getting oriented
+## Obiettivi della lezione
+
+Alla fine della lezione sarai in grado di:
+
+- riconoscere terminale, shell, prompt, comando, opzione e argomento;
+- orientarti nel filesystem con `pwd`, `ls` e `cd`;
+- creare e organizzare cartelle con `mkdir`, `cp` e `mv`;
+- ispezionare file di testo e file `FASTQ.gz` senza aprirli interamente;
+- selezionare più file con i wildcard e collegare comandi con una pipe;
+- salvare output e messaggi di errore in un log;
+- attivare l'ambiente Conda del corso e trovare l'help di un programma.
+
+## Scaletta indicativa
+
+| Minuti | Argomento |
+|---:|---|
+| 0–5 | Terminale, Bash e anatomia di un comando |
+| 5–15 | Directory, percorsi e navigazione |
+| 15–25 | Creare, copiare e spostare file e cartelle |
+| 25–37 | Ispezionare testo e FASTQ compressi |
+| 37–50 | Wildcard, pipe, redirezioni e log |
+| 50–55 | Conda e help dei programmi |
+| 55–60 | Esercizio finale |
+
+::: {.callout-note title="Come usare questa pagina"}
+Durante la lezione segui le sezioni dalla 1 alla 7. La scheda rapida e la diagnosi degli errori restano come riferimento per le esercitazioni successive. Il blocco di preparazione va eseguito una sola volta.
 :::
 
-::: {.lang-block .lang-en}
-## Goal
+## Prima di iniziare
 
-Learn the minimum needed to know where we are, inspect FASTQ files, and understand where AmpWrap writes its results.
+Apri il **terminale Ubuntu**. Su Windows deve essere il terminale della distribuzione Ubuntu in WSL2, non PowerShell.
 
-## 1. Getting oriented
+Nei blocchi di codice di questa pagina sono riportati soltanto i comandi da digitare. Non aggiungere simboli come `$` o `>` davanti al comando.
+
+::: {.callout-important title="Regola fondamentale"}
+Esegui un blocco alla volta e leggi sempre l'output prima di continuare.
 :::
+
+### Cinque tasti che userai spesso
+
+| Tasto | Effetto |
+|---|---|
+| `Tab` | completa nomi di file e cartelle; premuto due volte mostra le possibilità |
+| `Freccia su` | recupera i comandi precedenti |
+| `Ctrl+C` | interrompe il comando corrente o annulla una riga incompleta |
+| `Ctrl+L` | pulisce visivamente il terminale senza cancellare i file |
+| `q` | esce da programmi di consultazione come `less` e `man` |
+
+---
+
+## 0. Preparare il progetto di esercitazione
+
+Questa preparazione richiede circa un minuto e può essere eseguita dal docente prima della lezione. Copia e incolla l'intero blocco seguente. Crea un progetto nella tua home Linux e quattro piccoli FASTQ compressi. Non è necessario comprendere ora ogni carattere del blocco: i costrutti utilizzati verranno incontrati durante la lezione.
 
 ```bash
+mkdir -p "$HOME/microbiome-bash-lab"/{input,metadata,output,logs,notes}
+cd "$HOME/microbiome-bash-lab"
+
+printf '@sample_A_read_1/1\nACGTACGTACGT\n+\nIIIIIIIIIIII\n@sample_A_read_2/1\nTGCATGCATGCA\n+\nIIIIIIIIIIII\n' \
+  | gzip > input/sample_A_R1.fastq.gz
+
+printf '@sample_A_read_1/2\nTACGTACGTACG\n+\nIIIIIIIIIIII\n@sample_A_read_2/2\nCATGCATGCATG\n+\nIIIIIIIIIIII\n' \
+  | gzip > input/sample_A_R2.fastq.gz
+
+printf '@sample_B_read_1/1\nAAAACCCCGGGG\n+\nIIIIIIIIIIII\n@sample_B_read_2/1\nTTTTGGGGCCCC\n+\nIIIIIIIIIIII\n' \
+  | gzip > input/sample_B_R1.fastq.gz
+
+printf '@sample_B_read_1/2\nCCCCGGGGTTTT\n+\nIIIIIIIIIIII\n@sample_B_read_2/2\nGGGGCCCCAAAA\n+\nIIIIIIIIIIII\n' \
+  | gzip > input/sample_B_R2.fastq.gz
+
+printf 'sample\tgroup\nsample_A\tcontrol\nsample_B\ttreatment\n' \
+  > metadata/samples.tsv
+
+printf 'Progetto creato in: %s\n' "$PWD"
+ls -R
+```
+
+La struttura risultante è:
+
+```text
+microbiome-bash-lab/
+├── input/       # dati grezzi: non modificarli
+├── metadata/    # informazioni sui campioni
+├── output/      # risultati delle analisi
+├── logs/        # registrazione dei comandi e dei messaggi
+└── notes/       # appunti e copie di lavoro
+```
+
+::: {.callout-tip title="Buona pratica"}
+Conserva i dati originali in `input/` e scrivi risultati e file temporanei altrove. Un workflow è più facile da controllare quando input e output non sono mescolati.
+:::
+
+---
+
+## 1. Terminale, shell e Bash
+
+Il **terminale** è la finestra in cui scriviamo. La **shell** interpreta ciò che scriviamo. **Bash** è la shell usata in questa lezione.
+
+Una riga del terminale può assomigliare a questa:
+
+```text
+(metabarcoding-phd) nomeutente@computer:~/microbiome-bash-lab$
+```
+
+Le parti principali sono:
+
+- `(metabarcoding-phd)`: ambiente Conda attivo;
+- `nomeutente@computer`: utente e computer;
+- `~/microbiome-bash-lab`: directory corrente;
+- `$`: il terminale è pronto a ricevere un comando.
+
+Il prompt è mostrato dal terminale: **non va ricopiato**.
+
+### Anatomia di un comando
+
+La struttura più comune è:
+
+```text
+comando [opzioni] [argomenti]
+```
+
+Esempio:
+
+```bash
+ls -lh input/
+```
+
+| Parte | Ruolo |
+|---|---|
+| `ls` | comando: elenca il contenuto di una directory |
+| `-l` | opzione: usa un elenco dettagliato |
+| `-h` | opzione: mostra dimensioni leggibili, per esempio KB o MB |
+| `input/` | argomento: la directory su cui deve lavorare `ls` |
+
+Gli spazi separano le parti del comando. Bash distingue maiuscole e minuscole: `Input`, `input` e `INPUT` sono tre nomi diversi.
+
+Prova tre comandi semplici:
+
+```bash
+date
+whoami
+echo "Sto usando Bash"
+```
+
+Le righe che iniziano con `#` sono commenti e non vengono eseguite:
+
+```bash
+# Questo è un commento
+echo "Questo invece viene eseguito"
+```
+
+### Non serve memorizzare tutto
+
+Molti programmi mostrano una guida con `--help` o `-h`:
+
+```bash
+ls --help | less
+```
+
+Scorri con le frecce e premi `q` per uscire. Per i comandi di sistema è spesso disponibile anche il manuale:
+
+```bash
+man ls
+```
+
+---
+
+## 2. Dove sono? Che cosa c'è qui? Come mi sposto?
+
+Tre comandi rispondono alle domande fondamentali:
+
+| Domanda | Comando |
+|---|---|
+| Dove sono? | `pwd` |
+| Che cosa c'è qui? | `ls` |
+| Come mi sposto? | `cd` |
+
+Torna all'inizio del progetto e osserva la directory:
+
+```bash
+cd "$HOME/microbiome-bash-lab"
 pwd
 ls
-ls -lh
+ls -lah
+ls -lh input/
 ```
 
-::: {.lang-block .lang-it}
-- `pwd` mostra la directory corrente;
-- `ls -lh` elenca i file con dimensioni leggibili;
-- `.` indica la directory corrente e `..` quella superiore.
-:::
+`pwd` significa *print working directory*. Dovrebbe mostrare un percorso che termina con:
 
-::: {.lang-block .lang-en}
-- `pwd` shows the current directory;
-- `ls -lh` lists files with human-readable sizes;
-- `.` means the current directory and `..` the parent one.
-:::
+```text
+/microbiome-bash-lab
+```
+
+Con `ls -lah`:
+
+- `-l` mostra dettagli;
+- `-a` include gli elementi nascosti, i cui nomi iniziano con `.`;
+- `-h` mostra dimensioni leggibili.
+
+### Percorsi assoluti e relativi
+
+Un **percorso** è l'indirizzo di un file o di una directory.
+
+| Simbolo | Significato |
+|---|---|
+| `/` | radice del filesystem |
+| `~` oppure `$HOME` | home dell'utente corrente |
+| `.` | directory corrente |
+| `..` | directory superiore |
+
+Un percorso **assoluto** parte da `/` o dalla home:
+
+```text
+/home/nomeutente/microbiome-bash-lab/input/sample_A_R1.fastq.gz
+```
+
+Un percorso **relativo** parte dalla directory in cui ci troviamo:
+
+```text
+input/sample_A_R1.fastq.gz
+```
+
+Il percorso relativo funziona soltanto quando la posizione corrente è quella prevista. Per questo `pwd` è uno dei migliori strumenti di controllo.
+
+### Esercizio guidato di navigazione
 
 ```bash
-cd phd-microbiome-2026
+cd "$HOME/microbiome-bash-lab"
 pwd
-mkdir -p corso_2026/raw_reads
+
+cd input
+pwd
+ls -lh
+
+cd ..
+pwd
+
+cd metadata
+pwd
+
+cd -
+pwd
 ```
 
-::: {.callout-tip}
-Usate il tasto `Tab` per completare nomi e percorsi: riduce molti errori di battitura.
-:::
-
-::: {.lang-block .lang-it}
-## 2. Copiare senza perdere l'originale / Copying without losing the original
-:::
-
-::: {.lang-block .lang-en}
-## 2. Copying without losing the original
-:::
+`cd -` torna alla directory precedente. `cd` senza argomenti torna alla home:
 
 ```bash
-cp campione_R1.fastq.gz corso_2026/raw_reads/
-mv vecchio_nome.txt nuovo_nome.txt
+cd
+pwd
 ```
 
-::: {.lang-block .lang-it}
-`cp` conserva l'originale; `mv` sposta o rinomina. Prima di un comando su molti file controllate sempre `pwd` e `ls`.
-:::
-
-::: {.lang-block .lang-en}
-`cp` keeps the original; `mv` moves or renames. Before running a command on many files, always check `pwd` and `ls`.
-:::
-
-::: {.lang-block .lang-it}
-## 3. Leggere un FASTQ compresso / Reading a compressed FASTQ
-:::
-
-::: {.lang-block .lang-en}
-## 3. Reading a compressed FASTQ
-:::
+Ora torna al progetto usando il completamento con `Tab`: inizia a scrivere `cd ~/micro` e premi `Tab`.
 
 ```bash
-gzip -cd campione_R1.fastq.gz | head -n 8
+cd "$HOME/microbiome-bash-lab"
 ```
 
-Ogni read occupa quattro righe. Per stimare il numero di reads:
+::: {.callout-tip title="Abitudine utile"}
+Prima di lanciare un'analisi esegui sempre `pwd` e `ls -lh`. Molti errori derivano semplicemente dal trovarsi nella directory sbagliata.
+:::
 
-Every read occupies four lines. To estimate the number of reads:
+---
+
+## 3. Creare, copiare, spostare e rinominare
+
+### Creare directory con `mkdir`
+
+Crea due sottodirectory per i risultati:
 
 ```bash
-gzip -cd campione_R1.fastq.gz | wc -l
+cd "$HOME/microbiome-bash-lab"
+mkdir -p output/qc output/tables
+ls -R output
 ```
 
-Dividete il numero di righe per quattro. Cosa contengono la seconda e la quarta riga di ogni record?
+L'opzione `-p` crea anche eventuali directory intermedie e non produce errore se la directory esiste già.
 
-Divide the number of lines by four. What do the second and fourth lines of each record contain?
+### Copiare con `cp`
 
-::: {.lang-block .lang-it}
-## 4. Pipe e redirezione / Pipes and redirection
-:::
+La forma generale è:
 
-::: {.lang-block .lang-en}
-## 4. Pipes and redirection
-:::
+```text
+cp origine destinazione
+```
 
-La pipe `|` passa l'output di un comando al successivo; `>` lo scrive in un file.
-
-The pipe `|` sends the output of one command to the next; `>` writes it to a file.
+Crea una copia dei metadata nella directory degli appunti:
 
 ```bash
-gzip -cd campione_R1.fastq.gz | head -n 40 > prime_10_reads.fastq
-less -S prime_10_reads.fastq
+cp -i metadata/samples.tsv notes/samples_copy.tsv
+ls -lh notes/
 ```
 
-Uscire da `less` premendo `q`.
+`-i` significa *interactive*: se il file di destinazione esiste già, `cp` chiede conferma prima di sovrascriverlo.
 
-Exit `less` by pressing `q`.
+### Spostare o rinominare con `mv`
 
-::: {.lang-block .lang-it}
-## 5. Ambiente del corso / Course environment
+`mv` usa la stessa logica di origine e destinazione. Se origine e destinazione sono nella stessa directory, il file viene rinominato:
+
+```bash
+mv -i notes/samples_copy.tsv notes/samples_backup.tsv
+ls -lh notes/
+```
+
+Per spostarlo in una directory mantenendo lo stesso nome, indica soltanto la directory come destinazione:
+
+```bash
+mv -i notes/samples_backup.tsv output/qc/
+ls -lh output/qc/
+```
+
+### Sicurezza: cancellare non equivale al cestino
+
+Il comando `rm` cancella normalmente i file in modo permanente. Non è necessario usarlo in questa esercitazione.
+
+::: {.callout-warning title="Prima di cancellare qualsiasi cosa"}
+Controlla `pwd`, controlla `ls`, completa il nome con `Tab` e non usare `sudo` come tentativo generico di risolvere un errore. Evita soprattutto comandi ricorsivi copiati senza comprenderli.
 :::
 
-::: {.lang-block .lang-en}
-## 5. Course environment
+Anche `cp` e `mv` possono sovrascrivere file. Durante l'apprendimento è prudente usare `cp -i` e `mv -i`.
+
+---
+
+## 4. Ispezionare file di testo e FASTQ compressi
+
+In bioinformatica molti file sono troppo grandi per essere aperti interamente. Conviene prima osservarne una piccola parte.
+
+### File di testo
+
+Il file `metadata/samples.tsv` è una tabella di testo separata da tabulazioni:
+
+```bash
+cd "$HOME/microbiome-bash-lab"
+head -n 3 metadata/samples.tsv
+tail -n 2 metadata/samples.tsv
+wc -l metadata/samples.tsv
+```
+
+| Comando | Funzione |
+|---|---|
+| `head -n 3` | mostra le prime 3 righe |
+| `tail -n 2` | mostra le ultime 2 righe |
+| `wc -l` | conta le righe |
+
+Per consultare un file in modo interattivo:
+
+```bash
+less metadata/samples.tsv
+```
+
+Dentro `less`:
+
+- usa le frecce o `Page Up`/`Page Down` per spostarti;
+- digita `/sample_B` e premi Invio per cercare;
+- premi `n` per andare all'occorrenza successiva;
+- premi `q` per uscire.
+
+`cat` stampa tutto il contenuto di un file ed è adatto soltanto a file piccoli:
+
+```bash
+cat metadata/samples.tsv
+```
+
+### Riconoscere i file compressi
+
+```bash
+file input/sample_A_R1.fastq.gz
+ls -lh input/*.fastq.gz
+```
+
+Un file `.fastq.gz` è un FASTQ compresso con gzip. Non usare `cat` direttamente: vedresti dati compressi illeggibili.
+
+`gzip -cd` decomprime verso il terminale senza modificare il file originale. Collegandolo a `head`, osserviamo soltanto le prime otto righe:
+
+```bash
+gzip -cd input/sample_A_R1.fastq.gz | head -n 8
+```
+
+Un record FASTQ occupa quattro righe:
+
+```text
+@identificativo_della_lettura
+SEQUENZA
++
+QUALITA
+```
+
+Otto righe corrispondono quindi a due letture. Possiamo verificarlo così:
+
+```bash
+gzip -cd input/sample_A_R1.fastq.gz | wc -l
+```
+
+Nel piccolo file di esercizio il risultato è `8`. Per file reali è preferibile usare un programma che comprenda direttamente il formato FASTQ, per esempio SeqKit:
+
+```bash
+conda activate metabarcoding-phd
+seqkit stats input/*.fastq.gz
+```
+
+### Controllo rapido delle coppie R1/R2
+
+I file paired-end devono avere un file `R1` e un file `R2` per ciascun campione.
+
+```bash
+ls input/*_R1.fastq.gz
+ls input/*_R2.fastq.gz
+
+ls input/*_R1.fastq.gz | wc -l
+ls input/*_R2.fastq.gz | wc -l
+```
+
+In questa esercitazione devono esserci due file `R1` e due file `R2`.
+
+::: {.callout-note title="File compressi e conteggio delle righe"}
+`wc -l file.fastq.gz` non conta le letture: lavora sui dati binari compressi. Prima bisogna decomprimere verso lo standard output oppure usare un programma come SeqKit.
 :::
+
+---
+
+## 5. Wildcard, pipe, redirezioni e log
+
+Questi operatori permettono di lavorare su molti file e di combinare comandi semplici.
+
+### Wildcard: selezionare più file
+
+L'asterisco `*` rappresenta zero o più caratteri.
+
+```bash
+ls input/*.fastq.gz
+ls input/sample_A_*
+ls input/*_R1.fastq.gz
+```
+
+Interpretazione:
+
+| Espressione | Seleziona |
+|---|---|
+| `input/*.fastq.gz` | tutti i FASTQ compressi in `input/` |
+| `input/sample_A_*` | tutti i file il cui nome inizia con `sample_A_` |
+| `input/*_R1.fastq.gz` | tutti i file forward `R1` |
+
+Bash espande il wildcard prima di avviare il comando. Prima di usare un wildcard con comandi che modificano file, controlla sempre la selezione con `ls`.
+
+Il punto interrogativo `?` rappresenta esattamente un carattere. Nel nostro esempio:
+
+```bash
+ls input/sample_?_R1.fastq.gz
+```
+
+seleziona `sample_A_R1.fastq.gz` e `sample_B_R1.fastq.gz`.
+
+### Pipe: usare l'output di un comando come input del successivo
+
+La pipe è il simbolo `|`:
+
+```text
+comando_1 | comando_2
+```
+
+L'output di `comando_1` non viene stampato direttamente: diventa l'input di `comando_2`.
+
+Abbiamo già usato una pipe:
+
+```bash
+gzip -cd input/sample_A_R1.fastq.gz | head -n 8
+```
+
+Altri esempi:
+
+```bash
+ls input/*.fastq.gz | wc -l
+seqkit stats input/*.fastq.gz | less
+```
+
+Il primo conta i file selezionati. Il secondo permette di consultare l'output di SeqKit con `less`.
+
+### Redirezione: scrivere l'output in un file
+
+Il simbolo `>` salva l'output in un file invece di mostrarlo sul terminale:
+
+```bash
+ls input/*.fastq.gz > logs/input-files.txt
+head logs/input-files.txt
+```
+
+::: {.callout-warning title="Attenzione alla sovrascrittura"}
+`>` crea il file se non esiste, ma lo **sovrascrive** se esiste già.
+:::
+
+Il simbolo `>>` aggiunge l'output in fondo a un file esistente:
+
+```bash
+date > logs/session.log
+ls input/*.fastq.gz >> logs/session.log
+cat logs/session.log
+```
+
+### `tee`: mostrare e salvare nello stesso momento
+
+`tee` copia l'output sia sul terminale sia in un file:
+
+```bash
+seqkit stats input/*.fastq.gz | tee logs/seqkit-stats.log
+```
+
+Molti programmi inviano alcuni messaggi su un secondo canale chiamato **standard error**. Per salvare in un unico log sia l'output normale sia i messaggi di errore:
+
+```bash
+seqkit stats input/*.fastq.gz 2>&1 | tee logs/seqkit-stats.log
+```
+
+- `2>&1` unisce standard error e standard output;
+- `| tee ...` mostra tutto e ne salva una copia.
+
+Questa è una struttura molto utile per i workflow:
+
+```text
+comando_con_opzioni 2>&1 | tee logs/nome-analisi.log
+```
+
+Dopo l'esecuzione, controlla il log:
+
+```bash
+head logs/seqkit-stats.log
+tail logs/seqkit-stats.log
+```
+
+::: {.callout-tip title="Perché conservare i log?"}
+I log permettono di ricostruire ciò che è successo, individuare errori e comunicare al docente o a un collaboratore l'esatto messaggio prodotto dal programma.
+:::
+
+---
+
+## 6. Ambiente Conda e help dei programmi
+
+Un ambiente Conda mantiene insieme versioni compatibili dei programmi necessari per il corso.
+
+Mostra gli ambienti disponibili:
 
 ```bash
 conda env list
-conda activate metabarcoding-phd
-which R
-which ampwrap
 ```
 
-Se `which` non restituisce un percorso interno all'ambiente attivo, fermatevi e risolvete il problema prima di lanciare il workflow.
+Attiva l'ambiente del corso:
 
-If `which` does not return a path inside the active environment, stop and fix the problem before launching the workflow.
+```bash
+conda activate metabarcoding-phd
+```
 
-::: {.lang-block .lang-it}
-## Checklist
+Il nome dell'ambiente dovrebbe comparire all'inizio del prompt. Controlla il percorso dell'ambiente e il programma che verrà eseguito:
+
+```bash
+echo "$CONDA_PREFIX"
+command -v seqkit
+seqkit version
+```
+
+`command -v` risponde alla domanda: “quale eseguibile userà Bash quando scrivo questo nome?”. Il percorso dovrebbe trovarsi dentro l'ambiente `metabarcoding-phd`.
+
+Per scoprire le opzioni di un programma:
+
+```bash
+seqkit stats --help | less
+```
+
+Per vedere gli ultimi comandi eseguiti:
+
+```bash
+history | tail -n 10
+```
+
+Per uscire dall'ambiente:
+
+```bash
+conda deactivate
+```
+
+Durante il corso, riattivalo prima di usare AmpWrap o gli altri programmi bioinformatici:
+
+```bash
+conda activate metabarcoding-phd
+```
+
+---
+
+## 7. Esercizio finale: controllo di un progetto prima del workflow
+
+Senza guardare subito la soluzione, prova a:
+
+1. tornare nella directory `microbiome-bash-lab` partendo da qualunque posizione;
+2. mostrare il percorso corrente;
+3. creare la directory `output/qc` senza errore anche se esiste già;
+4. elencare soltanto i file `R1`;
+5. mostrare i primi due record di `sample_B_R1.fastq.gz`;
+6. copiare `samples.tsv` dentro `output/qc/` senza sovrascrivere in silenzio;
+7. attivare l'ambiente del corso;
+8. produrre le statistiche di tutti i FASTQ, mostrandole sul terminale e salvandole in `logs/fastq-stats.log`;
+9. controllare le ultime righe del log.
+
+Risultati attesi:
+
+- quattro FASTQ totali;
+- due file `R1` e due file `R2`;
+- due letture in ciascun piccolo file di esempio;
+- un file `output/qc/samples.tsv`;
+- un file `logs/fastq-stats.log`.
+
+::: {.callout-note collapse="true" title="Mostra una possibile soluzione"}
+
+```bash
+cd "$HOME/microbiome-bash-lab"
+pwd
+
+mkdir -p output/qc
+
+ls -lh input/*_R1.fastq.gz
+
+gzip -cd input/sample_B_R1.fastq.gz | head -n 8
+
+cp -i metadata/samples.tsv output/qc/
+
+conda activate metabarcoding-phd
+seqkit stats input/*.fastq.gz 2>&1 | tee logs/fastq-stats.log
+
+tail -n 5 logs/fastq-stats.log
+```
+
+Controlli aggiuntivi:
+
+```bash
+ls input/*.fastq.gz | wc -l
+ls input/*_R1.fastq.gz | wc -l
+ls input/*_R2.fastq.gz | wc -l
+ls -lh output/qc/ logs/
+```
+
 :::
 
-::: {.lang-block .lang-en}
-## Checklist
-:::
+---
 
-::: {.lang-block .lang-it}
-- [ ] So distinguere un percorso relativo da uno assoluto.
-- [ ] So controllare nome e dimensione dei file.
-- [ ] So visualizzare le prime due reads di un FASTQ compresso.
-- [ ] So attivare e controllare l'ambiente Conda.
-:::
+## Routine di controllo prima di lanciare AmpWrap
 
-::: {.lang-block .lang-en}
-- [ ] I can distinguish a relative path from an absolute one.
-- [ ] I can check file names and sizes.
-- [ ] I can inspect the first two reads of a compressed FASTQ.
-- [ ] I can activate and verify the Conda environment.
-:::
+Questa sequenza riduce molti errori comuni:
+
+```bash
+conda activate metabarcoding-phd
+cd "$HOME/microbiome-bash-lab"
+
+pwd
+ls -lh input/
+ls input/*_R1.fastq.gz | wc -l
+ls input/*_R2.fastq.gz | wc -l
+seqkit stats input/*.fastq.gz
+
+mkdir -p output logs
+```
+
+Solo dopo questi controlli si lancia il workflow, salvando un log completo:
+
+```text
+comando_ampwrap_con_le_opzioni 2>&1 | tee logs/ampwrap.log
+```
+
+Non copiare letteralmente l'ultima riga: è uno schema. Nel modulo successivo verrà sostituita con il comando AmpWrap completo e con i parametri appropriati per i dati del corso.
+
+---
+
+## Errori comuni e diagnosi rapida
+
+| Messaggio o situazione | Che cosa fare |
+|---|---|
+| `No such file or directory` | esegui `pwd`, poi `ls -lah`; controlla maiuscole/minuscole e usa `Tab` |
+| `command not found` | controlla l'ortografia, attiva Conda e prova `command -v nome_comando` |
+| `Permission denied` | controlla il percorso e i permessi con `ls -l`; non usare subito `sudo` |
+| il terminale mostra soltanto `>` e aspetta | probabilmente manca una virgoletta o il comando è incompleto; premi `Ctrl+C` |
+| compaiono caratteri illeggibili aprendo un `.gz` | non usare `cat`; usa `gzip -cd file.fastq.gz | head` |
+| `less` occupa tutto lo schermo | premi `q` |
+| un comando continua troppo a lungo | premi `Ctrl+C`, poi rileggi comando e log |
+| un percorso contiene spazi | racchiudilo tra virgolette; nei nuovi progetti preferisci `_` o `-` |
+
+### La routine dei 30 secondi
+
+Quando qualcosa non funziona:
+
+```bash
+pwd
+ls -lah
+ls -lah percorso/che/ti/aspetti
+command -v nome_programma
+```
+
+Poi rileggi il messaggio di errore dall'inizio. Il messaggio spesso indica il file, il percorso o l'opzione che ha causato il problema.
+
+---
+
+## Scheda rapida dei comandi
+
+| Comando o simbolo | Uso essenziale |
+|---|---|
+| `pwd` | mostra la directory corrente |
+| `ls -lah` | elenca contenuto, dettagli, file nascosti e dimensioni leggibili |
+| `cd percorso` | entra in una directory |
+| `cd ..` | sale di un livello |
+| `cd` oppure `cd ~` | torna alla home |
+| `cd -` | torna alla directory precedente |
+| `mkdir -p percorso` | crea una directory e gli eventuali livelli mancanti |
+| `cp -i origine destinazione` | copia chiedendo conferma prima di sovrascrivere |
+| `mv -i origine destinazione` | sposta o rinomina chiedendo conferma |
+| `head -n N file` | mostra le prime `N` righe |
+| `tail -n N file` | mostra le ultime `N` righe |
+| `less file` | consulta un file; esci con `q` |
+| `wc -l file` | conta le righe |
+| `file nomefile` | identifica il tipo di file |
+| `gzip -cd file.gz` | decomprime verso lo standard output senza modificare l'originale |
+| `*` | wildcard: zero o più caratteri |
+| `?` | wildcard: un carattere |
+| `comando1 \| comando2` | passa l'output del primo comando al secondo |
+| `>` | scrive e sovrascrive un file |
+| `>>` | aggiunge in fondo a un file |
+| `2>&1` | unisce messaggi di errore e output normale |
+| `tee file.log` | mostra l'output e lo salva |
+| `command -v programma` | mostra quale eseguibile verrà usato |
+| `programma --help` | mostra l'help del programma |
+| `Ctrl+C` | interrompe o annulla |
+| `Tab` | completa e verifica nomi e percorsi |
+
+---
+
+## Che cosa non abbiamo coperto
+
+In un'ora non è realistico affrontare bene scripting, cicli `for`, variabili complesse, `grep`, `awk`, `sed`, permessi, accesso a server remoti e gestione dei processi. Questi argomenti diventano utili dopo aver consolidato navigazione, percorsi, pipe e log.
+
+Per approfondire:
+
+- [Unix Crash Course — Happy Belly Bioinformatics](https://astrobiomike.github.io/unix/)
+- [GNU Bash Reference Manual](https://www.gnu.org/software/bash/manual/)
+- [GNU Coreutils Manual](https://www.gnu.org/software/coreutils/manual/)
+- [SeqKit documentation](https://bioinf.shenwei.me/seqkit/)
+
+La struttura didattica di questa lezione prende ispirazione dal percorso introduttivo di Happy Belly Bioinformatics, adattandolo agli obiettivi e ai file tipici di un workflow di metabarcoding.
