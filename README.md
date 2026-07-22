@@ -8,6 +8,8 @@ This repository contains the software environment and teaching material for the 
 
 **SEA4BLUE biostatistics material:** [download `Sea4Blue.zip`](https://ebosi.github.io/phd-microbiome-2026/downloads/Sea4Blue.zip)
 
+The website is published from the `gh-pages` branch. If GitHub Pages is not yet enabled in the repository settings, set the source to `Deploy from a branch` and choose `gh-pages`.
+
 > [!IMPORTANT]
 > Complete the installation **before the course**. Creating the software environment downloads many packages and can require substantial time, disk space, and a stable internet connection.
 
