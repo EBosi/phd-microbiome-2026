@@ -416,9 +416,7 @@ p2 +
 
 ![](figures/biostatistica/09-rda.png){fig-align="center" width="90%"}
 
-## Nota finale
 
-Questo tutorial resta statico apposta: il codice è mostrato per essere letto e discusso, mentre le figure sono già pronte. In aula, il punto è capire la sequenza logica dell'analisi, non perdere tempo con output rumorosi o blocchi troppo automatici.
 :::
 
 ::: {.lang-en}
@@ -837,7 +835,5 @@ p2 +
 
 ![](figures/biostatistica/09-rda.png){fig-align="center" width="90%"}
 
-## Final note
 
-This tutorial is intentionally static: the code is there to be read and discussed, while the figures are already ready to use. The point in class is to understand the analytical sequence, not to spend time on noisy output or overly automated steps.
 :::
