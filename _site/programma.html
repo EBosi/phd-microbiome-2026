@@ -126,16 +126,7 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">In questa pagina</h2>
-   
-  <ul>
-  <li><a href="#obiettivi-formativi" id="toc-obiettivi-formativi" class="nav-link active" data-scroll-target="#obiettivi-formativi">Obiettivi formativi</a></li>
-  <li><a href="#struttura-delle-8-ore" id="toc-struttura-delle-8-ore" class="nav-link" data-scroll-target="#struttura-delle-8-ore">Struttura delle 8 ore</a></li>
-  <li><a href="#filo-conduttore-sea4blue" id="toc-filo-conduttore-sea4blue" class="nav-link" data-scroll-target="#filo-conduttore-sea4blue">Filo conduttore: SEA4BLUE</a></li>
-  <li><a href="#preparazione-degli-studenti" id="toc-preparazione-degli-studenti" class="nav-link" data-scroll-target="#preparazione-degli-studenti">Preparazione degli studenti</a></li>
-  </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/EBosi/phd-microbiome-2026/blob/main/programma.qmd" class="toc-action"><i class="bi bi-github"></i>Mostra il codice</a></li><li><a href="https://github.com/EBosi/phd-microbiome-2026/issues/new" class="toc-action"><i class="bi empty"></i>Segnala un problema</a></li></ul></div></nav>
+    
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -163,6 +154,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<div class="lang-block lang-it">
 <section id="obiettivi-formativi" class="level2">
 <h2 class="anchored" data-anchor-id="obiettivi-formativi">Obiettivi formativi</h2>
 <p>Alla fine della giornata sarete in grado di:</p>
@@ -172,7 +164,7 @@ ul.task-list li input[type="checkbox"] {
 <li>orientarvi nel terminale e negli output di AmpWrap;</li>
 <li>importare e ispezionare un oggetto <code>phyloseq</code>;</li>
 <li>scegliere una trasformazione coerente con la domanda;</li>
-<li>interpretare diversità alfa, beta, PERMANOVA e ordinamenti vincolati.</li>
+<li>interpretare diversita alfa, beta, PERMANOVA e ordinamenti vincolati.</li>
 </ul>
 </section>
 <section id="struttura-delle-8-ore" class="level2">
@@ -214,14 +206,14 @@ ul.task-list li input[type="checkbox"] {
 <tr class="odd">
 <td>Biostatistica</td>
 <td style="text-align: right;">2 h</td>
-<td>Filtri, profondità, diversità alfa/beta, PERMANOVA, composizione e RDA</td>
+<td>Filtri, profondita, diversita alfa/beta, PERMANOVA, composizione e RDA</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="filo-conduttore-sea4blue" class="level2">
 <h2 class="anchored" data-anchor-id="filo-conduttore-sea4blue">Filo conduttore: SEA4BLUE</h2>
-<p>L’esercitazione finale usa un oggetto <code>phyloseq</code> già costruito a partire da campioni raccolti lungo un transetto nell’Atlantico settentrionale. Le reads sono state preprocessate con DADA2 e la tassonomia è stata assegnata con SILVA.</p>
+<p>L’esercitazione finale usa un oggetto <code>phyloseq</code> gia costruito a partire da campioni raccolti lungo un transetto nell’Atlantico settentrionale. Le reads sono state preprocessate con DADA2 e la tassonomia e stata assegnata con SILVA.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -232,7 +224,7 @@ Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Lo scopo non è produrre una “figura finale” il più rapidamente possibile, ma capire quale rappresentazione dei dati viene usata in ogni passaggio e quali assunzioni stiamo facendo.</p>
+<p>Lo scopo non e produrre una figura finale il piu rapidamente possibile, ma capire quale rappresentazione dei dati viene usata in ogni passaggio e quali assunzioni stiamo facendo.</p>
 </div>
 </div>
 </section>
@@ -244,11 +236,125 @@ Nota
 <li>Scaricare <a href="downloads/Sea4Blue.zip">Sea4Blue.zip</a> senza decomprimerlo due volte.</li>
 <li>Portare un computer con almeno 8 GB di RAM e spazio libero sufficiente.</li>
 </ol>
-
-
 </section>
+</div>
+<div class="lang-block lang-en">
+<section id="learning-goals" class="level2">
+<h2 class="anchored" data-anchor-id="learning-goals">Learning goals</h2>
+<p>By the end of the day you should be able to:</p>
+<ul>
+<li>describe the flow from sampling to an ASV table;</li>
+<li>recognize the main experimental and bioinformatic risks;</li>
+<li>navigate the terminal and read AmpWrap outputs;</li>
+<li>import and inspect a <code>phyloseq</code> object;</li>
+<li>choose a transformation that matches the question;</li>
+<li>interpret alpha and beta diversity, PERMANOVA, and constrained ordinations.</li>
+</ul>
+</section>
+<section id="the-8-hour-structure" class="level2">
+<h2 class="anchored" data-anchor-id="the-8-hour-structure">The 8-hour structure</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 40%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Module</th>
+<th style="text-align: right;">Duration</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Metabarcoding theory</td>
+<td style="text-align: right;">2 h</td>
+<td>Experimental design, markers, primers, controls, reads, errors, ASV/OTU, and taxonomy</td>
+</tr>
+<tr class="even">
+<td>Essential Bash</td>
+<td style="text-align: right;">1 h</td>
+<td>Directories, paths, FASTQ files, pipes, and the Conda environment</td>
+</tr>
+<tr class="odd">
+<td>AmpWrap</td>
+<td style="text-align: right;">2 h</td>
+<td>Configuration, launch, logs, quality control, and main outputs</td>
+</tr>
+<tr class="even">
+<td>R/RStudio</td>
+<td style="text-align: right;">1 h</td>
+<td>Scripts, console, objects, data frames, and import</td>
+</tr>
+<tr class="odd">
+<td>Biostatistics</td>
+<td style="text-align: right;">2 h</td>
+<td>Filtering, depth, alpha/beta diversity, PERMANOVA, composition, and RDA</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-running-example-sea4blue" class="level2">
+<h2 class="anchored" data-anchor-id="the-running-example-sea4blue">The running example: SEA4BLUE</h2>
+<p>The final exercise uses a <code>phyloseq</code> object already built from samples collected along a transect in the North Atlantic. Reads were preprocessed with DADA2 and taxonomy was assigned with SILVA.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The goal is not to produce a final figure as fast as possible, but to understand which data representation is used at each step and which assumptions we are making.</p>
+</div>
+</div>
+</section>
+<section id="student-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="student-preparation">Student preparation</h2>
+<ol type="1">
+<li>Complete the <a href="https://github.com/EBosi/phd-microbiome-2026#readme">installation</a>.</li>
+<li>Make sure RStudio opens from the course environment.</li>
+<li>Download <a href="downloads/Sea4Blue.zip">Sea4Blue.zip</a> without unzipping it twice.</li>
+<li>Bring a computer with at least 8 GB of RAM and enough free disk space.</li>
+</ol>
+</section>
+</div>
+
+
 
 </main> <!-- /main -->
+<div class="lang-switch" aria-label="Language switch">
+  <button class="lang-toggle is-active" type="button" data-lang="it">🇮🇹 IT</button>
+  <button class="lang-toggle" type="button" data-lang="en">🇬🇧 EN</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const root = document.documentElement;
+  const buttons = Array.from(document.querySelectorAll(".lang-toggle"));
+  if (!buttons.length) return;
+
+  const stored = localStorage.getItem("sea4blue-lang");
+
+  function setLang(lang) {
+    root.classList.remove("lang-it", "lang-en");
+    root.classList.add(`lang-${lang}`);
+    localStorage.setItem("sea4blue-lang", lang);
+    buttons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.lang === lang);
+    });
+  }
+
+  setLang(stored === "en" ? "en" : "it");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => setLang(button.dataset.lang));
+  });
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -657,7 +763,7 @@ Nota
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EBosi/phd-microbiome-2026/blob/main/programma.qmd" class="toc-action"><i class="bi bi-github"></i>Mostra il codice</a></li><li><a href="https://github.com/EBosi/phd-microbiome-2026/issues/new" class="toc-action"><i class="bi empty"></i>Segnala un problema</a></li></ul></div></div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/EBosi/phd-microbiome-2026/blob/main/programma.qmd" class="toc-action"><i class="bi bi-github"></i>Mostra il codice</a></li><li><a href="https://github.com/EBosi/phd-microbiome-2026/issues/new" class="toc-action"><i class="bi empty"></i>Segnala un problema</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

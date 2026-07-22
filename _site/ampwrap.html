@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Preprocessing con AmpWrap – Metabarcoding PhD 2026</title>
+<title>Pretrattamento con AmpWrap – Metabarcoding PhD 2026</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -104,6 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="styles.css">
@@ -165,17 +168,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">In questa pagina</h2>
    
   <ul>
-  <li><a href="#dal-fastq-alla-tabella-di-asv" id="toc-dal-fastq-alla-tabella-di-asv" class="nav-link active" data-scroll-target="#dal-fastq-alla-tabella-di-asv">Dal FASTQ alla tabella di ASV</a></li>
-  <li><a href="#prima-del-run" id="toc-prima-del-run" class="nav-link" data-scroll-target="#prima-del-run">Prima del run</a></li>
-  <li><a href="#run-illumina-di-esempio" id="toc-run-illumina-di-esempio" class="nav-link" data-scroll-target="#run-illumina-di-esempio">Run Illumina di esempio</a></li>
-  <li><a href="#fermate-di-lettura-degli-output" id="toc-fermate-di-lettura-degli-output" class="nav-link" data-scroll-target="#fermate-di-lettura-degli-output">Fermate di lettura degli output</a>
-  <ul class="collapse">
-  <li><a href="#quality-control-iniziale" id="toc-quality-control-iniziale" class="nav-link" data-scroll-target="#quality-control-iniziale">1. Quality control iniziale</a></li>
-  <li><a href="#rimozione-dei-primer" id="toc-rimozione-dei-primer" class="nav-link" data-scroll-target="#rimozione-dei-primer">2. Rimozione dei primer</a></li>
-  <li><a href="#denoising-e-chimere" id="toc-denoising-e-chimere" class="nav-link" data-scroll-target="#denoising-e-chimere">3. Denoising e chimere</a></li>
-  <li><a href="#output-da-portare-in-r" id="toc-output-da-portare-in-r" class="nav-link" data-scroll-target="#output-da-portare-in-r">4. Output da portare in R</a></li>
-  </ul></li>
-  <li><a href="#domande-prima-di-proseguire" id="toc-domande-prima-di-proseguire" class="nav-link" data-scroll-target="#domande-prima-di-proseguire">Domande prima di proseguire</a></li>
+  <li><a href="#ampwrap-per-il-pretrattamento-delle-raw-reads" id="toc-ampwrap-per-il-pretrattamento-delle-raw-reads" class="nav-link active" data-scroll-target="#ampwrap-per-il-pretrattamento-delle-raw-reads">AmpWrap per il pretrattamento delle raw reads</a></li>
+  <li><a href="#ampwrap-for-preprocessing-raw-reads" id="toc-ampwrap-for-preprocessing-raw-reads" class="nav-link" data-scroll-target="#ampwrap-for-preprocessing-raw-reads">AmpWrap for preprocessing raw reads</a></li>
+  <li><a href="#workflow-ampwrap-illumina-ampwrap-workflow-illumina" id="toc-workflow-ampwrap-illumina-ampwrap-workflow-illumina" class="nav-link" data-scroll-target="#workflow-ampwrap-illumina-ampwrap-workflow-illumina">Workflow AmpWrap (Illumina) / AmpWrap workflow (Illumina)</a></li>
+  <li><a href="#schema-del-workflow-workflow-diagram" id="toc-schema-del-workflow-workflow-diagram" class="nav-link" data-scroll-target="#schema-del-workflow-workflow-diagram">Schema del workflow / Workflow diagram</a></li>
+  <li><a href="#help-del-comando-command-help" id="toc-help-del-comando-command-help" class="nav-link" data-scroll-target="#help-del-comando-command-help">Help del comando / Command help</a></li>
+  <li><a href="#uso-di-base-basic-usage" id="toc-uso-di-base-basic-usage" class="nav-link" data-scroll-target="#uso-di-base-basic-usage">Uso di base / Basic usage</a></li>
+  <li><a href="#scaricare-i-dati-di-esempio-download-the-example-data" id="toc-scaricare-i-dati-di-esempio-download-the-example-data" class="nav-link" data-scroll-target="#scaricare-i-dati-di-esempio-download-the-example-data">Scaricare i dati di esempio / Download the example data</a></li>
+  <li><a href="#esecuzione-ampwrap-running-ampwrap" id="toc-esecuzione-ampwrap-running-ampwrap" class="nav-link" data-scroll-target="#esecuzione-ampwrap-running-ampwrap">Esecuzione AmpWrap / Running AmpWrap</a></li>
+  <li><a href="#analisi-output-output-inspection" id="toc-analisi-output-output-inspection" class="nav-link" data-scroll-target="#analisi-output-output-inspection">Analisi output / Output inspection</a></li>
+  <li><a href="#cosa-osservare-what-to-look-for" id="toc-cosa-osservare-what-to-look-for" class="nav-link" data-scroll-target="#cosa-osservare-what-to-look-for">Cosa osservare / What to look for</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EBosi/phd-microbiome-2026/blob/main/ampwrap.qmd" class="toc-action"><i class="bi bi-github"></i>Mostra il codice</a></li><li><a href="https://github.com/EBosi/phd-microbiome-2026/issues/new" class="toc-action"><i class="bi empty"></i>Segnala un problema</a></li></ul></div></nav>
 </nav>
@@ -188,7 +190,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Preprocessing con AmpWrap</h1>
+<h1 class="title">Pretrattamento con AmpWrap</h1>
+<p class="subtitle lead">Metabarcoding 16S rRNA gene</p>
 </div>
 
 
@@ -205,86 +208,156 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="dal-fastq-alla-tabella-di-asv" class="level2">
-<h2 class="anchored" data-anchor-id="dal-fastq-alla-tabella-di-asv">Dal FASTQ alla tabella di ASV</h2>
-<p>AmpWrap coordina i passaggi del preprocessing e conserva log e report utili a capire che cosa è successo. Durante la lezione useremo il modulo appropriato ai dati forniti; controllate sempre la versione installata e l’help locale.</p>
+<section id="ampwrap-per-il-pretrattamento-delle-raw-reads" class="level2 lang-block lang-it">
+<h2 class="anchored" data-anchor-id="ampwrap-per-il-pretrattamento-delle-raw-reads">AmpWrap per il pretrattamento delle raw reads</h2>
+<p>Per il pretrattamento useremo AmpWrap, il modulo Illumina del workflow pensato per passare dalle raw reads al materiale pronto per DADA2.</p>
+</section>
+<section id="ampwrap-for-preprocessing-raw-reads" class="level2 lang-block lang-en">
+<h2 class="anchored" data-anchor-id="ampwrap-for-preprocessing-raw-reads">AmpWrap for preprocessing raw reads</h2>
+<p>For preprocessing we use AmpWrap, the Illumina module of the workflow designed to move from raw reads to material ready for DADA2.</p>
+</section>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ampwrap</span> <span class="at">--help</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">ampwrap</span> short <span class="at">--help</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Il riferimento del progetto e:</p>
+<p>The project reference is:</p>
+<p><a href="https://github.com/LDoni/AmpWrap" class="uri">https://github.com/LDoni/AmpWrap</a></p>
+<section id="workflow-ampwrap-illumina-ampwrap-workflow-illumina" class="level2">
+<h2 class="anchored" data-anchor-id="workflow-ampwrap-illumina-ampwrap-workflow-illumina">Workflow AmpWrap (Illumina) / AmpWrap workflow (Illumina)</h2>
+<ol type="1">
+<li>Initial quality control con FastQC.</li>
+<li>Report multi-campione con MultiQC.</li>
+<li>Rimozione primer con Cutadapt (<code>--discard-untrimmed</code>).</li>
+<li>Post-cutadapt FastQC + MultiQC.</li>
+<li>Determinazione dei parametri ottimali con FIGARO.</li>
+<li>Inferenza delle ASV con DADA2.</li>
+</ol>
 </section>
-<section id="prima-del-run" class="level2">
-<h2 class="anchored" data-anchor-id="prima-del-run">Prima del run</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> corso_2026</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> raw_reads <span class="at">-maxdepth</span> 1 <span class="at">-type</span> f <span class="at">-name</span> <span class="st">'*.fastq.gz'</span> <span class="kw">|</span> <span class="fu">sort</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Controllate:</p>
-<ul>
-<li>che ogni campione abbia R1 e R2;</li>
-<li>che i nomi siano coerenti;</li>
-<li>che primer, orientamento e lunghezza attesa dell’amplicone siano noti;</li>
-<li>che positivi, negativi e mock community siano identificabili.</li>
-</ul>
+<section id="schema-del-workflow-workflow-diagram" class="level2">
+<h2 class="anchored" data-anchor-id="schema-del-workflow-workflow-diagram">Schema del workflow / Workflow diagram</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+  A[Raw FASTQ] --&gt; B[FastQC]
+  B --&gt; C[MultiQC]
+  C --&gt; D[Cutadapt&lt;br/&gt;--discard-untrimmed]
+  D --&gt; E[FastQC]
+  E --&gt; F[MultiQC]
+  F --&gt; G[FIGARO]
+  G --&gt; H[DADA2]
+  H --&gt; I[ASV table]
+  H --&gt; J[Representative sequences]
+  H --&gt; K[Tracking report]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
 </section>
-<section id="run-illumina-di-esempio" class="level2">
-<h2 class="anchored" data-anchor-id="run-illumina-di-esempio">Run Illumina di esempio</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ampwrap</span> short <span class="dt">\</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-i</span> raw_reads <span class="dt">\</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-a</span> GTGYCAGCMGCCGCGGTAA <span class="dt">\</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-A</span> CCGYCAATTYMTTTRAGTTT <span class="dt">\</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-l</span> 372 <span class="dt">\</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> ampwrap_output</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-warning callout-titled">
+<section id="help-del-comando-command-help" class="level2">
+<h2 class="anchored" data-anchor-id="help-del-comando-command-help">Help del comando / Command help</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /home/aula</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ampwrap</span> short <span class="at">--help</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="uso-di-base-basic-usage" class="level2">
+<h2 class="anchored" data-anchor-id="uso-di-base-basic-usage">Uso di base / Basic usage</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ampwrap</span> short <span class="at">-i</span> input_directory <span class="at">-a</span> forward_primer <span class="at">-A</span> reverse_primer <span class="at">-l</span> amplicon_length</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Avviso
+Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Il comando è un esempio didattico per un amplicone specifico. Non riutilizzate primer e lunghezza su dati diversi senza verificare il disegno sperimentale.</p>
+<p>Il comando va adattato al disegno sperimentale. Primer, lunghezza attesa e orientamento delle reads non sono parametri da copiare ciecamente tra dataset diversi.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The command must be adapted to the experimental design. Primers, expected length, and read orientation are not parameters to copy blindly across datasets.</p>
 </div>
 </div>
 </section>
-<section id="fermate-di-lettura-degli-output" class="level2">
-<h2 class="anchored" data-anchor-id="fermate-di-lettura-degli-output">Fermate di lettura degli output</h2>
-<section id="quality-control-iniziale" class="level3">
-<h3 class="anchored" data-anchor-id="quality-control-iniziale">1. Quality control iniziale</h3>
-<p>Aprite il report MultiQC. Guardate qualità per base, contenuto in basi, adattatori e differenze tra campioni. Ci sono campioni che meritano attenzione prima del trimming?</p>
+<section id="scaricare-i-dati-di-esempio-download-the-example-data" class="level2">
+<h2 class="anchored" data-anchor-id="scaricare-i-dati-di-esempio-download-the-example-data">Scaricare i dati di esempio / Download the example data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> raw_fastqc</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">--no-check-certificate</span> <span class="st">'https://drive.usercontent.google.com/download?export=download&amp;id=16nTZKwVmxrFkrT-26-IZtlMetjqDTO3r&amp;confirm=t'</span> <span class="at">-O</span> raw_fastqc/S2_11_L001_R2_001.fastq.gz</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">--no-check-certificate</span> <span class="st">'https://drive.usercontent.google.com/download?export=download&amp;id=1zHKpcZwgNRCe9_h8BqAJZJsG1OyFRW8_&amp;confirm=t'</span> <span class="at">-O</span> raw_fastqc/S2_11_L001_R1_001.fastq.gz</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">--no-check-certificate</span> <span class="st">'https://drive.usercontent.google.com/download?export=download&amp;id=1oQ2yNHI1JPuu2-NOq3IMdUBq2It8U3P9&amp;confirm=t'</span> <span class="at">-O</span> raw_fastqc/S1_10_L001_R2_001.fastq.gz</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">--no-check-certificate</span> <span class="st">'https://drive.usercontent.google.com/download?export=download&amp;id=1RmrDN98kDsxc40pVI2rpmP4LRNCYlvxT&amp;confirm=t'</span> <span class="at">-O</span> raw_fastqc/S1_10_L001_R1_001.fastq.gz</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="rimozione-dei-primer" class="level3">
-<h3 class="anchored" data-anchor-id="rimozione-dei-primer">2. Rimozione dei primer</h3>
-<p>Confrontate quante reads sono state mantenute. Una percentuale alta di reads senza primer può segnalare orientamento errato, primer sbagliati o dati non coerenti con l’esperimento.</p>
+<section id="esecuzione-ampwrap-running-ampwrap" class="level2">
+<h2 class="anchored" data-anchor-id="esecuzione-ampwrap-running-ampwrap">Esecuzione AmpWrap / Running AmpWrap</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ampwrap</span> short <span class="at">-i</span> raw_fastqc <span class="at">-a</span> GTGYCAGCMGCCGCGGTAA <span class="at">-A</span> CCGYCAATTYMTTTRAGTTT <span class="at">-l</span> 372 <span class="at">-o</span> short_test_output</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="denoising-e-chimere" class="level3">
-<h3 class="anchored" data-anchor-id="denoising-e-chimere">3. Denoising e chimere</h3>
-<p>Seguite la perdita di reads lungo i passaggi. Non giudicate il run soltanto dal numero finale di ASV.</p>
+<section id="analisi-output-output-inspection" class="level2">
+<h2 class="anchored" data-anchor-id="analisi-output-output-inspection">Analisi output / Output inspection</h2>
+<p>FastQC e MultiQC si aprono come report HTML e servono per controllare qualita, adattatori e distribuzione delle reads prima e dopo il trimming.</p>
+<p>FastQC and MultiQC open as HTML reports and are used to check quality, adapters, and read distribution before and after trimming.</p>
+<p>Il file finale riassume i passaggi svolti, le reads mantenute e gli output prodotti.</p>
+<p>The final report summarizes the steps performed, the reads retained, and the outputs produced.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ......../final_report.txt</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="output-da-portare-in-r" class="level3">
-<h3 class="anchored" data-anchor-id="output-da-portare-in-r">4. Output da portare in R</h3>
-<p>Identificate almeno:</p>
-<ul>
-<li>tabella ASV × campione;</li>
-<li>sequenze rappresentative;</li>
-<li>tabella tassonomica;</li>
-<li>metadata dei campioni;</li>
-<li>statistiche di tracciamento del workflow.</li>
-</ul>
-</section>
-</section>
-<section id="domande-prima-di-proseguire" class="level2">
-<h2 class="anchored" data-anchor-id="domande-prima-di-proseguire">Domande prima di proseguire</h2>
+<section id="cosa-osservare-what-to-look-for" class="level2">
+<h2 class="anchored" data-anchor-id="cosa-osservare-what-to-look-for">Cosa osservare / What to look for</h2>
 <ol type="1">
-<li>Quale passaggio ha rimosso più reads?</li>
-<li>I controlli negativi contengono reads o taxa inattesi?</li>
-<li>La profondità è comparabile tra campioni?</li>
-<li>Tassonomia e metadata hanno identificativi compatibili con la tabella ASV?</li>
+<li>Il primo controllo qualita mostra campioni anomali?</li>
+<li>La rimozione dei primer elimina una quota plausibile di reads?</li>
+<li>FIGARO suggerisce tagli coerenti con la lunghezza dell’amplicone?</li>
+<li>Il report finale contiene ASV, sequenze rappresentative e tracciamento del flusso?</li>
 </ol>
 
 
 </section>
 
 </main> <!-- /main -->
+<div class="lang-switch" aria-label="Language switch">
+  <button class="lang-toggle is-active" type="button" data-lang="it">🇮🇹 IT</button>
+  <button class="lang-toggle" type="button" data-lang="en">🇬🇧 EN</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const root = document.documentElement;
+  const buttons = Array.from(document.querySelectorAll(".lang-toggle"));
+  if (!buttons.length) return;
+
+  const stored = localStorage.getItem("sea4blue-lang");
+
+  function setLang(lang) {
+    root.classList.remove("lang-it", "lang-en");
+    root.classList.add(`lang-${lang}`);
+    localStorage.setItem("sea4blue-lang", lang);
+    buttons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.lang === lang);
+    });
+  }
+
+  setLang(stored === "en" ? "en" : "it");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => setLang(button.dataset.lang));
+  });
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

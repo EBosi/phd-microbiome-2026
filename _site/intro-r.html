@@ -166,12 +166,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#script-e-console" id="toc-script-e-console" class="nav-link active" data-scroll-target="#script-e-console">Script e console</a></li>
-  <li><a href="#dove-siamo" id="toc-dove-siamo" class="nav-link" data-scroll-target="#dove-siamo">1. Dove siamo?</a></li>
-  <li><a href="#oggetti-e-vettori" id="toc-oggetti-e-vettori" class="nav-link" data-scroll-target="#oggetti-e-vettori">2. Oggetti e vettori</a></li>
-  <li><a href="#data-frame-e-indicizzazione" id="toc-data-frame-e-indicizzazione" class="nav-link" data-scroll-target="#data-frame-e-indicizzazione">3. Data frame e indicizzazione</a></li>
-  <li><a href="#valori-mancanti" id="toc-valori-mancanti" class="nav-link" data-scroll-target="#valori-mancanti">4. Valori mancanti</a></li>
-  <li><a href="#pacchetti-e-help" id="toc-pacchetti-e-help" class="nav-link" data-scroll-target="#pacchetti-e-help">5. Pacchetti e help</a></li>
-  <li><a href="#preparare-sea4blue" id="toc-preparare-sea4blue" class="nav-link" data-scroll-target="#preparare-sea4blue">6. Preparare SEA4BLUE</a></li>
+  <li><a href="#scripts-and-console" id="toc-scripts-and-console" class="nav-link" data-scroll-target="#scripts-and-console">Scripts and console</a></li>
+  <li><a href="#dove-siamo-where-are-we" id="toc-dove-siamo-where-are-we" class="nav-link" data-scroll-target="#dove-siamo-where-are-we">1. Dove siamo? / Where are we?</a></li>
+  <li><a href="#oggetti-e-vettori-objects-and-vectors" id="toc-oggetti-e-vettori-objects-and-vectors" class="nav-link" data-scroll-target="#oggetti-e-vettori-objects-and-vectors">2. Oggetti e vettori / Objects and vectors</a></li>
+  <li><a href="#data-frame-e-indicizzazione-data-frames-and-indexing" id="toc-data-frame-e-indicizzazione-data-frames-and-indexing" class="nav-link" data-scroll-target="#data-frame-e-indicizzazione-data-frames-and-indexing">3. Data frame e indicizzazione / Data frames and indexing</a></li>
+  <li><a href="#valori-mancanti-missing-values" id="toc-valori-mancanti-missing-values" class="nav-link" data-scroll-target="#valori-mancanti-missing-values">4. Valori mancanti / Missing values</a></li>
+  <li><a href="#pacchetti-e-help-packages-and-help" id="toc-pacchetti-e-help-packages-and-help" class="nav-link" data-scroll-target="#pacchetti-e-help-packages-and-help">5. Pacchetti e help / Packages and help</a></li>
+  <li><a href="#preparare-sea4blue-preparing-sea4blue" id="toc-preparare-sea4blue-preparing-sea4blue" class="nav-link" data-scroll-target="#preparare-sea4blue-preparing-sea4blue">6. Preparare SEA4BLUE / Preparing SEA4BLUE</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EBosi/phd-microbiome-2026/blob/main/intro-r.qmd" class="toc-action"><i class="bi bi-github"></i>Mostra il codice</a></li><li><a href="https://github.com/EBosi/phd-microbiome-2026/issues/new" class="toc-action"><i class="bi empty"></i>Segnala un problema</a></li></ul></div></nav>
 </nav>
@@ -201,20 +202,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="script-e-console" class="level2">
+<section id="script-e-console" class="level2 lang-block lang-it">
 <h2 class="anchored" data-anchor-id="script-e-console">Script e console</h2>
-<p>Scrivete il codice nello script e inviate una riga o una selezione alla console con <code>Ctrl+Enter</code>. Conservare lo script rende l’analisi riproducibile; la cronologia della console non è un protocollo di analisi.</p>
+<p>Scrivete il codice nello script e inviate una riga o una selezione alla console con <code>Ctrl+Enter</code>. Conservare lo script rende l’analisi riproducibile; la cronologia della console non e un protocollo di analisi.</p>
 </section>
-<section id="dove-siamo" class="level2">
-<h2 class="anchored" data-anchor-id="dove-siamo">1. Dove siamo?</h2>
+<section id="scripts-and-console" class="level2 lang-block lang-en">
+<h2 class="anchored" data-anchor-id="scripts-and-console">Scripts and console</h2>
+<p>Write code in the script and send a line or a selection to the console with <code>Ctrl+Enter</code>. Keeping the script makes the analysis reproducible; the console history is not an analysis protocol.</p>
+</section>
+<section id="dove-siamo-where-are-we" class="level2">
+<h2 class="anchored" data-anchor-id="dove-siamo-where-are-we">1. Dove siamo? / Where are we?</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getwd</span>()</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>()</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<div class="lang-block lang-it">
 <p>Per la lezione aprite il progetto dalla cartella decompressa di SEA4BLUE, invece di inserire percorsi assoluti personali con <code>setwd()</code>.</p>
+</div>
+<div class="lang-block lang-en">
+<p>For the lesson, open the project from the unpacked SEA4BLUE folder instead of typing personal absolute paths with <code>setwd()</code>.</p>
+</div>
 </section>
-<section id="oggetti-e-vettori" class="level2">
-<h2 class="anchored" data-anchor-id="oggetti-e-vettori">2. Oggetti e vettori</h2>
+<section id="oggetti-e-vettori-objects-and-vectors" class="level2">
+<h2 class="anchored" data-anchor-id="oggetti-e-vettori-objects-and-vectors">2. Oggetti e vettori / Objects and vectors</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>profondita <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">15200</span>, <span class="dv">9800</span>, <span class="dv">12400</span>, <span class="dv">17100</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>profondita</span>
@@ -224,8 +234,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>profondita <span class="sc">&gt;=</span> <span class="dv">10000</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="data-frame-e-indicizzazione" class="level2">
-<h2 class="anchored" data-anchor-id="data-frame-e-indicizzazione">3. Data frame e indicizzazione</h2>
+<section id="data-frame-e-indicizzazione-data-frames-and-indexing" class="level2">
+<h2 class="anchored" data-anchor-id="data-frame-e-indicizzazione-data-frames-and-indexing">3. Data frame e indicizzazione / Data frames and indexing</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>campioni <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample =</span> <span class="fu">c</span>(<span class="st">"S1"</span>, <span class="st">"S2"</span>, <span class="st">"S3"</span>, <span class="st">"S4"</span>),</span>
@@ -239,8 +249,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>campioni[campioni<span class="sc">$</span>reads <span class="sc">&gt;=</span> <span class="dv">10000</span>, ]</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="valori-mancanti" class="level2">
-<h2 class="anchored" data-anchor-id="valori-mancanti">4. Valori mancanti</h2>
+<section id="valori-mancanti-missing-values" class="level2">
+<h2 class="anchored" data-anchor-id="valori-mancanti-missing-values">4. Valori mancanti / Missing values</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="cn">NA</span>, <span class="dv">9</span>, <span class="dv">12</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">is.na</span>(x)</span>
@@ -248,17 +258,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="pacchetti-e-help" class="level2">
-<h2 class="anchored" data-anchor-id="pacchetti-e-help">5. Pacchetti e help</h2>
+<section id="pacchetti-e-help-packages-and-help" class="level2">
+<h2 class="anchored" data-anchor-id="pacchetti-e-help-packages-and-help">5. Pacchetti e help / Packages and help</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phyloseq)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>?readRDS</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>install.packages()</code> installa una libreria; <code>library()</code> la carica nella sessione. Durante il corso i pacchetti devono essere già installati nell’ambiente Conda.</p>
+<div class="lang-block lang-it">
+<p><code>install.packages()</code> installa una libreria; <code>library()</code> la carica nella sessione. Durante il corso i pacchetti devono essere gia installati nell’ambiente Conda.</p>
+</div>
+<div class="lang-block lang-en">
+<p><code>install.packages()</code> installs a package; <code>library()</code> loads it into the session. During the course, packages must already be installed in the Conda environment.</p>
+</div>
 </section>
-<section id="preparare-sea4blue" class="level2">
-<h2 class="anchored" data-anchor-id="preparare-sea4blue">6. Preparare SEA4BLUE</h2>
+<section id="preparare-sea4blue-preparing-sea4blue" class="level2">
+<h2 class="anchored" data-anchor-id="preparare-sea4blue-preparing-sea4blue">6. Preparare SEA4BLUE / Preparing SEA4BLUE</h2>
 <ol type="1">
 <li>Scaricate <a href="downloads/Sea4Blue.zip">Sea4Blue.zip</a>.</li>
 <li>Decomprimetelo una sola volta.</li>
@@ -270,6 +285,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 
 </main> <!-- /main -->
+<div class="lang-switch" aria-label="Language switch">
+  <button class="lang-toggle is-active" type="button" data-lang="it">🇮🇹 IT</button>
+  <button class="lang-toggle" type="button" data-lang="en">🇬🇧 EN</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const root = document.documentElement;
+  const buttons = Array.from(document.querySelectorAll(".lang-toggle"));
+  if (!buttons.length) return;
+
+  const stored = localStorage.getItem("sea4blue-lang");
+
+  function setLang(lang) {
+    root.classList.remove("lang-it", "lang-en");
+    root.classList.add(`lang-${lang}`);
+    localStorage.setItem("sea4blue-lang", lang);
+    buttons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.lang === lang);
+    });
+  }
+
+  setLang(stored === "en" ? "en" : "it");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => setLang(button.dataset.lang));
+  });
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

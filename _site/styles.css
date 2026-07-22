@@ -50,3 +50,46 @@
   text-transform: uppercase;
 }
 
+.lang-switch {
+  position: fixed;
+  top: 4.3rem;
+  right: 1rem;
+  z-index: 1030;
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border: 1px solid #d6e1e8;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0.8rem 1.8rem rgba(8, 21, 34, 0.12);
+}
+
+.lang-toggle {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.38rem 0.75rem;
+  background: transparent;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.lang-toggle.is-active {
+  background: #087e8b;
+  color: #fff;
+}
+
+html.lang-it .lang-en,
+html.lang-en .lang-it {
+  display: none !important;
+}
+
+html:not(.lang-it):not(.lang-en) .lang-en {
+  display: none;
+}
+
+.quarto-figure img,
+figure img {
+  border-radius: 0.85rem;
+  box-shadow: 0 0.8rem 1.8rem rgba(8, 21, 34, 0.12);
+}

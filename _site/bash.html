@@ -165,13 +165,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">In questa pagina</h2>
    
   <ul>
-  <li><a href="#obiettivo" id="toc-obiettivo" class="nav-link active" data-scroll-target="#obiettivo">Obiettivo</a></li>
-  <li><a href="#orientarsi" id="toc-orientarsi" class="nav-link" data-scroll-target="#orientarsi">1. Orientarsi</a></li>
-  <li><a href="#copiare-senza-perdere-loriginale" id="toc-copiare-senza-perdere-loriginale" class="nav-link" data-scroll-target="#copiare-senza-perdere-loriginale">2. Copiare senza perdere l’originale</a></li>
-  <li><a href="#leggere-un-fastq-compresso" id="toc-leggere-un-fastq-compresso" class="nav-link" data-scroll-target="#leggere-un-fastq-compresso">3. Leggere un FASTQ compresso</a></li>
-  <li><a href="#pipe-e-redirezione" id="toc-pipe-e-redirezione" class="nav-link" data-scroll-target="#pipe-e-redirezione">4. Pipe e redirezione</a></li>
-  <li><a href="#ambiente-del-corso" id="toc-ambiente-del-corso" class="nav-link" data-scroll-target="#ambiente-del-corso">5. Ambiente del corso</a></li>
+  <li><a href="#copiare-senza-perdere-loriginale-copying-without-losing-the-original" id="toc-copiare-senza-perdere-loriginale-copying-without-losing-the-original" class="nav-link active" data-scroll-target="#copiare-senza-perdere-loriginale-copying-without-losing-the-original">2. Copiare senza perdere l’originale / Copying without losing the original</a></li>
+  <li><a href="#copying-without-losing-the-original" id="toc-copying-without-losing-the-original" class="nav-link" data-scroll-target="#copying-without-losing-the-original">2. Copying without losing the original</a></li>
+  <li><a href="#leggere-un-fastq-compresso-reading-a-compressed-fastq" id="toc-leggere-un-fastq-compresso-reading-a-compressed-fastq" class="nav-link" data-scroll-target="#leggere-un-fastq-compresso-reading-a-compressed-fastq">3. Leggere un FASTQ compresso / Reading a compressed FASTQ</a></li>
+  <li><a href="#reading-a-compressed-fastq" id="toc-reading-a-compressed-fastq" class="nav-link" data-scroll-target="#reading-a-compressed-fastq">3. Reading a compressed FASTQ</a></li>
+  <li><a href="#pipe-e-redirezione-pipes-and-redirection" id="toc-pipe-e-redirezione-pipes-and-redirection" class="nav-link" data-scroll-target="#pipe-e-redirezione-pipes-and-redirection">4. Pipe e redirezione / Pipes and redirection</a></li>
+  <li><a href="#pipes-and-redirection" id="toc-pipes-and-redirection" class="nav-link" data-scroll-target="#pipes-and-redirection">4. Pipes and redirection</a></li>
+  <li><a href="#ambiente-del-corso-course-environment" id="toc-ambiente-del-corso-course-environment" class="nav-link" data-scroll-target="#ambiente-del-corso-course-environment">5. Ambiente del corso / Course environment</a></li>
+  <li><a href="#course-environment" id="toc-course-environment" class="nav-link" data-scroll-target="#course-environment">5. Course environment</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#checklist-1" id="toc-checklist-1" class="nav-link" data-scroll-target="#checklist-1">Checklist</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EBosi/phd-microbiome-2026/blob/main/bash.qmd" class="toc-action"><i class="bi bi-github"></i>Mostra il codice</a></li><li><a href="https://github.com/EBosi/phd-microbiome-2026/issues/new" class="toc-action"><i class="bi empty"></i>Segnala un problema</a></li></ul></div></nav>
 </nav>
@@ -201,20 +204,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<div class="lang-block lang-it">
 <section id="obiettivo" class="level2">
 <h2 class="anchored" data-anchor-id="obiettivo">Obiettivo</h2>
 <p>Imparare il minimo indispensabile per sapere dove ci troviamo, ispezionare i FASTQ e capire dove AmpWrap scrive i risultati.</p>
 </section>
-<section id="orientarsi" class="level2">
-<h2 class="anchored" data-anchor-id="orientarsi">1. Orientarsi</h2>
+<section id="orientarsi-getting-oriented" class="level2">
+<h2 class="anchored" data-anchor-id="orientarsi-getting-oriented">1. Orientarsi / Getting oriented</h2>
+</section>
+</div>
+<div class="lang-block lang-en">
+<section id="goal" class="level2">
+<h2 class="anchored" data-anchor-id="goal">Goal</h2>
+<p>Learn the minimum needed to know where we are, inspect FASTQ files, and understand where AmpWrap writes its results.</p>
+</section>
+<section id="getting-oriented" class="level2">
+<h2 class="anchored" data-anchor-id="getting-oriented">1. Getting oriented</h2>
+</section>
+</div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="lang-block lang-it">
 <ul>
 <li><code>pwd</code> mostra la directory corrente;</li>
 <li><code>ls -lh</code> elenca i file con dimensioni leggibili;</li>
 <li><code>.</code> indica la directory corrente e <code>..</code> quella superiore.</li>
 </ul>
+</div>
+<div class="lang-block lang-en">
+<ul>
+<li><code>pwd</code> shows the current directory;</li>
+<li><code>ls -lh</code> lists files with human-readable sizes;</li>
+<li><code>.</code> means the current directory and <code>..</code> the parent one.</li>
+</ul>
+</div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> phd-microbiome-2026</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> corso_2026/raw_reads</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
@@ -231,48 +255,111 @@ Consiglio
 <p>Usate il tasto <code>Tab</code> per completare nomi e percorsi: riduce molti errori di battitura.</p>
 </div>
 </div>
+<section id="copiare-senza-perdere-loriginale-copying-without-losing-the-original" class="level2 lang-block lang-it">
+<h2 class="anchored" data-anchor-id="copiare-senza-perdere-loriginale-copying-without-losing-the-original">2. Copiare senza perdere l’originale / Copying without losing the original</h2>
 </section>
-<section id="copiare-senza-perdere-loriginale" class="level2">
-<h2 class="anchored" data-anchor-id="copiare-senza-perdere-loriginale">2. Copiare senza perdere l’originale</h2>
+<section id="copying-without-losing-the-original" class="level2 lang-block lang-en">
+<h2 class="anchored" data-anchor-id="copying-without-losing-the-original">2. Copying without losing the original</h2>
+</section>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> campione_R1.fastq.gz corso_2026/raw_reads/</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> vecchio_nome.txt nuovo_nome.txt</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="lang-block lang-it">
 <p><code>cp</code> conserva l’originale; <code>mv</code> sposta o rinomina. Prima di un comando su molti file controllate sempre <code>pwd</code> e <code>ls</code>.</p>
+</div>
+<div class="lang-block lang-en">
+<p><code>cp</code> keeps the original; <code>mv</code> moves or renames. Before running a command on many files, always check <code>pwd</code> and <code>ls</code>.</p>
+</div>
+<section id="leggere-un-fastq-compresso-reading-a-compressed-fastq" class="level2 lang-block lang-it">
+<h2 class="anchored" data-anchor-id="leggere-un-fastq-compresso-reading-a-compressed-fastq">3. Leggere un FASTQ compresso / Reading a compressed FASTQ</h2>
 </section>
-<section id="leggere-un-fastq-compresso" class="level2">
-<h2 class="anchored" data-anchor-id="leggere-un-fastq-compresso">3. Leggere un FASTQ compresso</h2>
+<section id="reading-a-compressed-fastq" class="level2 lang-block lang-en">
+<h2 class="anchored" data-anchor-id="reading-a-compressed-fastq">3. Reading a compressed FASTQ</h2>
+</section>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> campione_R1.fastq.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 8</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ogni read occupa quattro righe. Per stimare il numero di reads:</p>
+<p>Every read occupies four lines. To estimate the number of reads:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> campione_R1.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Dividete il numero di righe per quattro. Cosa contengono la seconda e la quarta riga di ogni record?</p>
+<p>Divide the number of lines by four. What do the second and fourth lines of each record contain?</p>
+<section id="pipe-e-redirezione-pipes-and-redirection" class="level2 lang-block lang-it">
+<h2 class="anchored" data-anchor-id="pipe-e-redirezione-pipes-and-redirection">4. Pipe e redirezione / Pipes and redirection</h2>
 </section>
-<section id="pipe-e-redirezione" class="level2">
-<h2 class="anchored" data-anchor-id="pipe-e-redirezione">4. Pipe e redirezione</h2>
+<section id="pipes-and-redirection" class="level2 lang-block lang-en">
+<h2 class="anchored" data-anchor-id="pipes-and-redirection">4. Pipes and redirection</h2>
+</section>
 <p>La pipe <code>|</code> passa l’output di un comando al successivo; <code>&gt;</code> lo scrive in un file.</p>
+<p>The pipe <code>|</code> sends the output of one command to the next; <code>&gt;</code> writes it to a file.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> campione_R1.fastq.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 40 <span class="op">&gt;</span> prime_10_reads.fastq</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> <span class="at">-S</span> prime_10_reads.fastq</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Uscire da <code>less</code> premendo <code>q</code>.</p>
+<p>Exit <code>less</code> by pressing <code>q</code>.</p>
+<section id="ambiente-del-corso-course-environment" class="level2 lang-block lang-it">
+<h2 class="anchored" data-anchor-id="ambiente-del-corso-course-environment">5. Ambiente del corso / Course environment</h2>
 </section>
-<section id="ambiente-del-corso" class="level2">
-<h2 class="anchored" data-anchor-id="ambiente-del-corso">5. Ambiente del corso</h2>
+<section id="course-environment" class="level2 lang-block lang-en">
+<h2 class="anchored" data-anchor-id="course-environment">5. Course environment</h2>
+</section>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env list</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> ampwrap</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Se <code>which</code> non restituisce un percorso interno all’ambiente attivo, fermatevi e risolvete il problema prima di lanciare il workflow.</p>
-</section>
-<section id="checklist" class="level2">
+<p>If <code>which</code> does not return a path inside the active environment, stop and fix the problem before launching the workflow.</p>
+<section id="checklist" class="level2 lang-block lang-it">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+</section>
+<section id="checklist-1" class="level2 lang-block lang-en">
+<h2 class="anchored" data-anchor-id="checklist-1">Checklist</h2>
+</section>
+<div class="lang-block lang-it">
 <ul class="task-list">
 <li><label><input type="checkbox">So distinguere un percorso relativo da uno assoluto.</label></li>
 <li><label><input type="checkbox">So controllare nome e dimensione dei file.</label></li>
 <li><label><input type="checkbox">So visualizzare le prime due reads di un FASTQ compresso.</label></li>
 <li><label><input type="checkbox">So attivare e controllare l’ambiente Conda.</label></li>
 </ul>
+</div>
+<div class="lang-block lang-en">
+<ul class="task-list">
+<li><label><input type="checkbox">I can distinguish a relative path from an absolute one.</label></li>
+<li><label><input type="checkbox">I can check file names and sizes.</label></li>
+<li><label><input type="checkbox">I can inspect the first two reads of a compressed FASTQ.</label></li>
+<li><label><input type="checkbox">I can activate and verify the Conda environment.</label></li>
+</ul>
+</div>
 
 
-</section>
 
 </main> <!-- /main -->
+<div class="lang-switch" aria-label="Language switch">
+  <button class="lang-toggle is-active" type="button" data-lang="it">🇮🇹 IT</button>
+  <button class="lang-toggle" type="button" data-lang="en">🇬🇧 EN</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const root = document.documentElement;
+  const buttons = Array.from(document.querySelectorAll(".lang-toggle"));
+  if (!buttons.length) return;
+
+  const stored = localStorage.getItem("sea4blue-lang");
+
+  function setLang(lang) {
+    root.classList.remove("lang-it", "lang-en");
+    root.classList.add(`lang-${lang}`);
+    localStorage.setItem("sea4blue-lang", lang);
+    buttons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.lang === lang);
+    });
+  }
+
+  setLang(stored === "en" ? "en" : "it");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => setLang(button.dataset.lang));
+  });
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

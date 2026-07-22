@@ -186,6 +186,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<div class="lang-block lang-it">
 <section id="dal-sequenziamento-alla-comunità-microbica" class="level1 hero">
 <h1>Dal sequenziamento alla comunità microbica</h1>
 <p>Materiale pratico per il corso PhD 2026: terminale Linux, AmpWrap, R/RStudio e analisi biostatistica di dati di metabarcoding.</p>
@@ -242,11 +243,100 @@ Importante
 <section id="come-usare-questo-sito" class="level2">
 <h2 class="anchored" data-anchor-id="come-usare-questo-sito">Come usare questo sito</h2>
 <p>Le pagine seguono l’ordine della lezione. I blocchi di codice della sezione di biostatistica sono volutamente brevi: eseguiteli uno alla volta, osservate l’oggetto prodotto e rispondete alle domande prima di proseguire.</p>
-
-
 </section>
+</div>
+<div class="lang-block lang-en">
+<section id="from-sequencing-to-microbial-communities" class="level1 hero">
+<h1>From sequencing to microbial communities</h1>
+<p>Practical material for the 2026 PhD course: Linux terminal, AmpWrap, R/RStudio, and biostatistical analysis of metabarcoding data.</p>
+</section>
+<section id="course-flow" class="level2">
+<h2 class="anchored" data-anchor-id="course-flow">Course flow</h2>
+<div class="grid">
+<div class="g-col-12 g-col-md-4">
+<section id="understand" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="understand">1. Understand</h3>
+<p>Experimental design, markers, primers, controls, sequencing, and the path from reads to ASVs.</p>
+</section>
+</div>
+<div class="g-col-12 g-col-md-4">
+<section id="process" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="process">2. Process</h3>
+<p>Essential Bash commands and the AmpWrap workflow: quality control, trimming, ASV inference, and taxonomy.</p>
+</section>
+</div>
+<div class="g-col-12 g-col-md-4">
+<section id="analyze" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="analyze">3. Analyze</h3>
+<p>Exploration in R, filtering, alpha and beta diversity, PERMANOVA, taxonomic composition, and RDA.</p>
+</section>
+</div>
+</div>
+</section>
+<section id="before-you-start" class="level2">
+<h2 class="anchored" data-anchor-id="before-you-start">Before you start</h2>
+<p>The software environment must be installed and checked <strong>before the course</strong>. Follow the <a href="https://github.com/EBosi/phd-microbiome-2026#readme">full instructions in the repository</a> and verify the installation with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> env/check_environment.R</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Importante
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Do not start downloading and building the environment on the morning of the course: it takes time, disk space, and a stable connection.</p>
+</div>
+</div>
+</section>
+<section id="biostatistics-material" class="level2">
+<h2 class="anchored" data-anchor-id="biostatistics-material">Biostatistics material</h2>
+<div class="download-box">
+<p>Download and unzip the dataset <strong>before opening RStudio</strong>.</p>
+<p><a href="downloads/Sea4Blue.zip" class="btn btn-primary" download="Sea4Blue.zip">Download Sea4Blue.zip</a></p>
+</div>
+</section>
+<section id="how-to-use-this-site" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-use-this-site">How to use this site</h2>
+<p>The pages follow the lesson order. The code blocks in the biostatistics section are intentionally short: run them one at a time, inspect the object produced, and answer the questions before moving on.</p>
+</section>
+</div>
+
+
 
 </main> <!-- /main -->
+<div class="lang-switch" aria-label="Language switch">
+  <button class="lang-toggle is-active" type="button" data-lang="it">🇮🇹 IT</button>
+  <button class="lang-toggle" type="button" data-lang="en">🇬🇧 EN</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const root = document.documentElement;
+  const buttons = Array.from(document.querySelectorAll(".lang-toggle"));
+  if (!buttons.length) return;
+
+  const stored = localStorage.getItem("sea4blue-lang");
+
+  function setLang(lang) {
+    root.classList.remove("lang-it", "lang-en");
+    root.classList.add(`lang-${lang}`);
+    localStorage.setItem("sea4blue-lang", lang);
+    buttons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.lang === lang);
+    });
+  }
+
+  setLang(stored === "en" ? "en" : "it");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => setLang(button.dataset.lang));
+  });
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
