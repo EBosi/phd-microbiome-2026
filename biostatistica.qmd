@@ -67,6 +67,9 @@ library(vegan)
 # Impostiamo la cartella di lavoro dove avete estratto Sea4Blue.zip
 setwd("~/Downloads/Sea4Blue")
 
+# Carichiamo le funzioni helper salvate nello zip del dataset
+source("biostatistics_helpers.R")
+
 # Carichiamo l'oggetto phyloseq già pronto
 ps <- readRDS("phyloseq.rds")
 
@@ -174,35 +177,9 @@ ggplot(depth_df, aes(x = reorder(SampleName, Reads), y = Reads, fill = Zone)) +
 set.seed(42)
 
 # Teniamo solo i campioni con zona assegnata
-ps_rarefaction <- subset_samples(ps, !is.na(Zone))
+ps_rarefaction <- ps_clean
 
-# Funzione originale, resa esplicita passo per passo
-calculate_rarefaction_curves <- function(psdata, measures, depths) {
-  estimate_rarified_richness <- function(psdata, measures, depth) {
-    if (max(sample_sums(psdata)) < depth) return(NULL)
-    psdata <- prune_samples(sample_sums(psdata) >= depth, psdata)
-    rarified_psdata <- rarefy_even_depth(psdata, depth, verbose = FALSE)
-    alpha_diversity <- estimate_richness(rarified_psdata, measures = measures)
-    melt(
-      as.matrix(alpha_diversity),
-      varnames = c("Sample", "Measure"),
-      value.name = "Alpha_diversity"
-    )
-  }
-
-  names(depths) <- depths
-  rarefaction_curve_data <- plyr::ldply(
-    depths,
-    estimate_rarified_richness,
-    psdata = psdata,
-    measures = measures,
-    .id = "Depth"
-  )
-  rarefaction_curve_data$Depth <- as.numeric(levels(rarefaction_curve_data$Depth))[rarefaction_curve_data$Depth]
-  rarefaction_curve_data
-}
-
-# Calcoliamo le curve
+# Calcoliamo le curve con la funzione helper
 rarefaction_curve_data <- calculate_rarefaction_curves(
   ps_rarefaction,
   c("Observed"),
@@ -251,34 +228,16 @@ ggplot(
 Qui facciamo i passaggi che servono davvero per la lezione: togliamo i taxa indesiderati, filtriamo i singletons, escludiamo i controlli e applichiamo CSS.
 
 ```r
-# Partiamo dall'oggetto iniziale
-phyloseq_obj <- ps
+# Usiamo una funzione helper per filtrare e normalizzare i dati
+biostat <- prepare_biostatistics_ps(ps)
+ps_clean <- biostat$ps_clean
+ps_css <- biostat$ps_css
+ps_css_round <- biostat$ps_css_round
 
-# Rimuoviamo cloroplasti e mitocondri
-phyloseq_obj <- phyloseq_obj |>
-  subset_taxa((is.na(Family) | Family != "Mitochondria") & (is.na(Order) | Order != "Chloroplast"))
-
-# Teniamo solo i taxa osservati più di una volta
-phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 1, phyloseq_obj)
-
-# Escludiamo i controlli
-phyloseq_obj <- subset_samples(
-  phyloseq_obj,
-  !is.na(Zone) & SampleName != "Positive" & SampleName != "Negative"
-)
-
-# Convertiamo in oggetto metagenomeSeq e applichiamo CSS
-data.metagenomeSeq <- phyloseq_to_metagenomeSeq(phyloseq_obj)
-p <- cumNormStat(data.metagenomeSeq)
-data.cumnorm <- cumNorm(data.metagenomeSeq, p = p)
-data.CSS <- MRcounts(data.cumnorm, norm = TRUE, log = TRUE)
-
-# Ricreiamo l'oggetto phyloseq normalizzato
-phyloseq_obj_css <- phyloseq_obj
-otu_table(phyloseq_obj_css) <- otu_table(data.CSS, taxa_are_rows = TRUE)
-
-# Rinominamo i campioni con il nome leggibile
-sample_names(phyloseq_obj_css) <- sample_data(phyloseq_obj_css)$SampleName
+# Manteniamo i nomi usati nei blocchi successivi
+phyloseq_obj <- ps_clean
+phyloseq_obj_css <- ps_css
+phyloseq_obj_css_round <- ps_css_round
 ```
 
 ## Alpha diversity
@@ -349,16 +308,11 @@ Guardando alpha e beta diversity insieme, quali campioni vi sembrano più divers
 Prima guardiamo la composizione tassonomica a livello di genere, poi chiudiamo con una RDA vincolata dalla longitudine e dalla richness.
 
 ```r
-# Convertiamo i conteggi in percentuale
-physeq_perc <- transform_sample_counts(phyloseq_obj_css, function(x) 100 * x / sum(x))
-
-# Agreghiamo al livello di genere
-glom <- tax_glom(physeq_perc, taxrank = "Genus")
-data_glom <- psmelt(glom)
-data_glom$Zone <- factor(as.character(data_glom$Zone), levels = c("ANW", "ANC", "ANE"))
-
-# Palette molto ampia per i generi
-color <- grDevices::colors()[grep("gr(a|e)y", grDevices::colors(), invert = TRUE)]
+# Usiamo una funzione helper per preparare la composizione
+comp <- prepare_composition_data(phyloseq_obj_css, top_n = 20)
+data_glom <- comp$data_glom
+topGenera <- comp$topGenera
+color <- comp$color
 
 # Barplot di tutti i generi
 ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
@@ -371,10 +325,6 @@ ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
 ![](figures/biostatistica/08-composition-all.png){fig-align="center" width="95%"}
 
 ```r
-# Identifichiamo i taxa più abbondanti
-genus.sum <- tapply(taxa_sums(glom), tax_table(glom)[, "Genus"], sum, na.rm = TRUE)
-topGenera <- names(sort(genus.sum, TRUE))[1:20]
-
 # Stesso grafico, ma con i top genera evidenziati
 ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
   facet_grid(~Zone, scales = "free") +
@@ -384,8 +334,11 @@ ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
 ```
 
 ```r
-# RDA sulla comunità
-RDA <- ordinate(phyloseq_obj_css ~ Richness + Longitude, "RDA")
+# Prepariamo la tabella minima della richness e calcoliamo la RDA con un helper
+alpha_df <- data.frame(Sample = p1$data$samples, Observed = p1$data$value)
+rda_data <- prepare_rda_data(phyloseq_obj_css_round, alpha_df)
+RDA <- rda_data$RDA
+arrowdf <- rda_data$arrowdf
 
 # Primo grafico: campioni colorati per zona
 p2 <- plot_ordination(phyloseq_obj_css, RDA, color = "Zone") +
@@ -395,8 +348,6 @@ p2 <- plot_ordination(phyloseq_obj_css, RDA, color = "Zone") +
   scale_color_manual(values = c("#4280fc", "#ffb452", "#f7170a"))
 
 # Aggiungiamo le frecce delle variabili esplicative
-arrowmat <- vegan::scores(RDA, display = "bp")
-arrowdf <- data.frame(labels = rownames(arrowmat), arrowmat)
 arrowhead <- grid::arrow(length = grid::unit(0.05, "npc"))
 
 p2 +
@@ -483,6 +434,9 @@ library(vegan)
 
 # Set the working directory where Sea4Blue.zip was extracted
 setwd("~/Downloads/Sea4Blue")
+
+# Load the helper functions saved inside the dataset zip
+source("biostatistics_helpers.R")
 
 # Load the ready-to-use phyloseq object
 ps <- readRDS("phyloseq.rds")
@@ -591,35 +545,9 @@ ggplot(depth_df, aes(x = reorder(SampleName, Reads), y = Reads, fill = Zone)) +
 set.seed(42)
 
 # Keep only samples with an assigned zone
-ps_rarefaction <- subset_samples(ps, !is.na(Zone))
+ps_rarefaction <- ps_clean
 
-# Original logic, written out step by step
-calculate_rarefaction_curves <- function(psdata, measures, depths) {
-  estimate_rarified_richness <- function(psdata, measures, depth) {
-    if (max(sample_sums(psdata)) < depth) return(NULL)
-    psdata <- prune_samples(sample_sums(psdata) >= depth, psdata)
-    rarified_psdata <- rarefy_even_depth(psdata, depth, verbose = FALSE)
-    alpha_diversity <- estimate_richness(rarified_psdata, measures = measures)
-    melt(
-      as.matrix(alpha_diversity),
-      varnames = c("Sample", "Measure"),
-      value.name = "Alpha_diversity"
-    )
-  }
-
-  names(depths) <- depths
-  rarefaction_curve_data <- plyr::ldply(
-    depths,
-    estimate_rarified_richness,
-    psdata = psdata,
-    measures = measures,
-    .id = "Depth"
-  )
-  rarefaction_curve_data$Depth <- as.numeric(levels(rarefaction_curve_data$Depth))[rarefaction_curve_data$Depth]
-  rarefaction_curve_data
-}
-
-# Compute the curves
+# Compute the curves with the helper function
 rarefaction_curve_data <- calculate_rarefaction_curves(
   ps_rarefaction,
   c("Observed"),
@@ -668,34 +596,16 @@ ggplot(
 Here we keep only the steps that matter for the lesson: remove unwanted taxa, filter singletons, exclude controls, and apply CSS.
 
 ```r
-# Start from the initial object
-phyloseq_obj <- ps
+# Use one helper function to filter and normalize the data
+biostat <- prepare_biostatistics_ps(ps)
+ps_clean <- biostat$ps_clean
+ps_css <- biostat$ps_css
+ps_css_round <- biostat$ps_css_round
 
-# Remove chloroplasts and mitochondria
-phyloseq_obj <- phyloseq_obj |>
-  subset_taxa((is.na(Family) | Family != "Mitochondria") & (is.na(Order) | Order != "Chloroplast"))
-
-# Keep only taxa observed more than once
-phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 1, phyloseq_obj)
-
-# Remove controls
-phyloseq_obj <- subset_samples(
-  phyloseq_obj,
-  !is.na(Zone) & SampleName != "Positive" & SampleName != "Negative"
-)
-
-# Convert to metagenomeSeq and apply CSS
-data.metagenomeSeq <- phyloseq_to_metagenomeSeq(phyloseq_obj)
-p <- cumNormStat(data.metagenomeSeq)
-data.cumnorm <- cumNorm(data.metagenomeSeq, p = p)
-data.CSS <- MRcounts(data.cumnorm, norm = TRUE, log = TRUE)
-
-# Rebuild the normalized phyloseq object
-phyloseq_obj_css <- phyloseq_obj
-otu_table(phyloseq_obj_css) <- otu_table(data.CSS, taxa_are_rows = TRUE)
-
-# Rename samples with their readable sample names
-sample_names(phyloseq_obj_css) <- sample_data(phyloseq_obj_css)$SampleName
+# Keep the names used in the following blocks
+phyloseq_obj <- ps_clean
+phyloseq_obj_css <- ps_css
+phyloseq_obj_css_round <- ps_css_round
 ```
 
 ## Alpha diversity
@@ -766,16 +676,11 @@ Looking at alpha and beta diversity together, which samples seem most different 
 First we look at the taxonomic composition at genus level, then we close with an RDA constrained by longitude and richness.
 
 ```r
-# Convert counts to percentages
-physeq_perc <- transform_sample_counts(phyloseq_obj_css, function(x) 100 * x / sum(x))
-
-# Aggregate at genus level
-glom <- tax_glom(physeq_perc, taxrank = "Genus")
-data_glom <- psmelt(glom)
-data_glom$Zone <- factor(as.character(data_glom$Zone), levels = c("ANW", "ANC", "ANE"))
-
-# Large palette for genera
-color <- grDevices::colors()[grep("gr(a|e)y", grDevices::colors(), invert = TRUE)]
+# Use one helper function to prepare composition data
+comp <- prepare_composition_data(phyloseq_obj_css, top_n = 20)
+data_glom <- comp$data_glom
+topGenera <- comp$topGenera
+color <- comp$color
 
 # All genera
 ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
@@ -788,10 +693,6 @@ ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
 ![](figures/biostatistica/08-composition-all.png){fig-align="center" width="95%"}
 
 ```r
-# Identify the most abundant taxa
-genus.sum <- tapply(taxa_sums(glom), tax_table(glom)[, "Genus"], sum, na.rm = TRUE)
-topGenera <- names(sort(genus.sum, TRUE))[1:20]
-
 # Same plot, highlighting the top genera
 ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
   facet_grid(~Zone, scales = "free") +
@@ -803,8 +704,11 @@ ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
 ![](figures/biostatistica/08-composition-top.png){fig-align="center" width="95%"}
 
 ```r
-# RDA on the community
-RDA <- ordinate(phyloseq_obj_css ~ Richness + Longitude, "RDA")
+# Prepariamo la tabella minima della richness e calcoliamo la RDA con un helper
+alpha_df <- data.frame(Sample = p1$data$samples, Observed = p1$data$value)
+rda_data <- prepare_rda_data(phyloseq_obj_css_round, alpha_df)
+RDA <- rda_data$RDA
+arrowdf <- rda_data$arrowdf
 
 # First plot: samples colored by zone
 p2 <- plot_ordination(phyloseq_obj_css, RDA, color = "Zone") +
@@ -814,8 +718,6 @@ p2 <- plot_ordination(phyloseq_obj_css, RDA, color = "Zone") +
   scale_color_manual(values = c("#4280fc", "#ffb452", "#f7170a"))
 
 # Add arrows for explanatory variables
-arrowmat <- vegan::scores(RDA, display = "bp")
-arrowdf <- data.frame(labels = rownames(arrowmat), arrowmat)
 arrowhead <- grid::arrow(length = grid::unit(0.05, "npc"))
 
 p2 +
