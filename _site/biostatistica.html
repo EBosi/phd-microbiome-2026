@@ -171,6 +171,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#analisi-in-r" id="toc-analisi-in-r" class="nav-link" data-scroll-target="#analisi-in-r">Analisi in R</a>
   <ul class="collapse">
   <li><a href="#controllo-rapido-delloggetto-phyloseq" id="toc-controllo-rapido-delloggetto-phyloseq" class="nav-link" data-scroll-target="#controllo-rapido-delloggetto-phyloseq">Controllo rapido dell’oggetto <code>phyloseq</code></a></li>
+  <li><a href="#mini-esercizio-guidato" id="toc-mini-esercizio-guidato" class="nav-link" data-scroll-target="#mini-esercizio-guidato">Mini-esercizio guidato</a></li>
   </ul></li>
   <li><a href="#mappa-del-transetto" id="toc-mappa-del-transetto" class="nav-link" data-scroll-target="#mappa-del-transetto">Mappa del transetto</a></li>
   <li><a href="#profondità-di-sequenziamento-e-rarefaction-curves" id="toc-profondità-di-sequenziamento-e-rarefaction-curves" class="nav-link" data-scroll-target="#profondità-di-sequenziamento-e-rarefaction-curves">Profondità di sequenziamento e rarefaction curves</a></li>
@@ -187,6 +188,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#getting-started-in-r" id="toc-getting-started-in-r" class="nav-link" data-scroll-target="#getting-started-in-r">Getting started in R</a>
   <ul class="collapse">
   <li><a href="#quick-check-of-the-phyloseq-object" id="toc-quick-check-of-the-phyloseq-object" class="nav-link" data-scroll-target="#quick-check-of-the-phyloseq-object">Quick check of the <code>phyloseq</code> object</a></li>
+  <li><a href="#guided-mini-exercise" id="toc-guided-mini-exercise" class="nav-link" data-scroll-target="#guided-mini-exercise">Guided mini-exercise</a></li>
   </ul></li>
   <li><a href="#transect-map" id="toc-transect-map" class="nav-link" data-scroll-target="#transect-map">Transect map</a></li>
   <li><a href="#sequencing-depth-and-rarefaction-curves" id="toc-sequencing-depth-and-rarefaction-curves" class="nav-link" data-scroll-target="#sequencing-depth-and-rarefaction-curves">Sequencing depth and rarefaction curves</a></li>
@@ -317,6 +319,16 @@ Consiglio
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabella di abbondanza</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">t</span>(<span class="fu">otu_table</span>(ps)))</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="mini-esercizio-guidato" class="level3">
+<h3 class="anchored" data-anchor-id="mini-esercizio-guidato">Mini-esercizio guidato</h3>
+<p>Prima di andare avanti, fate questi tre controlli e rispondete a voce:</p>
+<ol type="1">
+<li>Quanti campioni vedete in <code>sample_data(ps)</code>?</li>
+<li>Che cosa vi dice <code>tax_table(ps)</code> sulla tassonomia disponibile?</li>
+<li>La tabella <code>otu_table(ps)</code> ha taxa sulle righe o sui campioni?</li>
+</ol>
+<p>Se un risultato vi sorprende, fermatevi e verificate il contenuto dell’oggetto invece di andare avanti subito.</p>
 </section>
 </section>
 <section id="mappa-del-transetto" class="level2">
@@ -547,6 +559,9 @@ Consiglio
 <p><img src="figures/biostatistica/06-pcoa-bray.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
 </div>
+<div class="callout-question" title="Domanda di interpretazione">
+<p>Guardando alpha e beta diversity insieme, quali campioni vi sembrano più diversi dagli altri lungo il transetto? La differenza osservata sembra dipendere più dalla zona geografica o da un campione particolare?</p>
+</div>
 </section>
 <section id="composizione-della-comunità-e-rda" class="level2">
 <h2 class="anchored" data-anchor-id="composizione-della-comunità-e-rda">Composizione della comunità e RDA</h2>
@@ -717,6 +732,16 @@ Consiglio
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Abundance table</span></span>
 <span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">t</span>(<span class="fu">otu_table</span>(ps)))</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="guided-mini-exercise" class="level3">
+<h3 class="anchored" data-anchor-id="guided-mini-exercise">Guided mini-exercise</h3>
+<p>Before moving on, do these three checks and answer out loud:</p>
+<ol type="1">
+<li>How many samples do you see in <code>sample_data(ps)</code>?</li>
+<li>What does <code>tax_table(ps)</code> tell you about the available taxonomy?</li>
+<li>Does <code>otu_table(ps)</code> store taxa on rows or samples on rows?</li>
+</ol>
+<p>If one result looks unexpected, stop and inspect the object rather than moving on immediately.</p>
 </section>
 </section>
 <section id="transect-map" class="level2">
@@ -946,6 +971,9 @@ Consiglio
 <figure class="figure">
 <p><img src="figures/biostatistica/06-pcoa-bray.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="Interpretation question">
+<p>Looking at alpha and beta diversity together, which samples seem most different from the others along the transect? Does the pattern look more driven by geographic zone or by one specific sample?</p>
 </div>
 </section>
 <section id="community-composition-and-rda" class="level2">

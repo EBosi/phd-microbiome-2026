@@ -95,6 +95,16 @@ head(tax_table(ps))
 head(t(otu_table(ps)))
 ```
 
+### Mini-esercizio guidato
+
+Prima di andare avanti, fate questi tre controlli e rispondete a voce:
+
+1. Quanti campioni vedete in `sample_data(ps)`?
+2. Che cosa vi dice `tax_table(ps)` sulla tassonomia disponibile?
+3. La tabella `otu_table(ps)` ha taxa sulle righe o sui campioni?
+
+Se un risultato vi sorprende, fermatevi e verificate il contenuto dell'oggetto invece di andare avanti subito.
+
 ## Mappa del transetto
 
 Questa è la prima vista utile: mostra i siti di campionamento lungo il transetto e aiuta a leggere tutti i grafici successivi.
@@ -330,6 +340,10 @@ plot_ordination(phyloseq_obj_css, otu.ord, color = "Zone", axes = c(1, 2)) +
 
 ![](figures/biostatistica/06-pcoa-bray.png){fig-align="center" width="90%"}
 
+::: {.callout-question title="Domanda di interpretazione"}
+Guardando alpha e beta diversity insieme, quali campioni vi sembrano più diversi dagli altri lungo il transetto? La differenza osservata sembra dipendere più dalla zona geografica o da un campione particolare?
+:::
+
 ## Composizione della comunità e RDA
 
 Prima guardiamo la composizione tassonomica a livello di genere, poi chiudiamo con una RDA vincolata dalla longitudine e dalla richness.
@@ -499,6 +513,16 @@ head(tax_table(ps))
 # Abundance table
 head(t(otu_table(ps)))
 ```
+
+### Guided mini-exercise
+
+Before moving on, do these three checks and answer out loud:
+
+1. How many samples do you see in `sample_data(ps)`?
+2. What does `tax_table(ps)` tell you about the available taxonomy?
+3. Does `otu_table(ps)` store taxa on rows or samples on rows?
+
+If one result looks unexpected, stop and inspect the object rather than moving on immediately.
 
 ## Transect map
 
@@ -734,6 +758,10 @@ plot_ordination(phyloseq_obj_css, otu.ord, color = "Zone", axes = c(1, 2)) +
 ```
 
 ![](figures/biostatistica/06-pcoa-bray.png){fig-align="center" width="90%"}
+
+::: {.callout-question title="Interpretation question"}
+Looking at alpha and beta diversity together, which samples seem most different from the others along the transect? Does the pattern look more driven by geographic zone or by one specific sample?
+:::
 
 ## Community composition and RDA
 
