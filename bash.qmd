@@ -1,0 +1,82 @@
+---
+title: "Bash essenziale"
+---
+
+## Obiettivo
+
+Imparare il minimo indispensabile per sapere dove ci troviamo, ispezionare i FASTQ e capire dove AmpWrap scrive i risultati.
+
+## 1. Orientarsi
+
+```bash
+pwd
+ls
+ls -lh
+```
+
+- `pwd` mostra la directory corrente;
+- `ls -lh` elenca i file con dimensioni leggibili;
+- `.` indica la directory corrente e `..` quella superiore.
+
+```bash
+cd phd-microbiome-2026
+pwd
+mkdir -p corso_2026/raw_reads
+```
+
+::: {.callout-tip}
+Usate il tasto `Tab` per completare nomi e percorsi: riduce molti errori di battitura.
+:::
+
+## 2. Copiare senza perdere l'originale
+
+```bash
+cp campione_R1.fastq.gz corso_2026/raw_reads/
+mv vecchio_nome.txt nuovo_nome.txt
+```
+
+`cp` conserva l'originale; `mv` sposta o rinomina. Prima di un comando su molti file controllate sempre `pwd` e `ls`.
+
+## 3. Leggere un FASTQ compresso
+
+```bash
+gzip -cd campione_R1.fastq.gz | head -n 8
+```
+
+Ogni read occupa quattro righe. Per stimare il numero di reads:
+
+```bash
+gzip -cd campione_R1.fastq.gz | wc -l
+```
+
+Dividete il numero di righe per quattro. Cosa contengono la seconda e la quarta riga di ogni record?
+
+## 4. Pipe e redirezione
+
+La pipe `|` passa l'output di un comando al successivo; `>` lo scrive in un file.
+
+```bash
+gzip -cd campione_R1.fastq.gz | head -n 40 > prime_10_reads.fastq
+less -S prime_10_reads.fastq
+```
+
+Uscire da `less` premendo `q`.
+
+## 5. Ambiente del corso
+
+```bash
+conda env list
+conda activate metabarcoding-phd
+which R
+which ampwrap
+```
+
+Se `which` non restituisce un percorso interno all'ambiente attivo, fermatevi e risolvete il problema prima di lanciare il workflow.
+
+## Checklist
+
+- [ ] So distinguere un percorso relativo da uno assoluto.
+- [ ] So controllare nome e dimensione dei file.
+- [ ] So visualizzare le prime due reads di un FASTQ compresso.
+- [ ] So attivare e controllare l'ambiente Conda.
+

@@ -1,0 +1,40 @@
+---
+title: "Programma e obiettivi"
+---
+
+## Obiettivi formativi
+
+Alla fine della giornata sarete in grado di:
+
+- descrivere il flusso dal campionamento alla tabella di ASV;
+- riconoscere i principali rischi sperimentali e bioinformatici;
+- orientarvi nel terminale e negli output di AmpWrap;
+- importare e ispezionare un oggetto `phyloseq`;
+- scegliere una trasformazione coerente con la domanda;
+- interpretare diversità alfa, beta, PERMANOVA e ordinamenti vincolati.
+
+## Struttura delle 8 ore
+
+| Modulo | Durata | Contenuti |
+|---|---:|---|
+| Teoria del metabarcoding | 2 h | Disegno sperimentale, marker, primer, controlli, reads, errori, ASV/OTU e tassonomia |
+| Bash essenziale | 1 h | Directory, percorsi, file FASTQ, pipe e ambiente Conda |
+| AmpWrap | 2 h | Configurazione, avvio, log, quality control e output principali |
+| R/RStudio | 1 h | Script, console, oggetti, data frame e importazione |
+| Biostatistica | 2 h | Filtri, profondità, diversità alfa/beta, PERMANOVA, composizione e RDA |
+
+## Filo conduttore: SEA4BLUE
+
+L'esercitazione finale usa un oggetto `phyloseq` già costruito a partire da campioni raccolti lungo un transetto nell'Atlantico settentrionale. Le reads sono state preprocessate con DADA2 e la tassonomia è stata assegnata con SILVA.
+
+::: {.callout-note}
+Lo scopo non è produrre una “figura finale” il più rapidamente possibile, ma capire quale rappresentazione dei dati viene usata in ogni passaggio e quali assunzioni stiamo facendo.
+:::
+
+## Preparazione degli studenti
+
+1. Completare l'[installazione](https://github.com/EBosi/phd-microbiome-2026#readme).
+2. Verificare che RStudio si apra dall'ambiente del corso.
+3. Scaricare [Sea4Blue.zip](downloads/Sea4Blue.zip) senza decomprimerlo due volte.
+4. Portare un computer con almeno 8 GB di RAM e spazio libero sufficiente.
+

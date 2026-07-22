@@ -1,0 +1,65 @@
+---
+title: "Metabarcoding PhD Course 2026"
+page-layout: full
+toc: false
+---
+
+::: {.hero}
+# Dal sequenziamento alla comunità microbica
+
+Materiale pratico per il corso PhD 2026: terminale Linux, AmpWrap, R/RStudio e analisi biostatistica di dati di metabarcoding.
+:::
+
+## Percorso della giornata
+
+:::: {.grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.course-card}
+### 1. Comprendere
+
+Disegno sperimentale, marker, primer, controlli, sequenziamento e passaggio dalle reads alle ASV.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.course-card}
+### 2. Elaborare
+
+Comandi Bash essenziali e workflow AmpWrap: controllo qualità, trimming, inferenza delle ASV e tassonomia.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.course-card}
+### 3. Analizzare
+
+Esplorazione in R, filtraggio, diversità alfa e beta, PERMANOVA, composizione tassonomica e RDA.
+:::
+:::
+::::
+
+## Prima di iniziare
+
+L'ambiente software deve essere installato e verificato **prima del corso**. Seguire le [istruzioni complete nella repository](https://github.com/EBosi/phd-microbiome-2026#readme) e controllare l'installazione con:
+
+```bash
+conda activate metabarcoding-phd
+Rscript env/check_environment.R
+```
+
+::: {.callout-important}
+Non avviare il download e la creazione dell'ambiente la mattina del corso: richiedono tempo, spazio su disco e una connessione stabile.
+:::
+
+## Materiale per la biostatistica
+
+::: {.download-box}
+Scaricare e decomprimere il dataset **prima di aprire RStudio**.
+
+[Scarica Sea4Blue.zip](downloads/Sea4Blue.zip){.btn .btn-primary download="Sea4Blue.zip"}
+:::
+
+## Come usare questo sito
+
+Le pagine seguono l'ordine della lezione. I blocchi di codice della sezione di biostatistica sono volutamente brevi: eseguiteli uno alla volta, osservate l'oggetto prodotto e rispondete alle domande prima di proseguire.
+

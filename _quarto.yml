@@ -1,0 +1,54 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+    - programma.qmd
+    - bash.qmd
+    - ampwrap.qmd
+    - intro-r.qmd
+    - biostatistica.qmd
+  resources:
+    - downloads/Sea4Blue.zip
+
+website:
+  title: "Metabarcoding PhD 2026"
+  site-url: "https://ebosi.github.io/phd-microbiome-2026/"
+  repo-url: "https://github.com/EBosi/phd-microbiome-2026"
+  repo-actions: [source, issue]
+  navbar:
+    background: primary
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Programma"
+        href: programma.qmd
+      - text: "Bash"
+        href: bash.qmd
+      - text: "AmpWrap"
+        href: ampwrap.qmd
+      - text: "Introduzione a R"
+        href: intro-r.qmd
+      - text: "Biostatistica"
+        href: biostatistica.qmd
+  page-footer:
+    left: "Metabarcoding PhD Course 2026"
+    right:
+      - icon: github
+        href: "https://github.com/EBosi/phd-microbiome-2026"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-location: left
+    code-copy: true
+    code-overflow: wrap
+    anchor-sections: true
+    smooth-scroll: true
+
+execute:
+  freeze: auto
+
+lang: it

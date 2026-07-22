@@ -1,0 +1,74 @@
+---
+title: "Preprocessing con AmpWrap"
+---
+
+## Dal FASTQ alla tabella di ASV
+
+AmpWrap coordina i passaggi del preprocessing e conserva log e report utili a capire che cosa è successo. Durante la lezione useremo il modulo appropriato ai dati forniti; controllate sempre la versione installata e l'help locale.
+
+```bash
+conda activate metabarcoding-phd
+ampwrap --help
+ampwrap short --help
+```
+
+## Prima del run
+
+```bash
+cd corso_2026
+find raw_reads -maxdepth 1 -type f -name '*.fastq.gz' | sort
+```
+
+Controllate:
+
+- che ogni campione abbia R1 e R2;
+- che i nomi siano coerenti;
+- che primer, orientamento e lunghezza attesa dell'amplicone siano noti;
+- che positivi, negativi e mock community siano identificabili.
+
+## Run Illumina di esempio
+
+```bash
+ampwrap short \
+  -i raw_reads \
+  -a GTGYCAGCMGCCGCGGTAA \
+  -A CCGYCAATTYMTTTRAGTTT \
+  -l 372 \
+  -o ampwrap_output
+```
+
+::: {.callout-warning}
+Il comando è un esempio didattico per un amplicone specifico. Non riutilizzate primer e lunghezza su dati diversi senza verificare il disegno sperimentale.
+:::
+
+## Fermate di lettura degli output
+
+### 1. Quality control iniziale
+
+Aprite il report MultiQC. Guardate qualità per base, contenuto in basi, adattatori e differenze tra campioni. Ci sono campioni che meritano attenzione prima del trimming?
+
+### 2. Rimozione dei primer
+
+Confrontate quante reads sono state mantenute. Una percentuale alta di reads senza primer può segnalare orientamento errato, primer sbagliati o dati non coerenti con l'esperimento.
+
+### 3. Denoising e chimere
+
+Seguite la perdita di reads lungo i passaggi. Non giudicate il run soltanto dal numero finale di ASV.
+
+### 4. Output da portare in R
+
+Identificate almeno:
+
+- tabella ASV × campione;
+- sequenze rappresentative;
+- tabella tassonomica;
+- metadata dei campioni;
+- statistiche di tracciamento del workflow.
+
+## Domande prima di proseguire
+
+1. Quale passaggio ha rimosso più reads?
+2. I controlli negativi contengono reads o taxa inattesi?
+3. La profondità è comparabile tra campioni?
+4. Tassonomia e metadata hanno identificativi compatibili con la tabella ASV?
+

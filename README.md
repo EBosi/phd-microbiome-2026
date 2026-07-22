@@ -4,6 +4,10 @@
 
 This repository contains the software environment and teaching material for the **Metabarcoding PhD Course 2026**. The course introduces basic use of the Linux command line, processing of amplicon-sequencing data with [AmpWrap](https://github.com/LDoni/AmpWrap), and downstream analysis in R/RStudio.
 
+**Course website:** <https://ebosi.github.io/phd-microbiome-2026/>
+
+**SEA4BLUE biostatistics material:** [download `Sea4Blue.zip`](https://ebosi.github.io/phd-microbiome-2026/downloads/Sea4Blue.zip)
+
 > [!IMPORTANT]
 > Complete the installation **before the course**. Creating the software environment downloads many packages and can require substantial time, disk space, and a stable internet connection.
 
@@ -47,6 +51,16 @@ La repository contiene soltanto istruzioni, script, materiale didattico e la ric
 ```text
 phd-microbiome-2026/
 ├── README.md
+├── _quarto.yml
+├── index.qmd
+├── bash.qmd
+├── ampwrap.qmd
+├── intro-r.qmd
+├── biostatistica.qmd
+├── downloads/
+│   └── Sea4Blue.zip
+├── materials/
+│   └── Sea4Blue/
 ├── docs/
 │   └── programma_8_ore.md
 └── env/

@@ -1,0 +1,324 @@
+[
+  {
+    "objectID": "biostatistica.html",
+    "href": "biostatistica.html",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "",
+    "text": "In questa esercitazione distingueremo sempre:\n\nconteggi originali, usati per profondità, prevalenza e diversità alfa;\nabbondanze relative, usate qui per composizione e Bray–Curtis;\ndati trasformati con Hellinger, usati per la RDA.\n\n\n\n\n\n\n\nImportante\n\n\n\nNon eseguite l’intera pagina o lo script con un solo comando. Dopo ogni blocco controllate dimensioni, nomi e grafico ottenuto: quelle verifiche fanno parte dell’analisi."
+  },
+  {
+    "objectID": "biostatistica.html#obiettivi-della-sessione",
+    "href": "biostatistica.html#obiettivi-della-sessione",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "",
+    "text": "In questa esercitazione distingueremo sempre:\n\nconteggi originali, usati per profondità, prevalenza e diversità alfa;\nabbondanze relative, usate qui per composizione e Bray–Curtis;\ndati trasformati con Hellinger, usati per la RDA.\n\n\n\n\n\n\n\nImportante\n\n\n\nNon eseguite l’intera pagina o lo script con un solo comando. Dopo ogni blocco controllate dimensioni, nomi e grafico ottenuto: quelle verifiche fanno parte dell’analisi."
+  },
+  {
+    "objectID": "biostatistica.html#download-e-progetto-rstudio",
+    "href": "biostatistica.html#download-e-progetto-rstudio",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "0. Download e progetto RStudio",
+    "text": "0. Download e progetto RStudio\n\nScarica Sea4Blue.zip\n\n\nDecomprimete lo zip.\nAprite Sea4Blue.Rproj.\nAprite analysis_guided.R.\nVerificate che getwd() termini con Sea4Blue."
+  },
+  {
+    "objectID": "biostatistica.html#pacchetti-e-dati",
+    "href": "biostatistica.html#pacchetti-e-dati",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "1. Pacchetti e dati",
+    "text": "1. Pacchetti e dati\n\nlibrary(phyloseq)\nlibrary(vegan)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(maps)\nlibrary(ggrepel)\n\nps &lt;- readRDS(\"phyloseq.rds\")\nps\n\nUn oggetto phyloseq collega tre tabelle attraverso gli stessi identificativi:\n\nhead(t(otu_table(ps))[, 1:6])\nhead(as.data.frame(tax_table(ps)))\nas.data.frame(sample_data(ps))\n\nFermata. Quanti campioni, quante ASV e quali ranghi tassonomici contiene l’oggetto? Individuate controllo positivo e negativo."
+  },
+  {
+    "objectID": "biostatistica.html#profondità-di-sequenziamento",
+    "href": "biostatistica.html#profondità-di-sequenziamento",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "2. Profondità di sequenziamento",
+    "text": "2. Profondità di sequenziamento\n\ndepth_df &lt;- data.frame(\n  Sample = sample_names(ps),\n  Reads = sample_sums(ps),\n  Type = ifelse(is.na(sample_data(ps)$Zone), \"Control\", \"Environmental\")\n)\n\nggplot(depth_df, aes(x = reorder(Sample, Reads), y = Reads, fill = Type)) +\n  geom_col() +\n  coord_flip() +\n  labs(x = NULL, y = \"Reads\", title = \"Library size\") +\n  theme_bw()\n\nDiscussione. Il negativo ha la stessa profondità dei campioni ambientali? Il positivo è un campione ambientale? Profondità elevata significa automaticamente qualità elevata?\n\n2.1 Il transetto di campionamento\nLe coordinate sono metadata: prima del grafico le ordiniamo per giorno di navigazione.\n\nsamdf &lt;- data.frame(sample_data(subset_samples(ps, !is.na(Zone))))\nsamdf &lt;- samdf[order(samdf$NavigationDay), ]\nworld &lt;- map_data(\"world\")\n\nggplot() +\n  geom_polygon(\n    data = world,\n    aes(x = long, y = lat, group = group),\n    fill = \"grey92\", color = \"grey65\"\n  ) +\n  geom_path(data = samdf, aes(Longitude, Latitude), color = \"grey25\") +\n  geom_point(data = samdf, aes(Longitude, Latitude, color = Zone), size = 3) +\n  coord_quickmap(xlim = c(-85, -5), ylim = c(20, 45)) +\n  scale_color_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\")) +\n  labs(x = \"Longitudine\", y = \"Latitudine\", title = \"Transetto SEA4BLUE\") +\n  theme_minimal()\n\nFermata. Zone rappresenta gruppi indipendenti dalla geografia oppure segmenti dello stesso gradiente? Questa risposta sarà importante quando interpreteremo PERMANOVA e RDA."
+  },
+  {
+    "objectID": "biostatistica.html#curva-di-rarefazione",
+    "href": "biostatistica.html#curva-di-rarefazione",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "3. Curva di rarefazione",
+    "text": "3. Curva di rarefazione\nPer rendere visibile il principio, usiamo direttamente vegan::rarecurve sui soli campioni ambientali. La rarefazione qui è uno strumento diagnostico, non la normalizzazione scelta per tutte le analisi successive.\n\nps_bio &lt;- subset_samples(ps, !is.na(Zone))\notu_bio &lt;- as(otu_table(ps_bio), \"matrix\")\nif (taxa_are_rows(ps_bio)) otu_bio &lt;- t(otu_bio)\n\nset.seed(42)\nrarecurve(\n  otu_bio,\n  step = 1000,\n  sample = min(rowSums(otu_bio)),\n  label = FALSE,\n  xlab = \"Reads campionate\",\n  ylab = \"ASV osservate\"\n)\n\nFermata. Le curve raggiungono un plateau? Quale informazione perderemmo portando tutti i campioni alla profondità del più piccolo?"
+  },
+  {
+    "objectID": "biostatistica.html#filtraggio-esplicito",
+    "href": "biostatistica.html#filtraggio-esplicito",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "4. Filtraggio esplicito",
+    "text": "4. Filtraggio esplicito\nOgni filtro viene applicato e controllato separatamente.\n\n4.1 Rimuovere mitocondri e cloroplasti\n\nps_clean &lt;- subset_taxa(\n  ps,\n  (is.na(Family) | Family != \"Mitochondria\") &\n  (is.na(Order) | Order != \"Chloroplast\")\n)\n\nc(before = ntaxa(ps), after = ntaxa(ps_clean))\n\n\n\n4.2 Rimuovere ASV con un solo conteggio totale\n\nps_clean &lt;- prune_taxa(taxa_sums(ps_clean) &gt; 1, ps_clean)\nntaxa(ps_clean)\n\n\n\n4.3 Separare i controlli dall’analisi ecologica\n\nps_clean &lt;- subset_samples(ps_clean, !is.na(Zone))\nps_clean &lt;- prune_taxa(taxa_sums(ps_clean) &gt; 0, ps_clean)\nps_clean\n\n\n\n\n\n\n\nNota\n\n\n\nI controlli non vanno “dimenticati”: vengono esaminati per valutare contaminazione e riuscita del run, poi esclusi dal confronto ecologico tra zone."
+  },
+  {
+    "objectID": "biostatistica.html#diversità-alfa-sui-conteggi",
+    "href": "biostatistica.html#diversità-alfa-sui-conteggi",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "5. Diversità alfa sui conteggi",
+    "text": "5. Diversità alfa sui conteggi\nLa richness è il numero di ASV osservate nel singolo campione; Shannon combina richness ed evenness.\n\nalpha &lt;- estimate_richness(ps_clean, measures = c(\"Observed\", \"Shannon\"))\nalpha$Sample &lt;- rownames(alpha)\n\nmetadata &lt;- data.frame(sample_data(ps_clean))\nmetadata$Sample &lt;- rownames(metadata)\n\nalpha &lt;- left_join(alpha, metadata, by = \"Sample\")\nhead(alpha)\n\n\nggplot(alpha, aes(x = Longitude, y = Observed, color = Zone)) +\n  geom_point(size = 3) +\n  geom_smooth(method = \"lm\", se = TRUE, color = \"grey30\") +\n  scale_color_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\")) +\n  labs(x = \"Longitudine\", y = \"ASV osservate\", title = \"Richness lungo il transetto\") +\n  theme_bw()\n\nDiscussione. State descrivendo un’associazione o dimostrando un effetto causale? Profondità e posizione geografica possono essere confondenti?\nSalviamo la richness nei metadata, rispettando l’ordine dei campioni:\n\nsample_data(ps_clean)$Richness &lt;- alpha[\n  match(sample_names(ps_clean), alpha$Sample),\n  \"Observed\"\n]"
+  },
+  {
+    "objectID": "biostatistica.html#abbondanza-relativa-e-beta-diversity",
+    "href": "biostatistica.html#abbondanza-relativa-e-beta-diversity",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "6. Abbondanza relativa e beta diversity",
+    "text": "6. Abbondanza relativa e beta diversity\n\nps_rel &lt;- transform_sample_counts(ps_clean, function(x) x / sum(x))\nsample_sums(ps_rel)\n\nLe somme devono essere circa 1. Calcoliamo Bray–Curtis e una PCoA:\n\npcoa_bray &lt;- ordinate(ps_rel, method = \"PCoA\", distance = \"bray\")\n\nplot_ordination(ps_rel, pcoa_bray, color = \"Zone\") +\n  geom_point(size = 3) +\n  geom_text_repel(aes(label = SampleName), show.legend = FALSE) +\n  scale_color_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\")) +\n  labs(title = \"PCoA — Bray–Curtis\") +\n  theme_bw()\n\nFermata. Quali campioni sono più lontani? La separazione sembra graduale lungo il transetto o discreta tra zone?"
+  },
+  {
+    "objectID": "biostatistica.html#permanova-e-dispersione",
+    "href": "biostatistica.html#permanova-e-dispersione",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "7. PERMANOVA e dispersione",
+    "text": "7. PERMANOVA e dispersione\nUn grafico suggerisce pattern; un test formalizza una domanda. Prima assicuriamoci che righe della matrice e metadata abbiano lo stesso ordine.\n\notu_rel &lt;- as(otu_table(ps_rel), \"matrix\")\nif (taxa_are_rows(ps_rel)) otu_rel &lt;- t(otu_rel)\n\nmeta_rel &lt;- data.frame(sample_data(ps_rel))\nmeta_rel &lt;- meta_rel[rownames(otu_rel), , drop = FALSE]\nstopifnot(identical(rownames(otu_rel), rownames(meta_rel)))\n\nbray &lt;- vegdist(otu_rel, method = \"bray\")\nadonis2(bray ~ Zone, data = meta_rel, permutations = 999)\n\nLa PERMANOVA può risentire di dispersioni diverse tra gruppi. Controlliamole:\n\ndispersion &lt;- betadisper(bray, group = meta_rel$Zone)\nanova(dispersion)\npermutest(dispersion, permutations = 999)\n\n\n\n\n\n\n\nAvviso\n\n\n\nLe zone sono definite lungo lo stesso gradiente geografico. Un risultato significativo per Zone non separa automaticamente l’effetto della categoria da quello della longitudine, né dimostra causalità."
+  },
+  {
+    "objectID": "biostatistica.html#composizione-tassonomica",
+    "href": "biostatistica.html#composizione-tassonomica",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "8. Composizione tassonomica",
+    "text": "8. Composizione tassonomica\nAggregare a genere rende il grafico leggibile ma perde dettaglio. Mostriamo i 12 generi complessivamente più abbondanti e raggruppiamo gli altri.\n\nps_genus &lt;- tax_glom(ps_rel, taxrank = \"Genus\", NArm = FALSE)\ngenus_df &lt;- psmelt(ps_genus)\n\ntop_genera &lt;- genus_df |&gt;\n  filter(!is.na(Genus)) |&gt;\n  group_by(Genus) |&gt;\n  summarise(total = sum(Abundance), .groups = \"drop\") |&gt;\n  slice_max(total, n = 12) |&gt;\n  pull(Genus)\n\ngenus_plot &lt;- genus_df |&gt;\n  mutate(Genus_plot = ifelse(is.na(Genus) | !Genus %in% top_genera, \"Other\", as.character(Genus))) |&gt;\n  group_by(Sample, Zone, Genus_plot) |&gt;\n  summarise(Abundance = sum(Abundance), .groups = \"drop\")\n\n\nggplot(genus_plot, aes(x = Sample, y = Abundance, fill = Genus_plot)) +\n  geom_col(width = 0.85) +\n  facet_grid(~ Zone, scales = \"free_x\", space = \"free_x\") +\n  scale_y_continuous(labels = function(x) paste0(round(100 * x), \"%\")) +\n  labs(x = NULL, y = \"Abbondanza relativa\", fill = \"Genere\") +\n  theme_bw() +\n  theme(axis.text.x = element_text(angle = 90, hjust = 1))"
+  },
+  {
+    "objectID": "biostatistica.html#rda-lungo-il-gradiente-longitudinale",
+    "href": "biostatistica.html#rda-lungo-il-gradiente-longitudinale",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "9. RDA lungo il gradiente longitudinale",
+    "text": "9. RDA lungo il gradiente longitudinale\nPer la RDA trasformiamo le abbondanze relative con Hellinger. Usiamo la longitudine come variabile esplicativa; la richness non viene usata come predittore perché è calcolata dalla stessa matrice biologica.\n\notu_hellinger &lt;- decostand(otu_rel, method = \"hellinger\")\nrda_model &lt;- rda(otu_hellinger ~ Longitude, data = meta_rel)\n\nanova(rda_model, permutations = 999)\nRsquareAdj(rda_model)\n\n\nsite_scores &lt;- as.data.frame(scores(rda_model, display = \"sites\", choices = 1:2))\nsite_scores$Sample &lt;- rownames(site_scores)\nsite_scores &lt;- left_join(site_scores, cbind(Sample = rownames(meta_rel), meta_rel), by = \"Sample\")\n\nggplot(site_scores, aes(x = RDA1, y = PC1, color = Zone, label = SampleName)) +\n  geom_hline(yintercept = 0, color = \"grey85\") +\n  geom_vline(xintercept = 0, color = \"grey85\") +\n  geom_point(size = 3) +\n  geom_text_repel(show.legend = FALSE) +\n  scale_color_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\")) +\n  labs(title = \"RDA vincolata dalla longitudine\") +\n  theme_bw()"
+  },
+  {
+    "objectID": "biostatistica.html#cosa-riportare",
+    "href": "biostatistica.html#cosa-riportare",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "10. Cosa riportare",
+    "text": "10. Cosa riportare\nNel resoconto indicate sempre:\n\nnumero iniziale e finale di campioni e ASV;\ncriterio di esclusione dei controlli e dei taxa;\nrappresentazione/trasformazione usata in ogni analisi;\ndistanza e metodo di ordinamento;\nformula, numero di permutazioni e controllo della dispersione per PERMANOVA;\nlimiti del disegno osservazionale e possibili fattori confondenti."
+  },
+  {
+    "objectID": "biostatistica.html#revisione-rispetto-allo-script-precedente",
+    "href": "biostatistica.html#revisione-rispetto-allo-script-precedente",
+    "title": "Analisi biostatistica: SEA4BLUE",
+    "section": "Revisione rispetto allo script precedente",
+    "text": "Revisione rispetto allo script precedente\nLa versione didattica evita le funzioni “tutto in uno” e corregge quattro aspetti:\n\nfiltri e controlli vengono applicati all’oggetto che prosegue nell’analisi;\nla richness viene calcolata sui conteggi filtrati, non sui valori CSS arrotondati;\nbeta diversity e composizione usano una trasformazione esplicita e verificabile;\nPERMANOVA include il controllo delle dispersioni e la RDA non usa la richness derivata dalla risposta come predittore."
+  },
+  {
+    "objectID": "ampwrap.html",
+    "href": "ampwrap.html",
+    "title": "Preprocessing con AmpWrap",
+    "section": "",
+    "text": "AmpWrap coordina i passaggi del preprocessing e conserva log e report utili a capire che cosa è successo. Durante la lezione useremo il modulo appropriato ai dati forniti; controllate sempre la versione installata e l’help locale.\nconda activate metabarcoding-phd\nampwrap --help\nampwrap short --help"
+  },
+  {
+    "objectID": "ampwrap.html#dal-fastq-alla-tabella-di-asv",
+    "href": "ampwrap.html#dal-fastq-alla-tabella-di-asv",
+    "title": "Preprocessing con AmpWrap",
+    "section": "",
+    "text": "AmpWrap coordina i passaggi del preprocessing e conserva log e report utili a capire che cosa è successo. Durante la lezione useremo il modulo appropriato ai dati forniti; controllate sempre la versione installata e l’help locale.\nconda activate metabarcoding-phd\nampwrap --help\nampwrap short --help"
+  },
+  {
+    "objectID": "ampwrap.html#prima-del-run",
+    "href": "ampwrap.html#prima-del-run",
+    "title": "Preprocessing con AmpWrap",
+    "section": "Prima del run",
+    "text": "Prima del run\ncd corso_2026\nfind raw_reads -maxdepth 1 -type f -name '*.fastq.gz' | sort\nControllate:\n\nche ogni campione abbia R1 e R2;\nche i nomi siano coerenti;\nche primer, orientamento e lunghezza attesa dell’amplicone siano noti;\nche positivi, negativi e mock community siano identificabili."
+  },
+  {
+    "objectID": "ampwrap.html#run-illumina-di-esempio",
+    "href": "ampwrap.html#run-illumina-di-esempio",
+    "title": "Preprocessing con AmpWrap",
+    "section": "Run Illumina di esempio",
+    "text": "Run Illumina di esempio\nampwrap short \\\n  -i raw_reads \\\n  -a GTGYCAGCMGCCGCGGTAA \\\n  -A CCGYCAATTYMTTTRAGTTT \\\n  -l 372 \\\n  -o ampwrap_output\n\n\n\n\n\n\nAvviso\n\n\n\nIl comando è un esempio didattico per un amplicone specifico. Non riutilizzate primer e lunghezza su dati diversi senza verificare il disegno sperimentale."
+  },
+  {
+    "objectID": "ampwrap.html#fermate-di-lettura-degli-output",
+    "href": "ampwrap.html#fermate-di-lettura-degli-output",
+    "title": "Preprocessing con AmpWrap",
+    "section": "Fermate di lettura degli output",
+    "text": "Fermate di lettura degli output\n\n1. Quality control iniziale\nAprite il report MultiQC. Guardate qualità per base, contenuto in basi, adattatori e differenze tra campioni. Ci sono campioni che meritano attenzione prima del trimming?\n\n\n2. Rimozione dei primer\nConfrontate quante reads sono state mantenute. Una percentuale alta di reads senza primer può segnalare orientamento errato, primer sbagliati o dati non coerenti con l’esperimento.\n\n\n3. Denoising e chimere\nSeguite la perdita di reads lungo i passaggi. Non giudicate il run soltanto dal numero finale di ASV.\n\n\n4. Output da portare in R\nIdentificate almeno:\n\ntabella ASV × campione;\nsequenze rappresentative;\ntabella tassonomica;\nmetadata dei campioni;\nstatistiche di tracciamento del workflow."
+  },
+  {
+    "objectID": "ampwrap.html#domande-prima-di-proseguire",
+    "href": "ampwrap.html#domande-prima-di-proseguire",
+    "title": "Preprocessing con AmpWrap",
+    "section": "Domande prima di proseguire",
+    "text": "Domande prima di proseguire\n\nQuale passaggio ha rimosso più reads?\nI controlli negativi contengono reads o taxa inattesi?\nLa profondità è comparabile tra campioni?\nTassonomia e metadata hanno identificativi compatibili con la tabella ASV?"
+  },
+  {
+    "objectID": "programma.html",
+    "href": "programma.html",
+    "title": "Programma e obiettivi",
+    "section": "",
+    "text": "Alla fine della giornata sarete in grado di:\n\ndescrivere il flusso dal campionamento alla tabella di ASV;\nriconoscere i principali rischi sperimentali e bioinformatici;\norientarvi nel terminale e negli output di AmpWrap;\nimportare e ispezionare un oggetto phyloseq;\nscegliere una trasformazione coerente con la domanda;\ninterpretare diversità alfa, beta, PERMANOVA e ordinamenti vincolati."
+  },
+  {
+    "objectID": "programma.html#obiettivi-formativi",
+    "href": "programma.html#obiettivi-formativi",
+    "title": "Programma e obiettivi",
+    "section": "",
+    "text": "Alla fine della giornata sarete in grado di:\n\ndescrivere il flusso dal campionamento alla tabella di ASV;\nriconoscere i principali rischi sperimentali e bioinformatici;\norientarvi nel terminale e negli output di AmpWrap;\nimportare e ispezionare un oggetto phyloseq;\nscegliere una trasformazione coerente con la domanda;\ninterpretare diversità alfa, beta, PERMANOVA e ordinamenti vincolati."
+  },
+  {
+    "objectID": "programma.html#struttura-delle-8-ore",
+    "href": "programma.html#struttura-delle-8-ore",
+    "title": "Programma e obiettivi",
+    "section": "Struttura delle 8 ore",
+    "text": "Struttura delle 8 ore\n\n\n\n\n\n\n\n\nModulo\nDurata\nContenuti\n\n\n\n\nTeoria del metabarcoding\n2 h\nDisegno sperimentale, marker, primer, controlli, reads, errori, ASV/OTU e tassonomia\n\n\nBash essenziale\n1 h\nDirectory, percorsi, file FASTQ, pipe e ambiente Conda\n\n\nAmpWrap\n2 h\nConfigurazione, avvio, log, quality control e output principali\n\n\nR/RStudio\n1 h\nScript, console, oggetti, data frame e importazione\n\n\nBiostatistica\n2 h\nFiltri, profondità, diversità alfa/beta, PERMANOVA, composizione e RDA"
+  },
+  {
+    "objectID": "programma.html#filo-conduttore-sea4blue",
+    "href": "programma.html#filo-conduttore-sea4blue",
+    "title": "Programma e obiettivi",
+    "section": "Filo conduttore: SEA4BLUE",
+    "text": "Filo conduttore: SEA4BLUE\nL’esercitazione finale usa un oggetto phyloseq già costruito a partire da campioni raccolti lungo un transetto nell’Atlantico settentrionale. Le reads sono state preprocessate con DADA2 e la tassonomia è stata assegnata con SILVA.\n\n\n\n\n\n\nNota\n\n\n\nLo scopo non è produrre una “figura finale” il più rapidamente possibile, ma capire quale rappresentazione dei dati viene usata in ogni passaggio e quali assunzioni stiamo facendo."
+  },
+  {
+    "objectID": "programma.html#preparazione-degli-studenti",
+    "href": "programma.html#preparazione-degli-studenti",
+    "title": "Programma e obiettivi",
+    "section": "Preparazione degli studenti",
+    "text": "Preparazione degli studenti\n\nCompletare l’installazione.\nVerificare che RStudio si apra dall’ambiente del corso.\nScaricare Sea4Blue.zip senza decomprimerlo due volte.\nPortare un computer con almeno 8 GB di RAM e spazio libero sufficiente."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Metabarcoding PhD Course 2026",
+    "section": "",
+    "text": "Materiale pratico per il corso PhD 2026: terminale Linux, AmpWrap, R/RStudio e analisi biostatistica di dati di metabarcoding."
+  },
+  {
+    "objectID": "index.html#percorso-della-giornata",
+    "href": "index.html#percorso-della-giornata",
+    "title": "Metabarcoding PhD Course 2026",
+    "section": "Percorso della giornata",
+    "text": "Percorso della giornata\n\n\n\n1. Comprendere\nDisegno sperimentale, marker, primer, controlli, sequenziamento e passaggio dalle reads alle ASV.\n\n\n\n\n2. Elaborare\nComandi Bash essenziali e workflow AmpWrap: controllo qualità, trimming, inferenza delle ASV e tassonomia.\n\n\n\n\n3. Analizzare\nEsplorazione in R, filtraggio, diversità alfa e beta, PERMANOVA, composizione tassonomica e RDA."
+  },
+  {
+    "objectID": "index.html#prima-di-iniziare",
+    "href": "index.html#prima-di-iniziare",
+    "title": "Metabarcoding PhD Course 2026",
+    "section": "Prima di iniziare",
+    "text": "Prima di iniziare\nL’ambiente software deve essere installato e verificato prima del corso. Seguire le istruzioni complete nella repository e controllare l’installazione con:\nconda activate metabarcoding-phd\nRscript env/check_environment.R\n\n\n\n\n\n\nImportante\n\n\n\nNon avviare il download e la creazione dell’ambiente la mattina del corso: richiedono tempo, spazio su disco e una connessione stabile."
+  },
+  {
+    "objectID": "index.html#materiale-per-la-biostatistica",
+    "href": "index.html#materiale-per-la-biostatistica",
+    "title": "Metabarcoding PhD Course 2026",
+    "section": "Materiale per la biostatistica",
+    "text": "Materiale per la biostatistica\n\nScaricare e decomprimere il dataset prima di aprire RStudio.\nScarica Sea4Blue.zip"
+  },
+  {
+    "objectID": "index.html#come-usare-questo-sito",
+    "href": "index.html#come-usare-questo-sito",
+    "title": "Metabarcoding PhD Course 2026",
+    "section": "Come usare questo sito",
+    "text": "Come usare questo sito\nLe pagine seguono l’ordine della lezione. I blocchi di codice della sezione di biostatistica sono volutamente brevi: eseguiteli uno alla volta, osservate l’oggetto prodotto e rispondete alle domande prima di proseguire."
+  },
+  {
+    "objectID": "bash.html",
+    "href": "bash.html",
+    "title": "Bash essenziale",
+    "section": "",
+    "text": "Imparare il minimo indispensabile per sapere dove ci troviamo, ispezionare i FASTQ e capire dove AmpWrap scrive i risultati."
+  },
+  {
+    "objectID": "bash.html#obiettivo",
+    "href": "bash.html#obiettivo",
+    "title": "Bash essenziale",
+    "section": "",
+    "text": "Imparare il minimo indispensabile per sapere dove ci troviamo, ispezionare i FASTQ e capire dove AmpWrap scrive i risultati."
+  },
+  {
+    "objectID": "bash.html#orientarsi",
+    "href": "bash.html#orientarsi",
+    "title": "Bash essenziale",
+    "section": "1. Orientarsi",
+    "text": "1. Orientarsi\npwd\nls\nls -lh\n\npwd mostra la directory corrente;\nls -lh elenca i file con dimensioni leggibili;\n. indica la directory corrente e .. quella superiore.\n\ncd phd-microbiome-2026\npwd\nmkdir -p corso_2026/raw_reads\n\n\n\n\n\n\nConsiglio\n\n\n\nUsate il tasto Tab per completare nomi e percorsi: riduce molti errori di battitura."
+  },
+  {
+    "objectID": "bash.html#copiare-senza-perdere-loriginale",
+    "href": "bash.html#copiare-senza-perdere-loriginale",
+    "title": "Bash essenziale",
+    "section": "2. Copiare senza perdere l’originale",
+    "text": "2. Copiare senza perdere l’originale\ncp campione_R1.fastq.gz corso_2026/raw_reads/\nmv vecchio_nome.txt nuovo_nome.txt\ncp conserva l’originale; mv sposta o rinomina. Prima di un comando su molti file controllate sempre pwd e ls."
+  },
+  {
+    "objectID": "bash.html#leggere-un-fastq-compresso",
+    "href": "bash.html#leggere-un-fastq-compresso",
+    "title": "Bash essenziale",
+    "section": "3. Leggere un FASTQ compresso",
+    "text": "3. Leggere un FASTQ compresso\ngzip -cd campione_R1.fastq.gz | head -n 8\nOgni read occupa quattro righe. Per stimare il numero di reads:\ngzip -cd campione_R1.fastq.gz | wc -l\nDividete il numero di righe per quattro. Cosa contengono la seconda e la quarta riga di ogni record?"
+  },
+  {
+    "objectID": "bash.html#pipe-e-redirezione",
+    "href": "bash.html#pipe-e-redirezione",
+    "title": "Bash essenziale",
+    "section": "4. Pipe e redirezione",
+    "text": "4. Pipe e redirezione\nLa pipe | passa l’output di un comando al successivo; &gt; lo scrive in un file.\ngzip -cd campione_R1.fastq.gz | head -n 40 &gt; prime_10_reads.fastq\nless -S prime_10_reads.fastq\nUscire da less premendo q."
+  },
+  {
+    "objectID": "bash.html#ambiente-del-corso",
+    "href": "bash.html#ambiente-del-corso",
+    "title": "Bash essenziale",
+    "section": "5. Ambiente del corso",
+    "text": "5. Ambiente del corso\nconda env list\nconda activate metabarcoding-phd\nwhich R\nwhich ampwrap\nSe which non restituisce un percorso interno all’ambiente attivo, fermatevi e risolvete il problema prima di lanciare il workflow."
+  },
+  {
+    "objectID": "bash.html#checklist",
+    "href": "bash.html#checklist",
+    "title": "Bash essenziale",
+    "section": "Checklist",
+    "text": "Checklist\n\nSo distinguere un percorso relativo da uno assoluto.\nSo controllare nome e dimensione dei file.\nSo visualizzare le prime due reads di un FASTQ compresso.\nSo attivare e controllare l’ambiente Conda."
+  },
+  {
+    "objectID": "intro-r.html",
+    "href": "intro-r.html",
+    "title": "Introduzione a R e RStudio",
+    "section": "",
+    "text": "Scrivete il codice nello script e inviate una riga o una selezione alla console con Ctrl+Enter. Conservare lo script rende l’analisi riproducibile; la cronologia della console non è un protocollo di analisi."
+  },
+  {
+    "objectID": "intro-r.html#script-e-console",
+    "href": "intro-r.html#script-e-console",
+    "title": "Introduzione a R e RStudio",
+    "section": "",
+    "text": "Scrivete il codice nello script e inviate una riga o una selezione alla console con Ctrl+Enter. Conservare lo script rende l’analisi riproducibile; la cronologia della console non è un protocollo di analisi."
+  },
+  {
+    "objectID": "intro-r.html#dove-siamo",
+    "href": "intro-r.html#dove-siamo",
+    "title": "Introduzione a R e RStudio",
+    "section": "1. Dove siamo?",
+    "text": "1. Dove siamo?\n\ngetwd()\nlist.files()\n\nPer la lezione aprite il progetto dalla cartella decompressa di SEA4BLUE, invece di inserire percorsi assoluti personali con setwd()."
+  },
+  {
+    "objectID": "intro-r.html#oggetti-e-vettori",
+    "href": "intro-r.html#oggetti-e-vettori",
+    "title": "Introduzione a R e RStudio",
+    "section": "2. Oggetti e vettori",
+    "text": "2. Oggetti e vettori\n\nprofondita &lt;- c(15200, 9800, 12400, 17100)\nprofondita\nclass(profondita)\nlength(profondita)\nmean(profondita)\nprofondita &gt;= 10000"
+  },
+  {
+    "objectID": "intro-r.html#data-frame-e-indicizzazione",
+    "href": "intro-r.html#data-frame-e-indicizzazione",
+    "title": "Introduzione a R e RStudio",
+    "section": "3. Data frame e indicizzazione",
+    "text": "3. Data frame e indicizzazione\n\ncampioni &lt;- data.frame(\n  sample = c(\"S1\", \"S2\", \"S3\", \"S4\"),\n  zona = c(\"ANW\", \"ANW\", \"ANC\", \"ANE\"),\n  reads = profondita\n)\n\ncampioni\nstr(campioni)\ncampioni$reads\ncampioni[campioni$reads &gt;= 10000, ]"
+  },
+  {
+    "objectID": "intro-r.html#valori-mancanti",
+    "href": "intro-r.html#valori-mancanti",
+    "title": "Introduzione a R e RStudio",
+    "section": "4. Valori mancanti",
+    "text": "4. Valori mancanti\n\nx &lt;- c(4, NA, 9, 12)\nis.na(x)\nsum(is.na(x))\nmean(x, na.rm = TRUE)"
+  },
+  {
+    "objectID": "intro-r.html#pacchetti-e-help",
+    "href": "intro-r.html#pacchetti-e-help",
+    "title": "Introduzione a R e RStudio",
+    "section": "5. Pacchetti e help",
+    "text": "5. Pacchetti e help\n\nlibrary(phyloseq)\n?readRDS\nsessionInfo()\n\ninstall.packages() installa una libreria; library() la carica nella sessione. Durante il corso i pacchetti devono essere già installati nell’ambiente Conda."
+  },
+  {
+    "objectID": "intro-r.html#preparare-sea4blue",
+    "href": "intro-r.html#preparare-sea4blue",
+    "title": "Introduzione a R e RStudio",
+    "section": "6. Preparare SEA4BLUE",
+    "text": "6. Preparare SEA4BLUE\n\nScaricate Sea4Blue.zip.\nDecomprimetelo una sola volta.\nAprite Sea4Blue.Rproj con RStudio.\nAprite analysis_guided.R e lavorate per sezioni, senza eseguire tutto il file in una volta."
+  }
+]

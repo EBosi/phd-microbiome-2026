@@ -1,0 +1,74 @@
+---
+title: "Introduzione a R e RStudio"
+---
+
+## Script e console
+
+Scrivete il codice nello script e inviate una riga o una selezione alla console con `Ctrl+Enter`. Conservare lo script rende l'analisi riproducibile; la cronologia della console non è un protocollo di analisi.
+
+## 1. Dove siamo?
+
+```{r}
+#| eval: false
+getwd()
+list.files()
+```
+
+Per la lezione aprite il progetto dalla cartella decompressa di SEA4BLUE, invece di inserire percorsi assoluti personali con `setwd()`.
+
+## 2. Oggetti e vettori
+
+```{r}
+#| eval: false
+profondita <- c(15200, 9800, 12400, 17100)
+profondita
+class(profondita)
+length(profondita)
+mean(profondita)
+profondita >= 10000
+```
+
+## 3. Data frame e indicizzazione
+
+```{r}
+#| eval: false
+campioni <- data.frame(
+  sample = c("S1", "S2", "S3", "S4"),
+  zona = c("ANW", "ANW", "ANC", "ANE"),
+  reads = profondita
+)
+
+campioni
+str(campioni)
+campioni$reads
+campioni[campioni$reads >= 10000, ]
+```
+
+## 4. Valori mancanti
+
+```{r}
+#| eval: false
+x <- c(4, NA, 9, 12)
+is.na(x)
+sum(is.na(x))
+mean(x, na.rm = TRUE)
+```
+
+## 5. Pacchetti e help
+
+```{r}
+#| eval: false
+library(phyloseq)
+?readRDS
+sessionInfo()
+```
+
+`install.packages()` installa una libreria; `library()` la carica nella sessione. Durante il corso i pacchetti devono essere già installati nell'ambiente Conda.
+
+## 6. Preparare SEA4BLUE
+
+1. Scaricate [Sea4Blue.zip](downloads/Sea4Blue.zip).
+2. Decomprimetelo una sola volta.
+3. Aprite `Sea4Blue.Rproj` con RStudio.
+4. Aprite `analysis_guided.R` e lavorate per sezioni, senza eseguire tutto il file in una volta.
+

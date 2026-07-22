@@ -7,6 +7,8 @@
 *.log
 *.tmp
 
+!/_site/**/*.html
+
 data/
 outputs/
 results/
@@ -15,3 +17,7 @@ work/
 
 Miniforge3-Linux-x86_64.sh
 
+/_freeze/
+**/*.quarto_ipynb
+
+/.quarto/
