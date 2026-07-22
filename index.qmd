@@ -4,6 +4,7 @@ page-layout: full
 toc: false
 ---
 
+::: {.lang-block .lang-it}
 ::: {.hero}
 # Dal sequenziamento alla comunità microbica
 
@@ -62,4 +63,65 @@ Scaricare e decomprimere il dataset **prima di aprire RStudio**.
 ## Come usare questo sito
 
 Le pagine seguono l'ordine della lezione. I blocchi di codice della sezione di biostatistica sono volutamente brevi: eseguiteli uno alla volta, osservate l'oggetto prodotto e rispondete alle domande prima di proseguire.
+:::
 
+::: {.lang-block .lang-en}
+::: {.hero}
+# From sequencing to microbial communities
+
+Practical material for the 2026 PhD course: Linux terminal, AmpWrap, R/RStudio, and biostatistical analysis of metabarcoding data.
+:::
+
+## Course flow
+
+:::: {.grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.course-card}
+### 1. Understand
+
+Experimental design, markers, primers, controls, sequencing, and the path from reads to ASVs.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.course-card}
+### 2. Process
+
+Essential Bash commands and the AmpWrap workflow: quality control, trimming, ASV inference, and taxonomy.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.course-card}
+### 3. Analyze
+
+Exploration in R, filtering, alpha and beta diversity, PERMANOVA, taxonomic composition, and RDA.
+:::
+:::
+::::
+
+## Before you start
+
+The software environment must be installed and checked **before the course**. Follow the [full instructions in the repository](https://github.com/EBosi/phd-microbiome-2026#readme) and verify the installation with:
+
+```bash
+conda activate metabarcoding-phd
+Rscript env/check_environment.R
+```
+
+::: {.callout-important}
+Do not start downloading and building the environment on the morning of the course: it takes time, disk space, and a stable connection.
+:::
+
+## Biostatistics material
+
+::: {.download-box}
+Download and unzip the dataset **before opening RStudio**.
+
+[Download Sea4Blue.zip](downloads/Sea4Blue.zip){.btn .btn-primary download="Sea4Blue.zip"}
+:::
+
+## How to use this site
+
+The pages follow the lesson order. The code blocks in the biostatistics section are intentionally short: run them one at a time, inspect the object produced, and answer the questions before moving on.
+:::

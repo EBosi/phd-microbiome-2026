@@ -1,10 +1,19 @@
 ---
-title: "Preprocessing con AmpWrap"
+title: "Pretrattamento con AmpWrap"
+subtitle: "Metabarcoding 16S rRNA gene"
 ---
 
-## Dal FASTQ alla tabella di ASV
+::: {.lang-block .lang-it}
+## AmpWrap per il pretrattamento delle raw reads
 
-AmpWrap coordina i passaggi del preprocessing e conserva log e report utili a capire che cosa è successo. Durante la lezione useremo il modulo appropriato ai dati forniti; controllate sempre la versione installata e l'help locale.
+Per il pretrattamento useremo AmpWrap, il modulo Illumina del workflow pensato per passare dalle raw reads al materiale pronto per DADA2.
+:::
+
+::: {.lang-block .lang-en}
+## AmpWrap for preprocessing raw reads
+
+For preprocessing we use AmpWrap, the Illumina module of the workflow designed to move from raw reads to material ready for DADA2.
+:::
 
 ```bash
 conda activate metabarcoding-phd
@@ -12,63 +21,94 @@ ampwrap --help
 ampwrap short --help
 ```
 
-## Prima del run
+Il riferimento del progetto e:
 
-```bash
-cd corso_2026
-find raw_reads -maxdepth 1 -type f -name '*.fastq.gz' | sort
+The project reference is:
+
+<https://github.com/LDoni/AmpWrap>
+
+## Workflow AmpWrap (Illumina) / AmpWrap workflow (Illumina)
+
+1. Initial quality control con FastQC.
+2. Report multi-campione con MultiQC.
+3. Rimozione primer con Cutadapt (`--discard-untrimmed`).
+4. Post-cutadapt FastQC + MultiQC.
+5. Determinazione dei parametri ottimali con FIGARO.
+6. Inferenza delle ASV con DADA2.
+
+## Schema del workflow / Workflow diagram
+
+```{mermaid}
+flowchart LR
+  A[Raw FASTQ] --> B[FastQC]
+  B --> C[MultiQC]
+  C --> D[Cutadapt<br/>--discard-untrimmed]
+  D --> E[FastQC]
+  E --> F[MultiQC]
+  F --> G[FIGARO]
+  G --> H[DADA2]
+  H --> I[ASV table]
+  H --> J[Representative sequences]
+  H --> K[Tracking report]
 ```
 
-Controllate:
-
-- che ogni campione abbia R1 e R2;
-- che i nomi siano coerenti;
-- che primer, orientamento e lunghezza attesa dell'amplicone siano noti;
-- che positivi, negativi e mock community siano identificabili.
-
-## Run Illumina di esempio
+## Help del comando / Command help
 
 ```bash
-ampwrap short \
-  -i raw_reads \
-  -a GTGYCAGCMGCCGCGGTAA \
-  -A CCGYCAATTYMTTTRAGTTT \
-  -l 372 \
-  -o ampwrap_output
+conda activate metabarcoding-phd
+
+cd /home/aula
+
+ampwrap short --help
 ```
 
-::: {.callout-warning}
-Il comando è un esempio didattico per un amplicone specifico. Non riutilizzate primer e lunghezza su dati diversi senza verificare il disegno sperimentale.
+## Uso di base / Basic usage
+
+```bash
+ampwrap short -i input_directory -a forward_primer -A reverse_primer -l amplicon_length
+```
+
+::: {.callout-note}
+Il comando va adattato al disegno sperimentale. Primer, lunghezza attesa e orientamento delle reads non sono parametri da copiare ciecamente tra dataset diversi.
 :::
 
-## Fermate di lettura degli output
+::: {.callout-note}
+The command must be adapted to the experimental design. Primers, expected length, and read orientation are not parameters to copy blindly across datasets.
+:::
 
-### 1. Quality control iniziale
+## Scaricare i dati di esempio / Download the example data
 
-Aprite il report MultiQC. Guardate qualità per base, contenuto in basi, adattatori e differenze tra campioni. Ci sono campioni che meritano attenzione prima del trimming?
+```bash
+mkdir -p raw_fastqc
+wget --no-check-certificate 'https://drive.usercontent.google.com/download?export=download&id=16nTZKwVmxrFkrT-26-IZtlMetjqDTO3r&confirm=t' -O raw_fastqc/S2_11_L001_R2_001.fastq.gz
+wget --no-check-certificate 'https://drive.usercontent.google.com/download?export=download&id=1zHKpcZwgNRCe9_h8BqAJZJsG1OyFRW8_&confirm=t' -O raw_fastqc/S2_11_L001_R1_001.fastq.gz
+wget --no-check-certificate 'https://drive.usercontent.google.com/download?export=download&id=1oQ2yNHI1JPuu2-NOq3IMdUBq2It8U3P9&confirm=t' -O raw_fastqc/S1_10_L001_R2_001.fastq.gz
+wget --no-check-certificate 'https://drive.usercontent.google.com/download?export=download&id=1RmrDN98kDsxc40pVI2rpmP4LRNCYlvxT&confirm=t' -O raw_fastqc/S1_10_L001_R1_001.fastq.gz
+```
 
-### 2. Rimozione dei primer
+## Esecuzione AmpWrap / Running AmpWrap
 
-Confrontate quante reads sono state mantenute. Una percentuale alta di reads senza primer può segnalare orientamento errato, primer sbagliati o dati non coerenti con l'esperimento.
+```bash
+ampwrap short -i raw_fastqc -a GTGYCAGCMGCCGCGGTAA -A CCGYCAATTYMTTTRAGTTT -l 372 -o short_test_output
+```
 
-### 3. Denoising e chimere
+## Analisi output / Output inspection
 
-Seguite la perdita di reads lungo i passaggi. Non giudicate il run soltanto dal numero finale di ASV.
+FastQC e MultiQC si aprono come report HTML e servono per controllare qualita, adattatori e distribuzione delle reads prima e dopo il trimming.
 
-### 4. Output da portare in R
+FastQC and MultiQC open as HTML reports and are used to check quality, adapters, and read distribution before and after trimming.
 
-Identificate almeno:
+Il file finale riassume i passaggi svolti, le reads mantenute e gli output prodotti.
 
-- tabella ASV × campione;
-- sequenze rappresentative;
-- tabella tassonomica;
-- metadata dei campioni;
-- statistiche di tracciamento del workflow.
+The final report summarizes the steps performed, the reads retained, and the outputs produced.
 
-## Domande prima di proseguire
+```bash
+cat ......../final_report.txt
+```
 
-1. Quale passaggio ha rimosso più reads?
-2. I controlli negativi contengono reads o taxa inattesi?
-3. La profondità è comparabile tra campioni?
-4. Tassonomia e metadata hanno identificativi compatibili con la tabella ASV?
+## Cosa osservare / What to look for
 
+1. Il primo controllo qualita mostra campioni anomali?
+2. La rimozione dei primer elimina una quota plausibile di reads?
+3. FIGARO suggerisce tagli coerenti con la lunghezza dell'amplicone?
+4. Il report finale contiene ASV, sequenze rappresentative e tracciamento del flusso?

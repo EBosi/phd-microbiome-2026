@@ -41,6 +41,7 @@ format:
   html:
     theme: cosmo
     css: styles.css
+    include-after-body: includes/lang-switch.html
     toc: true
     toc-location: left
     code-copy: true

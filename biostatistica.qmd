@@ -1,35 +1,71 @@
 ---
 title: "Analisi biostatistica: SEA4BLUE"
-subtitle: "Un passaggio alla volta, dai conteggi all'interpretazione"
+subtitle: "From counts to ecological interpretation"
 ---
 
+::: {.lang-block .lang-it}
 ## Obiettivi della sessione
 
-In questa esercitazione distingueremo sempre:
+Questa lezione segue il percorso biologico del dataset SEA4BLUE: dal transetto oceanico ai grafici di diversita, fino ai test multivariati.
 
-- **conteggi originali**, usati per profondità, prevalenza e diversità alfa;
-- **abbondanze relative**, usate qui per composizione e Bray–Curtis;
-- **dati trasformati con Hellinger**, usati per la RDA.
+- conti grezzi per profondita di sequenziamento e diversita alfa;
+- abbondanze relative per composizione e Bray-Curtis;
+- trasformazione di Hellinger per la RDA.
 
-::: {.callout-important}
-Non eseguite l'intera pagina o lo script con un solo comando. Dopo ogni blocco controllate dimensioni, nomi e grafico ottenuto: quelle verifiche fanno parte dell'analisi.
+Il punto didattico non e fare tutto con un unico comando, ma vedere come cambia l'oggetto a ogni passaggio.
 :::
 
+::: {.lang-block .lang-en}
+## Session goals
+
+This lesson follows the biological story of the SEA4BLUE dataset: from the ocean transect to diversity plots and multivariate tests.
+
+- raw counts for sequencing depth and alpha diversity;
+- relative abundances for composition and Bray-Curtis;
+- Hellinger-transformed data for RDA.
+
+The teaching goal is not to compress everything into one command, but to watch how the object changes at each step.
+:::
+
+::: {.callout-important}
+Non eseguite l'intera pagina o lo script con un solo comando. Dopo ogni blocco controllate dimensioni, nomi e grafico ottenuto.
+:::
+
+::: {.lang-block .lang-it}
 ## 0. Download e progetto RStudio
+:::
+
+::: {.lang-block .lang-en}
+## 0. Download and RStudio project
+:::
 
 ::: {.download-box}
 [Scarica Sea4Blue.zip](downloads/Sea4Blue.zip){.btn .btn-primary download="Sea4Blue.zip"}
 :::
 
+::: {.lang-block .lang-it}
 1. Decomprimete lo zip.
 2. Aprite `Sea4Blue.Rproj`.
 3. Aprite `analysis_guided.R`.
 4. Verificate che `getwd()` termini con `Sea4Blue`.
+:::
 
+::: {.lang-block .lang-en}
+1. Unzip the archive.
+2. Open `Sea4Blue.Rproj`.
+3. Open `analysis_guided.R`.
+4. Check that `getwd()` ends with `Sea4Blue`.
+:::
+
+::: {.lang-block .lang-it}
 ## 1. Pacchetti e dati
+:::
+
+::: {.lang-block .lang-en}
+## 1. Packages and data
+:::
 
 ```{r}
-#| eval: false
 library(phyloseq)
 library(vegan)
 library(ggplot2)
@@ -37,25 +73,34 @@ library(dplyr)
 library(maps)
 library(ggrepel)
 
-ps <- readRDS("phyloseq.rds")
+zone_colors <- c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a")
+
+ps <- readRDS("materials/Sea4Blue/phyloseq.rds")
+
 ps
 ```
 
-Un oggetto `phyloseq` collega tre tabelle attraverso gli stessi identificativi:
+Un oggetto `phyloseq` collega la tabella ASV, la tassonomia e i metadata dei campioni.
+
+An object of class `phyloseq` links the ASV table, taxonomy and sample metadata.
 
 ```{r}
-#| eval: false
 head(t(otu_table(ps))[, 1:6])
 head(as.data.frame(tax_table(ps)))
 as.data.frame(sample_data(ps))
 ```
 
-**Fermata.** Quanti campioni, quante ASV e quali ranghi tassonomici contiene l'oggetto? Individuate controllo positivo e negativo.
+**Fermata / Stop.** Quanti campioni, quante ASV e quali ranghi tassonomici contiene l'oggetto? Individuate controllo positivo e negativo.
 
-## 2. Profondità di sequenziamento
+::: {.lang-block .lang-it}
+## 2. Profondita di sequenziamento
+:::
+
+::: {.lang-block .lang-en}
+## 2. Sequencing depth
+:::
 
 ```{r}
-#| eval: false
 depth_df <- data.frame(
   Sample = sample_names(ps),
   Reads = sample_sums(ps),
@@ -69,14 +114,33 @@ ggplot(depth_df, aes(x = reorder(Sample, Reads), y = Reads, fill = Type)) +
   theme_bw()
 ```
 
-**Discussione.** Il negativo ha la stessa profondità dei campioni ambientali? Il positivo è un campione ambientale? Profondità elevata significa automaticamente qualità elevata?
+::: {.lang-block .lang-it}
+I controlli vengono visualizzati insieme ai campioni ambientali per capire subito se hanno profondita anomala.
+:::
 
+::: {.lang-block .lang-en}
+Controls are shown together with environmental samples so we can immediately spot anomalous library sizes.
+:::
+
+**Discussione / Discussion.** Il negativo ha la stessa profondita dei campioni ambientali? Il positivo e un campione ambientale? Profondita elevata significa automaticamente qualita elevata?
+
+::: {.lang-block .lang-it}
 ### 2.1 Il transetto di campionamento
+:::
 
-Le coordinate sono metadata: prima del grafico le ordiniamo per giorno di navigazione.
+::: {.lang-block .lang-en}
+### 2.1 The sampling transect
+:::
+
+::: {.lang-block .lang-it}
+Le coordinate sono metadata: prima del grafico le ordiniamo per giorno di navigazione per far leggere il gradiente spaziale in modo corretto.
+:::
+
+::: {.lang-block .lang-en}
+Coordinates are metadata: before plotting them, we sort samples by navigation day so the spatial gradient is read correctly.
+:::
 
 ```{r}
-#| eval: false
 samdf <- data.frame(sample_data(subset_samples(ps, !is.na(Zone))))
 samdf <- samdf[order(samdf$NavigationDay), ]
 world <- map_data("world")
@@ -87,22 +151,33 @@ ggplot() +
     aes(x = long, y = lat, group = group),
     fill = "grey92", color = "grey65"
   ) +
-  geom_path(data = samdf, aes(Longitude, Latitude), color = "grey25") +
+  geom_path(data = samdf, aes(Longitude, Latitude), color = "grey25", linewidth = 0.8) +
   geom_point(data = samdf, aes(Longitude, Latitude, color = Zone), size = 3) +
   coord_quickmap(xlim = c(-85, -5), ylim = c(20, 45)) +
-  scale_color_manual(values = c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a")) +
-  labs(x = "Longitudine", y = "Latitudine", title = "Transetto SEA4BLUE") +
+  scale_color_manual(values = zone_colors) +
+  labs(x = "Longitudine", y = "Latitudine", title = "SEA4BLUE transect") +
   theme_minimal()
 ```
 
-**Fermata.** `Zone` rappresenta gruppi indipendenti dalla geografia oppure segmenti dello stesso gradiente? Questa risposta sarà importante quando interpreteremo PERMANOVA e RDA.
+**Fermata / Stop.** `Zone` rappresenta gruppi indipendenti dalla geografia oppure segmenti dello stesso gradiente? Questa risposta sara importante quando interpreteremo PERMANOVA e RDA.
 
+::: {.lang-block .lang-it}
 ## 3. Curva di rarefazione
+:::
 
-Per rendere visibile il principio, usiamo direttamente `vegan::rarecurve` sui soli campioni ambientali. La rarefazione qui è uno strumento diagnostico, non la normalizzazione scelta per tutte le analisi successive.
+::: {.lang-block .lang-en}
+## 3. Rarefaction curve
+:::
+
+::: {.lang-block .lang-it}
+Qui usiamo `vegan::rarecurve` sui soli campioni ambientali. E uno strumento diagnostico, non la normalizzazione finale dell'analisi.
+:::
+
+::: {.lang-block .lang-en}
+Here we use `vegan::rarecurve` on environmental samples only. This is a diagnostic tool, not the final normalization for the analysis.
+:::
 
 ```{r}
-#| eval: false
 ps_bio <- subset_samples(ps, !is.na(Zone))
 otu_bio <- as(otu_table(ps_bio), "matrix")
 if (taxa_are_rows(ps_bio)) otu_bio <- t(otu_bio)
@@ -118,29 +193,39 @@ rarecurve(
 )
 ```
 
-**Fermata.** Le curve raggiungono un plateau? Quale informazione perderemmo portando tutti i campioni alla profondità del più piccolo?
+**Fermata / Stop.** Le curve raggiungono un plateau? Quale informazione perderemmo portando tutti i campioni alla profondita del piu piccolo?
 
+::: {.lang-block .lang-it}
 ## 4. Filtraggio esplicito
+:::
 
-Ogni filtro viene applicato e controllato separatamente.
+::: {.lang-block .lang-en}
+## 4. Explicit filtering
+:::
+
+::: {.lang-block .lang-it}
+Ogni filtro viene applicato e controllato separatamente, cosi l'oggetto che prosegue nell'analisi e sempre verificabile.
+:::
+
+::: {.lang-block .lang-en}
+Each filter is applied and checked separately, so the object that continues through the analysis always remains inspectable.
+:::
 
 ### 4.1 Rimuovere mitocondri e cloroplasti
 
 ```{r}
-#| eval: false
 ps_clean <- subset_taxa(
   ps,
   (is.na(Family) | Family != "Mitochondria") &
-  (is.na(Order) | Order != "Chloroplast")
+    (is.na(Order) | Order != "Chloroplast")
 )
 
-c(before = ntaxa(ps), after = ntaxa(ps_clean))
+c(before = ntaxa(ps), after_organelle = ntaxa(ps_clean))
 ```
 
 ### 4.2 Rimuovere ASV con un solo conteggio totale
 
 ```{r}
-#| eval: false
 ps_clean <- prune_taxa(taxa_sums(ps_clean) > 1, ps_clean)
 ntaxa(ps_clean)
 ```
@@ -148,22 +233,32 @@ ntaxa(ps_clean)
 ### 4.3 Separare i controlli dall'analisi ecologica
 
 ```{r}
-#| eval: false
 ps_clean <- subset_samples(ps_clean, !is.na(Zone))
 ps_clean <- prune_taxa(taxa_sums(ps_clean) > 0, ps_clean)
 ps_clean
 ```
 
 ::: {.callout-note}
-I controlli non vanno “dimenticati”: vengono esaminati per valutare contaminazione e riuscita del run, poi esclusi dal confronto ecologico tra zone.
+I controlli non vengono eliminati per ignorarli: prima si ispezionano per valutare contaminazione e riuscita del run, poi si escludono dal confronto ecologico tra zone.
 :::
 
-## 5. Diversità alfa sui conteggi
+::: {.callout-note}
+Controls are not removed to ignore them: first we inspect them to assess contamination and run success, then we exclude them from the ecological comparison between zones.
+:::
 
-La richness è il numero di ASV osservate nel singolo campione; Shannon combina richness ed evenness.
+::: {.lang-block .lang-it}
+## 5. Diversita alfa sui conteggi
+:::
+
+::: {.lang-block .lang-en}
+## 5. Alpha diversity on counts
+:::
+
+La richness e il numero di ASV osservate nel campione; Shannon combina richness ed evenness.
+
+Richness is the number of observed ASVs in a sample; Shannon combines richness and evenness.
 
 ```{r}
-#| eval: false
 alpha <- estimate_richness(ps_clean, measures = c("Observed", "Shannon"))
 alpha$Sample <- rownames(alpha)
 
@@ -175,57 +270,66 @@ head(alpha)
 ```
 
 ```{r}
-#| eval: false
 ggplot(alpha, aes(x = Longitude, y = Observed, color = Zone)) +
   geom_point(size = 3) +
   geom_smooth(method = "lm", se = TRUE, color = "grey30") +
-  scale_color_manual(values = c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a")) +
+  scale_color_manual(values = zone_colors) +
   labs(x = "Longitudine", y = "ASV osservate", title = "Richness lungo il transetto") +
   theme_bw()
 ```
 
-**Discussione.** State descrivendo un'associazione o dimostrando un effetto causale? Profondità e posizione geografica possono essere confondenti?
-
-Salviamo la richness nei metadata, rispettando l'ordine dei campioni:
+**Discussione / Discussion.** State descrivendo un'associazione o dimostrando un effetto causale? Profondita e posizione geografica possono essere confondenti?
 
 ```{r}
-#| eval: false
 sample_data(ps_clean)$Richness <- alpha[
   match(sample_names(ps_clean), alpha$Sample),
   "Observed"
 ]
 ```
 
+::: {.lang-block .lang-it}
 ## 6. Abbondanza relativa e beta diversity
+:::
+
+::: {.lang-block .lang-en}
+## 6. Relative abundance and beta diversity
+:::
 
 ```{r}
-#| eval: false
 ps_rel <- transform_sample_counts(ps_clean, function(x) x / sum(x))
 sample_sums(ps_rel)
 ```
 
-Le somme devono essere circa 1. Calcoliamo Bray–Curtis e una PCoA:
+La somma di ogni campione deve essere circa 1. Ora calcoliamo Bray-Curtis e una PCoA.
+
+The sum for each sample should be approximately 1. Now we compute Bray-Curtis and a PCoA.
 
 ```{r}
-#| eval: false
 pcoa_bray <- ordinate(ps_rel, method = "PCoA", distance = "bray")
 
 plot_ordination(ps_rel, pcoa_bray, color = "Zone") +
   geom_point(size = 3) +
   geom_text_repel(aes(label = SampleName), show.legend = FALSE) +
-  scale_color_manual(values = c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a")) +
-  labs(title = "PCoA — Bray–Curtis") +
+  scale_color_manual(values = zone_colors) +
+  labs(title = "PCoA - Bray-Curtis") +
   theme_bw()
 ```
 
-**Fermata.** Quali campioni sono più lontani? La separazione sembra graduale lungo il transetto o discreta tra zone?
+**Fermata / Stop.** Quali campioni sono piu lontani? La separazione sembra graduale lungo il transetto o discreta tra zone?
 
+::: {.lang-block .lang-it}
 ## 7. PERMANOVA e dispersione
+:::
 
-Un grafico suggerisce pattern; un test formalizza una domanda. Prima assicuriamoci che righe della matrice e metadata abbiano lo stesso ordine.
+::: {.lang-block .lang-en}
+## 7. PERMANOVA and dispersion
+:::
+
+Prima assicuriamoci che righe della matrice e metadata abbiano lo stesso ordine.
+
+First, make sure that matrix rows and metadata have the same order.
 
 ```{r}
-#| eval: false
 otu_rel <- as(otu_table(ps_rel), "matrix")
 if (taxa_are_rows(ps_rel)) otu_rel <- t(otu_rel)
 
@@ -234,28 +338,44 @@ meta_rel <- meta_rel[rownames(otu_rel), , drop = FALSE]
 stopifnot(identical(rownames(otu_rel), rownames(meta_rel)))
 
 bray <- vegdist(otu_rel, method = "bray")
+
+set.seed(42)
 adonis2(bray ~ Zone, data = meta_rel, permutations = 999)
 ```
 
-La PERMANOVA può risentire di dispersioni diverse tra gruppi. Controlliamole:
+La PERMANOVA puo risentire di dispersioni diverse tra gruppi. Controlliamole.
+
+PERMANOVA can be affected by different dispersions among groups. Check them.
 
 ```{r}
-#| eval: false
 dispersion <- betadisper(bray, group = meta_rel$Zone)
 anova(dispersion)
+
+set.seed(42)
 permutest(dispersion, permutations = 999)
 ```
 
 ::: {.callout-warning}
-Le zone sono definite lungo lo stesso gradiente geografico. Un risultato significativo per `Zone` non separa automaticamente l'effetto della categoria da quello della longitudine, né dimostra causalità.
+Le zone sono definite lungo lo stesso gradiente geografico. Un risultato significativo per `Zone` non separa automaticamente l'effetto della categoria da quello della longitudine, ne dimostra causalita.
 :::
 
-## 8. Composizione tassonomica
+::: {.callout-warning}
+The zones are defined along the same geographic gradient. A significant result for `Zone` does not automatically separate category effects from longitude effects, and it does not demonstrate causality.
+:::
 
-Aggregare a genere rende il grafico leggibile ma perde dettaglio. Mostriamo i 12 generi complessivamente più abbondanti e raggruppiamo gli altri.
+::: {.lang-block .lang-it}
+## 8. Composizione tassonomica
+:::
+
+::: {.lang-block .lang-en}
+## 8. Taxonomic composition
+:::
+
+Aggregare a genere rende il grafico leggibile ma perde dettaglio. Mostriamo i 12 generi complessivamente piu abbondanti e raggruppiamo gli altri.
+
+Aggregating to genus makes the plot readable but loses detail. We show the 12 most abundant genera overall and group the rest.
 
 ```{r}
-#| eval: false
 ps_genus <- tax_glom(ps_rel, taxrank = "Genus", NArm = FALSE)
 genus_df <- psmelt(ps_genus)
 
@@ -267,13 +387,18 @@ top_genera <- genus_df |>
   pull(Genus)
 
 genus_plot <- genus_df |>
-  mutate(Genus_plot = ifelse(is.na(Genus) | !Genus %in% top_genera, "Other", as.character(Genus))) |>
+  mutate(
+    Genus_plot = ifelse(
+      is.na(Genus) | !Genus %in% top_genera,
+      "Other",
+      as.character(Genus)
+    )
+  ) |>
   group_by(Sample, Zone, Genus_plot) |>
   summarise(Abundance = sum(Abundance), .groups = "drop")
 ```
 
 ```{r}
-#| eval: false
 ggplot(genus_plot, aes(x = Sample, y = Abundance, fill = Genus_plot)) +
   geom_col(width = 0.85) +
   facet_grid(~ Zone, scales = "free_x", space = "free_x") +
@@ -283,51 +408,71 @@ ggplot(genus_plot, aes(x = Sample, y = Abundance, fill = Genus_plot)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-## 9. RDA lungo il gradiente longitudinale
+**Discussione / Discussion.** Quali pattern della PCoA possono essere collegati a questo grafico?
 
-Per la RDA trasformiamo le abbondanze relative con Hellinger. Usiamo la longitudine come variabile esplicativa; la richness non viene usata come predittore perché è calcolata dalla stessa matrice biologica.
+::: {.lang-block .lang-it}
+## 9. RDA lungo il gradiente longitudinale
+:::
+
+::: {.lang-block .lang-en}
+## 9. RDA along the longitudinal gradient
+:::
+
+Per la RDA trasformiamo le abbondanze relative con Hellinger. Usiamo la longitudine come variabile esplicativa; la richness non viene usata come predittore perche e calcolata dalla stessa matrice biologica.
+
+For the RDA we transform relative abundances with Hellinger. Longitude is the explanatory variable; richness is not used as a predictor because it is derived from the same biological matrix.
 
 ```{r}
-#| eval: false
 otu_hellinger <- decostand(otu_rel, method = "hellinger")
 rda_model <- rda(otu_hellinger ~ Longitude, data = meta_rel)
 
+set.seed(42)
 anova(rda_model, permutations = 999)
 RsquareAdj(rda_model)
 ```
 
 ```{r}
-#| eval: false
 site_scores <- as.data.frame(scores(rda_model, display = "sites", choices = 1:2))
 site_scores$Sample <- rownames(site_scores)
-site_scores <- left_join(site_scores, cbind(Sample = rownames(meta_rel), meta_rel), by = "Sample")
+site_scores <- left_join(
+  site_scores,
+  cbind(Sample = rownames(meta_rel), meta_rel),
+  by = "Sample"
+)
 
 ggplot(site_scores, aes(x = RDA1, y = PC1, color = Zone, label = SampleName)) +
   geom_hline(yintercept = 0, color = "grey85") +
   geom_vline(xintercept = 0, color = "grey85") +
   geom_point(size = 3) +
   geom_text_repel(show.legend = FALSE) +
-  scale_color_manual(values = c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a")) +
+  scale_color_manual(values = zone_colors) +
   labs(title = "RDA vincolata dalla longitudine") +
   theme_bw()
 ```
 
+::: {.lang-block .lang-it}
 ## 10. Cosa riportare
+:::
+
+::: {.lang-block .lang-en}
+## 10. What to report
+:::
 
 Nel resoconto indicate sempre:
 
+In the report always include:
+
 - numero iniziale e finale di campioni e ASV;
 - criterio di esclusione dei controlli e dei taxa;
-- rappresentazione/trasformazione usata in ogni analisi;
+- rappresentazione o trasformazione usata in ogni analisi;
 - distanza e metodo di ordinamento;
 - formula, numero di permutazioni e controllo della dispersione per PERMANOVA;
 - limiti del disegno osservazionale e possibili fattori confondenti.
 
-## Revisione rispetto allo script precedente
+::: {.callout-note}
+Se volete, il passo successivo e affiancare a questa pagina una versione compatta con il solo flusso operativo, da usare come handout durante la lezione.
+:::
 
-La versione didattica evita le funzioni “tutto in uno” e corregge quattro aspetti:
-
-1. filtri e controlli vengono applicati all'oggetto che prosegue nell'analisi;
-2. la richness viene calcolata sui conteggi filtrati, non sui valori CSS arrotondati;
-3. beta diversity e composizione usano una trasformazione esplicita e verificabile;
-4. PERMANOVA include il controllo delle dispersioni e la RDA non usa la richness derivata dalla risposta come predittore.
+::: {.callout-note}
+If you want, the next step is to add a compact operator view of the same material, to use as a handout during the lesson.
+:::

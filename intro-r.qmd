@@ -2,11 +2,19 @@
 title: "Introduzione a R e RStudio"
 ---
 
+::: {.lang-block .lang-it}
 ## Script e console
 
-Scrivete il codice nello script e inviate una riga o una selezione alla console con `Ctrl+Enter`. Conservare lo script rende l'analisi riproducibile; la cronologia della console non è un protocollo di analisi.
+Scrivete il codice nello script e inviate una riga o una selezione alla console con `Ctrl+Enter`. Conservare lo script rende l'analisi riproducibile; la cronologia della console non e un protocollo di analisi.
+:::
 
-## 1. Dove siamo?
+::: {.lang-block .lang-en}
+## Scripts and console
+
+Write code in the script and send a line or a selection to the console with `Ctrl+Enter`. Keeping the script makes the analysis reproducible; the console history is not an analysis protocol.
+:::
+
+## 1. Dove siamo? / Where are we?
 
 ```{r}
 #| eval: false
@@ -14,9 +22,15 @@ getwd()
 list.files()
 ```
 
+::: {.lang-block .lang-it}
 Per la lezione aprite il progetto dalla cartella decompressa di SEA4BLUE, invece di inserire percorsi assoluti personali con `setwd()`.
+:::
 
-## 2. Oggetti e vettori
+::: {.lang-block .lang-en}
+For the lesson, open the project from the unpacked SEA4BLUE folder instead of typing personal absolute paths with `setwd()`.
+:::
+
+## 2. Oggetti e vettori / Objects and vectors
 
 ```{r}
 #| eval: false
@@ -28,7 +42,7 @@ mean(profondita)
 profondita >= 10000
 ```
 
-## 3. Data frame e indicizzazione
+## 3. Data frame e indicizzazione / Data frames and indexing
 
 ```{r}
 #| eval: false
@@ -44,7 +58,7 @@ campioni$reads
 campioni[campioni$reads >= 10000, ]
 ```
 
-## 4. Valori mancanti
+## 4. Valori mancanti / Missing values
 
 ```{r}
 #| eval: false
@@ -54,7 +68,7 @@ sum(is.na(x))
 mean(x, na.rm = TRUE)
 ```
 
-## 5. Pacchetti e help
+## 5. Pacchetti e help / Packages and help
 
 ```{r}
 #| eval: false
@@ -63,12 +77,17 @@ library(phyloseq)
 sessionInfo()
 ```
 
-`install.packages()` installa una libreria; `library()` la carica nella sessione. Durante il corso i pacchetti devono essere già installati nell'ambiente Conda.
+::: {.lang-block .lang-it}
+`install.packages()` installa una libreria; `library()` la carica nella sessione. Durante il corso i pacchetti devono essere gia installati nell'ambiente Conda.
+:::
 
-## 6. Preparare SEA4BLUE
+::: {.lang-block .lang-en}
+`install.packages()` installs a package; `library()` loads it into the session. During the course, packages must already be installed in the Conda environment.
+:::
+
+## 6. Preparare SEA4BLUE / Preparing SEA4BLUE
 
 1. Scaricate [Sea4Blue.zip](downloads/Sea4Blue.zip).
 2. Decomprimetelo una sola volta.
 3. Aprite `Sea4Blue.Rproj` con RStudio.
 4. Aprite `analysis_guided.R` e lavorate per sezioni, senza eseguire tutto il file in una volta.
-

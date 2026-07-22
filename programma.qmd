@@ -2,6 +2,7 @@
 title: "Programma e obiettivi"
 ---
 
+::: {.lang-block .lang-it}
 ## Obiettivi formativi
 
 Alla fine della giornata sarete in grado di:
@@ -11,7 +12,7 @@ Alla fine della giornata sarete in grado di:
 - orientarvi nel terminale e negli output di AmpWrap;
 - importare e ispezionare un oggetto `phyloseq`;
 - scegliere una trasformazione coerente con la domanda;
-- interpretare diversità alfa, beta, PERMANOVA e ordinamenti vincolati.
+- interpretare diversita alfa, beta, PERMANOVA e ordinamenti vincolati.
 
 ## Struttura delle 8 ore
 
@@ -21,14 +22,14 @@ Alla fine della giornata sarete in grado di:
 | Bash essenziale | 1 h | Directory, percorsi, file FASTQ, pipe e ambiente Conda |
 | AmpWrap | 2 h | Configurazione, avvio, log, quality control e output principali |
 | R/RStudio | 1 h | Script, console, oggetti, data frame e importazione |
-| Biostatistica | 2 h | Filtri, profondità, diversità alfa/beta, PERMANOVA, composizione e RDA |
+| Biostatistica | 2 h | Filtri, profondita, diversita alfa/beta, PERMANOVA, composizione e RDA |
 
 ## Filo conduttore: SEA4BLUE
 
-L'esercitazione finale usa un oggetto `phyloseq` già costruito a partire da campioni raccolti lungo un transetto nell'Atlantico settentrionale. Le reads sono state preprocessate con DADA2 e la tassonomia è stata assegnata con SILVA.
+L'esercitazione finale usa un oggetto `phyloseq` gia costruito a partire da campioni raccolti lungo un transetto nell'Atlantico settentrionale. Le reads sono state preprocessate con DADA2 e la tassonomia e stata assegnata con SILVA.
 
 ::: {.callout-note}
-Lo scopo non è produrre una “figura finale” il più rapidamente possibile, ma capire quale rappresentazione dei dati viene usata in ogni passaggio e quali assunzioni stiamo facendo.
+Lo scopo non e produrre una figura finale il piu rapidamente possibile, ma capire quale rappresentazione dei dati viene usata in ogni passaggio e quali assunzioni stiamo facendo.
 :::
 
 ## Preparazione degli studenti
@@ -37,4 +38,42 @@ Lo scopo non è produrre una “figura finale” il più rapidamente possibile, 
 2. Verificare che RStudio si apra dall'ambiente del corso.
 3. Scaricare [Sea4Blue.zip](downloads/Sea4Blue.zip) senza decomprimerlo due volte.
 4. Portare un computer con almeno 8 GB di RAM e spazio libero sufficiente.
+:::
 
+::: {.lang-block .lang-en}
+## Learning goals
+
+By the end of the day you should be able to:
+
+- describe the flow from sampling to an ASV table;
+- recognize the main experimental and bioinformatic risks;
+- navigate the terminal and read AmpWrap outputs;
+- import and inspect a `phyloseq` object;
+- choose a transformation that matches the question;
+- interpret alpha and beta diversity, PERMANOVA, and constrained ordinations.
+
+## The 8-hour structure
+
+| Module | Duration | Content |
+|---|---:|---|
+| Metabarcoding theory | 2 h | Experimental design, markers, primers, controls, reads, errors, ASV/OTU, and taxonomy |
+| Essential Bash | 1 h | Directories, paths, FASTQ files, pipes, and the Conda environment |
+| AmpWrap | 2 h | Configuration, launch, logs, quality control, and main outputs |
+| R/RStudio | 1 h | Scripts, console, objects, data frames, and import |
+| Biostatistics | 2 h | Filtering, depth, alpha/beta diversity, PERMANOVA, composition, and RDA |
+
+## The running example: SEA4BLUE
+
+The final exercise uses a `phyloseq` object already built from samples collected along a transect in the North Atlantic. Reads were preprocessed with DADA2 and taxonomy was assigned with SILVA.
+
+::: {.callout-note}
+The goal is not to produce a final figure as fast as possible, but to understand which data representation is used at each step and which assumptions we are making.
+:::
+
+## Student preparation
+
+1. Complete the [installation](https://github.com/EBosi/phd-microbiome-2026#readme).
+2. Make sure RStudio opens from the course environment.
+3. Download [Sea4Blue.zip](downloads/Sea4Blue.zip) without unzipping it twice.
+4. Bring a computer with at least 8 GB of RAM and enough free disk space.
+:::

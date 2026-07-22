@@ -2,11 +2,21 @@
 title: "Bash essenziale"
 ---
 
+::: {.lang-block .lang-it}
 ## Obiettivo
 
 Imparare il minimo indispensabile per sapere dove ci troviamo, ispezionare i FASTQ e capire dove AmpWrap scrive i risultati.
 
-## 1. Orientarsi
+## 1. Orientarsi / Getting oriented
+:::
+
+::: {.lang-block .lang-en}
+## Goal
+
+Learn the minimum needed to know where we are, inspect FASTQ files, and understand where AmpWrap writes its results.
+
+## 1. Getting oriented
+:::
 
 ```bash
 pwd
@@ -14,9 +24,17 @@ ls
 ls -lh
 ```
 
+::: {.lang-block .lang-it}
 - `pwd` mostra la directory corrente;
 - `ls -lh` elenca i file con dimensioni leggibili;
 - `.` indica la directory corrente e `..` quella superiore.
+:::
+
+::: {.lang-block .lang-en}
+- `pwd` shows the current directory;
+- `ls -lh` lists files with human-readable sizes;
+- `.` means the current directory and `..` the parent one.
+:::
 
 ```bash
 cd phd-microbiome-2026
@@ -28,16 +46,34 @@ mkdir -p corso_2026/raw_reads
 Usate il tasto `Tab` per completare nomi e percorsi: riduce molti errori di battitura.
 :::
 
-## 2. Copiare senza perdere l'originale
+::: {.lang-block .lang-it}
+## 2. Copiare senza perdere l'originale / Copying without losing the original
+:::
+
+::: {.lang-block .lang-en}
+## 2. Copying without losing the original
+:::
 
 ```bash
 cp campione_R1.fastq.gz corso_2026/raw_reads/
 mv vecchio_nome.txt nuovo_nome.txt
 ```
 
+::: {.lang-block .lang-it}
 `cp` conserva l'originale; `mv` sposta o rinomina. Prima di un comando su molti file controllate sempre `pwd` e `ls`.
+:::
 
-## 3. Leggere un FASTQ compresso
+::: {.lang-block .lang-en}
+`cp` keeps the original; `mv` moves or renames. Before running a command on many files, always check `pwd` and `ls`.
+:::
+
+::: {.lang-block .lang-it}
+## 3. Leggere un FASTQ compresso / Reading a compressed FASTQ
+:::
+
+::: {.lang-block .lang-en}
+## 3. Reading a compressed FASTQ
+:::
 
 ```bash
 gzip -cd campione_R1.fastq.gz | head -n 8
@@ -45,15 +81,27 @@ gzip -cd campione_R1.fastq.gz | head -n 8
 
 Ogni read occupa quattro righe. Per stimare il numero di reads:
 
+Every read occupies four lines. To estimate the number of reads:
+
 ```bash
 gzip -cd campione_R1.fastq.gz | wc -l
 ```
 
 Dividete il numero di righe per quattro. Cosa contengono la seconda e la quarta riga di ogni record?
 
-## 4. Pipe e redirezione
+Divide the number of lines by four. What do the second and fourth lines of each record contain?
+
+::: {.lang-block .lang-it}
+## 4. Pipe e redirezione / Pipes and redirection
+:::
+
+::: {.lang-block .lang-en}
+## 4. Pipes and redirection
+:::
 
 La pipe `|` passa l'output di un comando al successivo; `>` lo scrive in un file.
+
+The pipe `|` sends the output of one command to the next; `>` writes it to a file.
 
 ```bash
 gzip -cd campione_R1.fastq.gz | head -n 40 > prime_10_reads.fastq
@@ -62,7 +110,15 @@ less -S prime_10_reads.fastq
 
 Uscire da `less` premendo `q`.
 
-## 5. Ambiente del corso
+Exit `less` by pressing `q`.
+
+::: {.lang-block .lang-it}
+## 5. Ambiente del corso / Course environment
+:::
+
+::: {.lang-block .lang-en}
+## 5. Course environment
+:::
 
 ```bash
 conda env list
@@ -73,10 +129,26 @@ which ampwrap
 
 Se `which` non restituisce un percorso interno all'ambiente attivo, fermatevi e risolvete il problema prima di lanciare il workflow.
 
-## Checklist
+If `which` does not return a path inside the active environment, stop and fix the problem before launching the workflow.
 
+::: {.lang-block .lang-it}
+## Checklist
+:::
+
+::: {.lang-block .lang-en}
+## Checklist
+:::
+
+::: {.lang-block .lang-it}
 - [ ] So distinguere un percorso relativo da uno assoluto.
 - [ ] So controllare nome e dimensione dei file.
 - [ ] So visualizzare le prime due reads di un FASTQ compresso.
 - [ ] So attivare e controllare l'ambiente Conda.
+:::
 
+::: {.lang-block .lang-en}
+- [ ] I can distinguish a relative path from an absolute one.
+- [ ] I can check file names and sizes.
+- [ ] I can inspect the first two reads of a compressed FASTQ.
+- [ ] I can activate and verify the Conda environment.
+:::
