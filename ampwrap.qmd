@@ -52,6 +52,12 @@ flowchart LR
   H --> K[Tracking report]
 ```
 
+::: {.callout-tip}
+La figura riassuntiva del flusso AmpWrap e la stessa che useremo a lezione per seguire il passaggio da raw reads a ASV:
+:::
+
+![](figures/ampwrap/Fig1.jpg){fig-alt="Schema del workflow AmpWrap"}
+
 ## Help del comando / Command help
 
 ```bash

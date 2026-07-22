@@ -24,10 +24,26 @@ list.files()
 
 ::: {.lang-block .lang-it}
 Per la lezione aprite il progetto dalla cartella decompressa di SEA4BLUE, invece di inserire percorsi assoluti personali con `setwd()`.
+
+Se avete scaricato e decompresso lo zip nella vostra home, un esempio tipico e:
+
+```r
+setwd("~/Downloads/Sea4Blue")
+```
+
+Poi controllate subito con `getwd()`.
 :::
 
 ::: {.lang-block .lang-en}
 For the lesson, open the project from the unpacked SEA4BLUE folder instead of typing personal absolute paths with `setwd()`.
+
+If you downloaded and unpacked the zip in your home folder, a typical example is:
+
+```r
+setwd("~/Downloads/Sea4Blue")
+```
+
+Then immediately check with `getwd()`.
 :::
 
 ## 2. Oggetti e vettori / Objects and vectors

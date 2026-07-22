@@ -43,6 +43,16 @@ Non eseguite l'intera pagina o lo script con un solo comando. Dopo ogni blocco c
 [Scarica Sea4Blue.zip](downloads/Sea4Blue.zip){.btn .btn-primary download="Sea4Blue.zip"}
 :::
 
+::: {.callout-tip}
+Se avete scaricato lo zip nella cartella Download della vostra home, aprite la sessione da lì con:
+
+```bash
+setwd("~/Downloads/Sea4Blue")
+```
+
+`~` significa "home". Se la vostra cartella si chiama `Scaricati`, il percorso cambia di conseguenza. L'idea e sempre la stessa: portarsi nella cartella dove avete decompresso il dataset prima di lanciare lo script.
+:::
+
 ::: {.lang-block .lang-it}
 1. Decomprimete lo zip.
 2. Aprite `Sea4Blue.Rproj`.
@@ -101,6 +111,7 @@ as.data.frame(sample_data(ps))
 :::
 
 ```{r}
+#| eval: false
 depth_df <- data.frame(
   Sample = sample_names(ps),
   Reads = sample_sums(ps),
@@ -113,6 +124,8 @@ ggplot(depth_df, aes(x = reorder(Sample, Reads), y = Reads, fill = Type)) +
   labs(x = NULL, y = "Reads", title = "Library size") +
   theme_bw()
 ```
+
+![](figures/biostatistica/01-depth.png){fig-alt="Library size per campione"}
 
 ::: {.lang-block .lang-it}
 I controlli vengono visualizzati insieme ai campioni ambientali per capire subito se hanno profondita anomala.
@@ -141,6 +154,7 @@ Coordinates are metadata: before plotting them, we sort samples by navigation da
 :::
 
 ```{r}
+#| eval: false
 samdf <- data.frame(sample_data(subset_samples(ps, !is.na(Zone))))
 samdf <- samdf[order(samdf$NavigationDay), ]
 world <- map_data("world")
@@ -158,6 +172,8 @@ ggplot() +
   labs(x = "Longitudine", y = "Latitudine", title = "SEA4BLUE transect") +
   theme_minimal()
 ```
+
+![](figures/biostatistica/02-transect.png){fig-alt="Mappa del transetto SEA4BLUE"}
 
 **Fermata / Stop.** `Zone` rappresenta gruppi indipendenti dalla geografia oppure segmenti dello stesso gradiente? Questa risposta sara importante quando interpreteremo PERMANOVA e RDA.
 
@@ -178,6 +194,7 @@ Here we use `vegan::rarecurve` on environmental samples only. This is a diagnost
 :::
 
 ```{r}
+#| eval: false
 ps_bio <- subset_samples(ps, !is.na(Zone))
 otu_bio <- as(otu_table(ps_bio), "matrix")
 if (taxa_are_rows(ps_bio)) otu_bio <- t(otu_bio)
@@ -192,6 +209,8 @@ rarecurve(
   ylab = "ASV osservate"
 )
 ```
+
+![](figures/biostatistica/03-rarefaction.png){fig-alt="Curve di rarefazione"}
 
 **Fermata / Stop.** Le curve raggiungono un plateau? Quale informazione perderemmo portando tutti i campioni alla profondita del piu piccolo?
 
@@ -270,6 +289,7 @@ head(alpha)
 ```
 
 ```{r}
+#| eval: false
 ggplot(alpha, aes(x = Longitude, y = Observed, color = Zone)) +
   geom_point(size = 3) +
   geom_smooth(method = "lm", se = TRUE, color = "grey30") +
@@ -277,6 +297,8 @@ ggplot(alpha, aes(x = Longitude, y = Observed, color = Zone)) +
   labs(x = "Longitudine", y = "ASV osservate", title = "Richness lungo il transetto") +
   theme_bw()
 ```
+
+![](figures/biostatistica/05-alpha-richness.png){fig-alt="Richness lungo il transetto"}
 
 **Discussione / Discussion.** State descrivendo un'associazione o dimostrando un effetto causale? Profondita e posizione geografica possono essere confondenti?
 
@@ -305,6 +327,7 @@ La somma di ogni campione deve essere circa 1. Ora calcoliamo Bray-Curtis e una 
 The sum for each sample should be approximately 1. Now we compute Bray-Curtis and a PCoA.
 
 ```{r}
+#| eval: false
 pcoa_bray <- ordinate(ps_rel, method = "PCoA", distance = "bray")
 
 plot_ordination(ps_rel, pcoa_bray, color = "Zone") +
@@ -314,6 +337,8 @@ plot_ordination(ps_rel, pcoa_bray, color = "Zone") +
   labs(title = "PCoA - Bray-Curtis") +
   theme_bw()
 ```
+
+![](figures/biostatistica/06-pcoa-bray.png){fig-alt="PCoA Bray-Curtis"}
 
 **Fermata / Stop.** Quali campioni sono piu lontani? La separazione sembra graduale lungo il transetto o discreta tra zone?
 
@@ -399,6 +424,7 @@ genus_plot <- genus_df |>
 ```
 
 ```{r}
+#| eval: false
 ggplot(genus_plot, aes(x = Sample, y = Abundance, fill = Genus_plot)) +
   geom_col(width = 0.85) +
   facet_grid(~ Zone, scales = "free_x", space = "free_x") +
@@ -407,6 +433,8 @@ ggplot(genus_plot, aes(x = Sample, y = Abundance, fill = Genus_plot)) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
+
+![](figures/biostatistica/08-composition.png){fig-alt="Composizione tassonomica"}
 
 **Discussione / Discussion.** Quali pattern della PCoA possono essere collegati a questo grafico?
 
@@ -432,6 +460,7 @@ RsquareAdj(rda_model)
 ```
 
 ```{r}
+#| eval: false
 site_scores <- as.data.frame(scores(rda_model, display = "sites", choices = 1:2))
 site_scores$Sample <- rownames(site_scores)
 site_scores <- left_join(
@@ -449,6 +478,8 @@ ggplot(site_scores, aes(x = RDA1, y = PC1, color = Zone, label = SampleName)) +
   labs(title = "RDA vincolata dalla longitudine") +
   theme_bw()
 ```
+
+![](figures/biostatistica/09-rda.png){fig-alt="RDA vincolata dalla longitudine"}
 
 ::: {.lang-block .lang-it}
 ## 10. Cosa riportare
