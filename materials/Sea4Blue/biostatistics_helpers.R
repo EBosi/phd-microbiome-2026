@@ -1,6 +1,8 @@
 # Helper functions for the SEA4BLUE biostatistics lesson.
 # Source this file after extracting Sea4Blue.zip into your working directory.
 
+zone_colors <- c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a")
+
 prepare_biostatistics_ps <- function(ps) {
   ps_clean <- subset_taxa(
     ps,

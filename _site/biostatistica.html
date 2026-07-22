@@ -179,7 +179,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#alpha-diversity" id="toc-alpha-diversity" class="nav-link" data-scroll-target="#alpha-diversity">Alpha diversity</a></li>
   <li><a href="#beta-diversity" id="toc-beta-diversity" class="nav-link" data-scroll-target="#beta-diversity">Beta diversity</a></li>
   <li><a href="#composizione-della-comunità-e-rda" id="toc-composizione-della-comunità-e-rda" class="nav-link" data-scroll-target="#composizione-della-comunità-e-rda">Composizione della comunità e RDA</a></li>
-  <li><a href="#nota-finale" id="toc-nota-finale" class="nav-link" data-scroll-target="#nota-finale">Nota finale</a></li>
   </ul></li>
   <li><a href="#sea4blue-project-1" id="toc-sea4blue-project-1" class="nav-link" data-scroll-target="#sea4blue-project-1">SEA4BLUE Project</a>
   <ul class="collapse">
@@ -196,7 +195,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#alpha-diversity-1" id="toc-alpha-diversity-1" class="nav-link" data-scroll-target="#alpha-diversity-1">Alpha diversity</a></li>
   <li><a href="#beta-diversity-1" id="toc-beta-diversity-1" class="nav-link" data-scroll-target="#beta-diversity-1">Beta diversity</a></li>
   <li><a href="#community-composition-and-rda" id="toc-community-composition-and-rda" class="nav-link" data-scroll-target="#community-composition-and-rda">Community composition and RDA</a></li>
-  <li><a href="#final-note" id="toc-final-note" class="nav-link" data-scroll-target="#final-note">Final note</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EBosi/phd-microbiome-2026/blob/main/biostatistica.qmd" class="toc-action"><i class="bi bi-github"></i>Mostra il codice</a></li><li><a href="https://github.com/EBosi/phd-microbiome-2026/issues/new" class="toc-action"><i class="bi empty"></i>Segnala un problema</a></li></ul></div></nav>
@@ -237,10 +235,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><img src="figures/intro/Sea4Blue_page-0001.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:86.0%"></p>
 </figure>
 </div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Quale informazione del transetto vi aiuta a capire il disegno sperimentale?</p>
+</div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="figures/intro/gel.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Quale passaggio del workflow di laboratorio vi sembra collegato a questa immagine?</p>
 </div>
 <hr>
 <section id="i-dati-che-useremo-sono-già-stati-pre-processati-con-dada2-e-la-tassonomia-è-stata-assegnata-con-silva-db" class="level2">
@@ -290,14 +294,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Carichiamo le funzioni helper salvate nello zip del dataset</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"biostatistics_helpers.R"</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Carichiamo l'oggetto phyloseq già pronto</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"phyloseq.rds"</span>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Controlliamo che tutto sia a posto</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>ps</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_data</span>(ps)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">t</span>(<span class="fu">otu_table</span>(ps)))</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>zone_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">ANW =</span> <span class="st">"#4280fc"</span>, <span class="at">ANC =</span> <span class="st">"#ffb452"</span>, <span class="at">ANE =</span> <span class="st">"#f7170a"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Carichiamo l'oggetto phyloseq già pronto</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"phyloseq.rds"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Controlliamo che tutto sia a posto</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>ps</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_data</span>(ps)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">t</span>(<span class="fu">otu_table</span>(ps)))</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -373,6 +378,12 @@ Consiglio
 <p><img src="figures/biostatistica/02-transect.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
 </div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Le tre zone sembrano disposte in modo netto o lungo un gradiente continuo?</p>
+</div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Le tre zone sembrano disposte in modo netto o lungo un gradiente continuo?</p>
+</div>
 </section>
 <section id="profondità-di-sequenziamento-e-rarefaction-curves" class="level2">
 <h2 class="anchored" data-anchor-id="profondità-di-sequenziamento-e-rarefaction-curves">Profondità di sequenziamento e rarefaction curves</h2>
@@ -389,13 +400,19 @@ Consiglio
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(depth_df, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(SampleName, Reads), <span class="at">y =</span> Reads, <span class="at">fill =</span> Zone)) <span class="sc">+</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">ANW =</span> <span class="st">"#4280fc"</span>, <span class="at">ANC =</span> <span class="st">"#ffb452"</span>, <span class="at">ANE =</span> <span class="st">"#f7170a"</span>), <span class="at">na.translate =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> zone_colors, <span class="at">na.translate =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Reads"</span>, <span class="at">title =</span> <span class="st">"Library size"</span>) <span class="sc">+</span></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="figures/biostatistica/01-depth.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Quali campioni hanno una profondità di sequenziamento più bassa e come li trattereste?</p>
+</div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Quali campioni hanno una profondità di sequenziamento più bassa e come li trattereste?</p>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fissiamo il seed per rendere riproducibile il downsampling</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
@@ -440,13 +457,19 @@ Consiglio
 <span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"black"</span>,</span>
 <span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
 <span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">ANW =</span> <span class="st">"#4280fc"</span>, <span class="at">ANC =</span> <span class="st">"#ffb452"</span>, <span class="at">ANE =</span> <span class="st">"#f7170a"</span>)) <span class="sc">+</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> zone_colors) <span class="sc">+</span></span>
 <span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Profondità"</span>, <span class="at">y =</span> <span class="st">"ASV osservate"</span>, <span class="at">title =</span> <span class="st">"Rarefaction Curves"</span>) <span class="sc">+</span></span>
 <span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="figures/biostatistica/03-rarefaction.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Le curve raggiungono un plateau simile tra i campioni o no?</p>
+</div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Le curve raggiungono un plateau simile tra i campioni o no?</p>
 </div>
 </section>
 <section id="normalizzazione" class="level2">
@@ -487,7 +510,7 @@ Consiglio
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>), <span class="at">ggside.panel.scale.y =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> Zone), <span class="at">alpha =</span> <span class="fl">0.45</span>) <span class="sc">+</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#4280fc"</span>, <span class="st">"#ffb452"</span>, <span class="st">"#f7170a"</span>, <span class="st">"#000000"</span>)) <span class="sc">+</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(zone_colors, <span class="at">Observed =</span> <span class="st">"black"</span>)) <span class="sc">+</span></span>
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ysideboxplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Zone, <span class="at">y =</span> value, <span class="at">colour =</span> Zone), <span class="at">orientation =</span> <span class="st">"x"</span>) <span class="sc">+</span></span>
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_ysidex_discrete</span>() <span class="sc">+</span></span>
 <span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">colour =</span> variable), <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
@@ -496,6 +519,9 @@ Consiglio
 <figure class="figure">
 <p><img src="figures/biostatistica/05-alpha-richness.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="Cosa osservate?">
+<p>La richness cambia in modo coerente con la posizione lungo il transetto?</p>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Salviamo la richness nei metadata: ci servirà dopo</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_data</span>(phyloseq_obj_css)<span class="sc">$</span>Richness <span class="ot">&lt;-</span> p1<span class="sc">$</span>data<span class="sc">$</span>value</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
@@ -508,7 +534,7 @@ Consiglio
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Disegniamo la PCoA con le etichette</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_ordination</span>(phyloseq_obj_css, otu.ord, <span class="at">color =</span> <span class="st">"Zone"</span>, <span class="at">axes =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)) <span class="sc">+</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#4280fc"</span>, <span class="st">"#ffb452"</span>, <span class="st">"#f7170a"</span>)) <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> zone_colors) <span class="sc">+</span></span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> SampleName), <span class="at">max.overlaps =</span> <span class="cn">Inf</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Beta Diversity based on Bray-Curtis"</span>) <span class="sc">+</span></span>
@@ -542,6 +568,12 @@ Consiglio
 <p><img src="figures/biostatistica/08-composition-all.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:95.0%"></p>
 </figure>
 </div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Quali gruppi tassonomici dominano e cambiano di più tra le zone?</p>
+</div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Quali gruppi tassonomici dominano e cambiano di più tra le zone?</p>
+</div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stesso grafico, ma con i top genera evidenziati</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> data_glom, <span class="fu">aes</span>(<span class="at">x =</span> Sample, <span class="at">y =</span> Abundance, <span class="at">fill =</span> Genus)) <span class="sc">+</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="sc">~</span>Zone, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
@@ -559,7 +591,7 @@ Consiglio
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> SampleName, <span class="at">color =</span> Zone), <span class="at">max.overlaps =</span> <span class="cn">Inf</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#4280fc"</span>, <span class="st">"#ffb452"</span>, <span class="st">"#f7170a"</span>))</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> zone_colors)</span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggiungiamo le frecce delle variabili esplicative</span></span>
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>arrowhead <span class="ot">&lt;-</span> grid<span class="sc">::</span><span class="fu">arrow</span>(<span class="at">length =</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="fl">0.05</span>, <span class="st">"npc"</span>))</span>
@@ -582,10 +614,12 @@ Consiglio
 <p><img src="figures/biostatistica/09-rda.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
 </div>
-</section>
-<section id="nota-finale" class="level2">
-<h2 class="anchored" data-anchor-id="nota-finale">Nota finale</h2>
-<p>Questo tutorial resta statico apposta: il codice è mostrato per essere letto e discusso, mentre le figure sono già pronte. In aula, il punto è capire la sequenza logica dell’analisi, non perdere tempo con output rumorosi o blocchi troppo automatici.</p>
+<div class="callout-question" title="Cosa osservate?">
+<p>Le frecce della RDA vi suggeriscono una relazione più forte con la longitudine o con la richness?</p>
+</div>
+<div class="callout-question" title="Cosa osservate?">
+<p>Le frecce della RDA vi suggeriscono una relazione più forte con la longitudine o con la richness?</p>
+</div>
 </section>
 </section>
 <section id="sea4blue-project-1" class="level1 lang-en">
@@ -598,10 +632,16 @@ Consiglio
 <p><img src="figures/intro/Sea4Blue_page-0001.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:86.0%"></p>
 </figure>
 </div>
+<div class="callout-question" title="What do you notice?">
+<p>Which element of the transect helps you understand the experimental design?</p>
+</div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="figures/intro/gel.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="What do you notice?">
+<p>Which step of the laboratory workflow do you think is connected to this image?</p>
 </div>
 <hr>
 <section id="the-data-we-will-use-have-already-been-pre-processed-with-dada2-and-the-taxonomy-was-assigned-using-silva-db" class="level2">
@@ -654,14 +694,15 @@ Consiglio
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the helper functions saved inside the dataset zip</span></span>
 <span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"biostatistics_helpers.R"</span>)</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the ready-to-use phyloseq object</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"phyloseq.rds"</span>)</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick sanity checks</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>ps</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_data</span>(ps)</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">t</span>(<span class="fu">otu_table</span>(ps)))</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>zone_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">ANW =</span> <span class="st">"#4280fc"</span>, <span class="at">ANC =</span> <span class="st">"#ffb452"</span>, <span class="at">ANE =</span> <span class="st">"#f7170a"</span>)</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the ready-to-use phyloseq object</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"phyloseq.rds"</span>)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick sanity checks</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>ps</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_data</span>(ps)</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">t</span>(<span class="fu">otu_table</span>(ps)))</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -737,6 +778,9 @@ Consiglio
 <p><img src="figures/biostatistica/02-transect.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
 </div>
+<div class="callout-question" title="What do you notice?">
+<p>Do the three zones look clearly separated or arranged along a continuous gradient?</p>
+</div>
 </section>
 <section id="sequencing-depth-and-rarefaction-curves" class="level2">
 <h2 class="anchored" data-anchor-id="sequencing-depth-and-rarefaction-curves">Sequencing depth and rarefaction curves</h2>
@@ -753,13 +797,16 @@ Consiglio
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(depth_df, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(SampleName, Reads), <span class="at">y =</span> Reads, <span class="at">fill =</span> Zone)) <span class="sc">+</span></span>
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">ANW =</span> <span class="st">"#4280fc"</span>, <span class="at">ANC =</span> <span class="st">"#ffb452"</span>, <span class="at">ANE =</span> <span class="st">"#f7170a"</span>), <span class="at">na.translate =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> zone_colors, <span class="at">na.translate =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Reads"</span>, <span class="at">title =</span> <span class="st">"Library size"</span>) <span class="sc">+</span></span>
 <span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="figures/biostatistica/01-depth.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="What do you notice?">
+<p>Which samples have lower sequencing depth, and how would you treat them?</p>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fix the seed to keep the downsampling reproducible</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
@@ -804,13 +851,16 @@ Consiglio
 <span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"black"</span>,</span>
 <span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
 <span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">ANW =</span> <span class="st">"#4280fc"</span>, <span class="at">ANC =</span> <span class="st">"#ffb452"</span>, <span class="at">ANE =</span> <span class="st">"#f7170a"</span>)) <span class="sc">+</span></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> zone_colors) <span class="sc">+</span></span>
 <span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Depth"</span>, <span class="at">y =</span> <span class="st">"Observed ASVs"</span>, <span class="at">title =</span> <span class="st">"Rarefaction Curves"</span>) <span class="sc">+</span></span>
 <span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="figures/biostatistica/03-rarefaction.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="What do you notice?">
+<p>Do the curves reach a similar plateau across samples or not?</p>
 </div>
 </section>
 <section id="normalization" class="level2">
@@ -851,7 +901,7 @@ Consiglio
 <span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>), <span class="at">ggside.panel.scale.y =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
 <span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> Zone), <span class="at">alpha =</span> <span class="fl">0.45</span>) <span class="sc">+</span></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#4280fc"</span>, <span class="st">"#ffb452"</span>, <span class="st">"#f7170a"</span>, <span class="st">"#000000"</span>)) <span class="sc">+</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(zone_colors, <span class="at">Observed =</span> <span class="st">"black"</span>)) <span class="sc">+</span></span>
 <span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ysideboxplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Zone, <span class="at">y =</span> value, <span class="at">colour =</span> Zone), <span class="at">orientation =</span> <span class="st">"x"</span>) <span class="sc">+</span></span>
 <span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_ysidex_discrete</span>() <span class="sc">+</span></span>
 <span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">colour =</span> variable), <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
@@ -860,6 +910,9 @@ Consiglio
 <figure class="figure">
 <p><img src="figures/biostatistica/05-alpha-richness.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="What do you notice?">
+<p>Does richness change in a way that follows the transect position?</p>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save richness in the metadata for later use</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_data</span>(phyloseq_obj_css)<span class="sc">$</span>Richness <span class="ot">&lt;-</span> p1<span class="sc">$</span>data<span class="sc">$</span>value</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
@@ -872,7 +925,7 @@ Consiglio
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw the PCoA with labels</span></span>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_ordination</span>(phyloseq_obj_css, otu.ord, <span class="at">color =</span> <span class="st">"Zone"</span>, <span class="at">axes =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)) <span class="sc">+</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#4280fc"</span>, <span class="st">"#ffb452"</span>, <span class="st">"#f7170a"</span>)) <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> zone_colors) <span class="sc">+</span></span>
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> SampleName), <span class="at">max.overlaps =</span> <span class="cn">Inf</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Beta Diversity based on Bray-Curtis"</span>) <span class="sc">+</span></span>
@@ -881,6 +934,9 @@ Consiglio
 <figure class="figure">
 <p><img src="figures/biostatistica/06-pcoa-bray.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="Interpretation question">
+<p>Looking at alpha and beta diversity together, which samples seem most different from the others along the transect?</p>
 </div>
 <div class="callout-question" title="Interpretation question">
 <p>Looking at alpha and beta diversity together, which samples seem most different from the others along the transect? Does the pattern look more driven by geographic zone or by one specific sample?</p>
@@ -906,6 +962,9 @@ Consiglio
 <p><img src="figures/biostatistica/08-composition-all.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:95.0%"></p>
 </figure>
 </div>
+<div class="callout-question" title="What do you notice?">
+<p>Which taxonomic groups dominate, and which ones change most between zones?</p>
+</div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Same plot, highlighting the top genera</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> data_glom, <span class="fu">aes</span>(<span class="at">x =</span> Sample, <span class="at">y =</span> Abundance, <span class="at">fill =</span> Genus)) <span class="sc">+</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="sc">~</span>Zone, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
@@ -916,6 +975,9 @@ Consiglio
 <figure class="figure">
 <p><img src="figures/biostatistica/08-composition-top.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:95.0%"></p>
 </figure>
+</div>
+<div class="callout-question" title="What do you notice?">
+<p>Do the top genera help explain the separation you saw in the ordination?</p>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepariamo la tabella minima della richness e calcoliamo la RDA con un helper</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>alpha_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Sample =</span> p1<span class="sc">$</span>data<span class="sc">$</span>samples, <span class="at">Observed =</span> p1<span class="sc">$</span>data<span class="sc">$</span>value)</span>
@@ -928,7 +990,7 @@ Consiglio
 <span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> SampleName, <span class="at">color =</span> Zone), <span class="at">max.overlaps =</span> <span class="cn">Inf</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#4280fc"</span>, <span class="st">"#ffb452"</span>, <span class="st">"#f7170a"</span>))</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> zone_colors)</span>
 <span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Add arrows for explanatory variables</span></span>
 <span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>arrowhead <span class="ot">&lt;-</span> grid<span class="sc">::</span><span class="fu">arrow</span>(<span class="at">length =</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="fl">0.05</span>, <span class="st">"npc"</span>))</span>
@@ -951,10 +1013,9 @@ Consiglio
 <p><img src="figures/biostatistica/09-rda.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
 </figure>
 </div>
-</section>
-<section id="final-note" class="level2">
-<h2 class="anchored" data-anchor-id="final-note">Final note</h2>
-<p>This tutorial is intentionally static: the code is there to be read and discussed, while the figures are already ready to use. The point in class is to understand the analytical sequence, not to spend time on noisy output or overly automated steps.</p>
+<div class="callout-question" title="What do you notice?">
+<p>Do the RDA arrows suggest a stronger link with longitude or with richness?</p>
+</div>
 </section>
 </section>
 
