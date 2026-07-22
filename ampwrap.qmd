@@ -16,7 +16,7 @@ For preprocessing we use AmpWrap, the Illumina module of the workflow designed t
 :::
 
 ```bash
-conda activate metabarcoding-phd
+conda activate ampwrap
 ampwrap --help
 ampwrap short --help
 ```
@@ -55,7 +55,7 @@ flowchart LR
 ## Help del comando / Command help
 
 ```bash
-conda activate metabarcoding-phd
+conda activate ampwrap
 
 cd /home/aula
 
