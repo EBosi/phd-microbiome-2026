@@ -4,6 +4,7 @@ subtitle: "Una lezione pratica di 60 minuti per chi parte da zero"
 description: "Terminale, percorsi, organizzazione dei file, controllo dei FASTQ compressi, pipe, log e ambienti Conda."
 ---
 
+::: {.lang-it}
 Bash non è una lista di comandi da imparare a memoria. È un modo preciso e riproducibile per dire al computer **dove sono i dati**, **quale programma deve usarli** e **dove devono finire i risultati**.
 
 Questa lezione dura circa **60 minuti** ed è pensata per chi non ha mai usato un terminale. Lavoreremo su un piccolo progetto di esempio con file FASTQ compressi, organizzato come un'analisi reale.
@@ -748,3 +749,379 @@ Per approfondire:
 - [SeqKit documentation](https://bioinf.shenwei.me/seqkit/)
 
 La struttura didattica di questa lezione prende ispirazione dal percorso introduttivo di Happy Belly Bioinformatics, adattandolo agli obiettivi e ai file tipici di un workflow di metabarcoding.
+:::
+
+::: {.lang-en}
+Bash is not a list of commands to memorize. It is a precise and reproducible way to tell the computer **where the data are**, **which program should use them**, and **where the results should go**.
+
+This lesson takes about **60 minutes** and is designed for people who have never used a terminal before. We work on a small example project with compressed FASTQ files, organized like a real analysis.
+
+## Lesson goals
+
+By the end of the lesson, you should be able to:
+
+- recognize terminal, shell, prompt, command, option, and argument;
+- move around the filesystem with `pwd`, `ls`, and `cd`;
+- create and organize folders with `mkdir`, `cp`, and `mv`;
+- inspect text files and compressed `FASTQ.gz` files without opening them fully;
+- select multiple files with wildcards and connect commands with a pipe;
+- save output and error messages to a log file;
+- activate the course Conda environment and find program help.
+
+## Suggested timing
+
+| Minutes | Topic |
+|---:|---|
+| 0–5 | Terminal, Bash, and command anatomy |
+| 5–15 | Directories, paths, and navigation |
+| 15–25 | Creating, copying, and moving files/folders |
+| 25–37 | Inspecting text and compressed FASTQ files |
+| 37–50 | Wildcards, pipes, redirection, and logs |
+| 50–55 | Conda and program help |
+| 55–60 | Final exercise |
+
+::: {.callout-note title="How to use this page"}
+Follow sections 1 to 7 in order. The quick reference and the error checklist are meant to stay nearby during practice. The preparation block only needs to be run once.
+:::
+
+## Before you start
+
+Open the **Ubuntu terminal**. On Windows, use the Ubuntu terminal in WSL2, not PowerShell.
+
+The code blocks below contain only the commands you should type. Do not add `$` or `>` before a command.
+
+::: {.callout-important title="One rule matters most"}
+Run one block at a time and always read the output before continuing.
+:::
+
+### Five keys you will use often
+
+| Key | Effect |
+|---|---|
+| `Tab` | completes file and folder names; pressing it twice shows alternatives |
+| `Up arrow` | recalls previous commands |
+| `Ctrl+C` | stops the current command or cancels an incomplete line |
+| `Ctrl+L` | clears the terminal view without deleting files |
+| `q` | exits viewers such as `less` and `man` |
+
+---
+
+## 0. Prepare the practice project
+
+This setup takes about one minute and can be done by the instructor before class. Copy and paste the whole block. It creates a project in your Linux home folder and four small compressed FASTQ files. You do not need to understand every character yet.
+
+```bash
+mkdir -p "$HOME/microbiome-bash-lab"/{input,metadata,output,logs,notes}
+cd "$HOME/microbiome-bash-lab"
+
+printf '@sample_A_read_1/1\nACGTACGTACGT\n+\nIIIIIIIIIIII\n@sample_A_read_2/1\nTGCATGCATGCA\n+\nIIIIIIIIIIII\n' \
+  | gzip > input/sample_A_R1.fastq.gz
+
+printf '@sample_A_read_1/2\nTACGTACGTACG\n+\nIIIIIIIIIIII\n@sample_A_read_2/2\nCATGCATGCATG\n+\nIIIIIIIIIIII\n' \
+  | gzip > input/sample_A_R2.fastq.gz
+
+printf '@sample_B_read_1/1\nAAAACCCCGGGG\n+\nIIIIIIIIIIII\n@sample_B_read_2/1\nTTTTGGGGCCCC\n+\nIIIIIIIIIIII\n' \
+  | gzip > input/sample_B_R1.fastq.gz
+
+printf '@sample_B_read_1/2\nCCCCGGGGTTTT\n+\nIIIIIIIIIIII\n@sample_B_read_2/2\nGGGGCCCCAAAA\n+\nIIIIIIIIIIII\n' \
+  | gzip > input/sample_B_R2.fastq.gz
+
+printf 'sample\tgroup\nsample_A\tcontrol\nsample_B\ttreatment\n' \
+  > metadata/samples.tsv
+
+printf 'Project created in: %s\n' "$PWD"
+ls -R
+```
+
+The resulting structure is:
+
+```text
+microbiome-bash-lab/
+├── input/       # raw data: do not modify them
+├── metadata/    # information about samples
+├── output/      # analysis results
+├── logs/        # command and error logs
+└── notes/       # notes and working copies
+```
+
+::: {.callout-tip title="Good practice"}
+Keep the original data in `input/` and write results and temporary files somewhere else. A workflow is easier to control when input and output are not mixed together.
+:::
+
+---
+
+## 1. Terminal, shell, and Bash
+
+The **terminal** is the window where we type. The **shell** interprets what we type. **Bash** is the shell used in this lesson.
+
+A terminal line can look like this:
+
+```text
+(metabarcoding-phd) username@computer:~/microbiome-bash-lab$
+```
+
+The main parts are:
+
+- `(metabarcoding-phd)`: active Conda environment;
+- `username@computer`: user and computer;
+- `~/microbiome-bash-lab`: current directory;
+- `$`: the terminal is ready for a command.
+
+The prompt is shown by the terminal: **do not type it again**.
+
+### Command anatomy
+
+The most common structure is:
+
+```text
+command [options] [arguments]
+```
+
+Example:
+
+```bash
+ls -lh input/
+```
+
+| Part | Role |
+|---|---|
+| `ls` | command: list a directory |
+| `-l` | option: long listing |
+| `-h` | option: human-readable sizes |
+| `input/` | argument: the directory to inspect |
+
+Spaces separate parts of the command. Bash is case-sensitive: `Input`, `input`, and `INPUT` are different names.
+
+Try three simple commands:
+
+```bash
+date
+whoami
+echo "I am using Bash"
+```
+
+Lines starting with `#` are comments and are not executed:
+
+```bash
+# This is a comment
+echo "This one is executed"
+```
+
+### You do not need to memorize everything
+
+Many programs show a guide with `--help` or `-h`:
+
+```bash
+ls --help | less
+```
+
+Scroll with the arrows and press `q` to exit. For system commands, a manual page is often available:
+
+```bash
+man ls
+```
+
+---
+
+## 2. Where am I? What is here? How do I move?
+
+Three commands answer the basic questions:
+
+| Question | Command |
+|---|---|
+| Where am I? | `pwd` |
+| What is here? | `ls` |
+| How do I move? | `cd` |
+
+Go back to the project root and inspect the directory:
+
+```bash
+cd "$HOME/microbiome-bash-lab"
+pwd
+ls
+ls -lah
+ls -lh input/
+```
+
+### Absolute and relative paths
+
+A **path** is the address of a file or directory.
+
+| Symbol | Meaning |
+|---|---|
+| `/` | filesystem root |
+| `~` or `$HOME` | your home directory |
+| `.` | current directory |
+| `..` | parent directory |
+
+An **absolute path** starts from `/` or the home folder:
+
+```text
+/home/username/microbiome-bash-lab/input/sample_A_R1.fastq.gz
+```
+
+A **relative path** starts from the current directory:
+
+```text
+input/sample_A_R1.fastq.gz
+```
+
+Relative paths only work if you are in the expected directory. That is why `pwd` is such an important check.
+
+### Guided navigation exercise
+
+```bash
+cd "$HOME/microbiome-bash-lab"
+pwd
+cd input
+pwd
+ls
+cd ..
+pwd
+cd -
+pwd
+```
+
+### Create, copy, move, and rename
+
+Create a directory:
+
+```bash
+mkdir results
+mkdir -p output/fastqc
+```
+
+Copy a file:
+
+```bash
+cp metadata/samples.tsv notes/samples_backup.tsv
+```
+
+Move or rename:
+
+```bash
+mv notes/samples_backup.tsv notes/samples_info.tsv
+```
+
+Safer versions ask for confirmation before overwriting:
+
+```bash
+cp -i metadata/samples.tsv notes/samples_info.tsv
+mv -i notes/samples_info.tsv notes/samples.tsv
+```
+
+### Inspect text and compressed FASTQ files
+
+Look at the first lines of a text file:
+
+```bash
+head -n 5 metadata/samples.tsv
+```
+
+Count lines:
+
+```bash
+wc -l metadata/samples.tsv
+```
+
+Identify a file:
+
+```bash
+file input/sample_A_R1.fastq.gz
+```
+
+Read a compressed FASTQ without modifying it:
+
+```bash
+gzip -cd input/sample_A_R1.fastq.gz | head
+```
+
+### Wildcards, pipes, redirection, and logs
+
+Use wildcards to select multiple files:
+
+```bash
+ls input/*.fastq.gz
+```
+
+Pass the output of one command to the next:
+
+```bash
+gzip -cd input/sample_A_R1.fastq.gz | head -n 8
+```
+
+Write output to a file:
+
+```bash
+ls -lh input/ > logs/input_listing.txt
+```
+
+Show and save at the same time:
+
+```bash
+ls -lh input/ | tee logs/input_listing.txt
+```
+
+### Conda and program help
+
+```bash
+conda activate metabarcoding-phd
+command -v seqkit
+seqkit --help | head
+```
+
+## Final exercise
+
+Check a project before starting the AmpWrap workflow:
+
+```bash
+cd "$HOME/microbiome-bash-lab"
+ls input
+ls metadata
+wc -l metadata/samples.tsv
+```
+
+## Quick command sheet
+
+| Command | Use |
+|---|---|
+| `pwd` | print the current directory |
+| `ls -lah` | list files, hidden items, and readable sizes |
+| `cd path` | move into a directory |
+| `cd ..` | go up one level |
+| `cd` or `cd ~` | go back home |
+| `cd -` | return to the previous directory |
+| `mkdir -p path` | create a directory and missing parent folders |
+| `cp -i source dest` | copy and ask before overwriting |
+| `mv -i source dest` | move or rename and ask before overwriting |
+| `head -n N file` | show the first `N` lines |
+| `tail -n N file` | show the last `N` lines |
+| `less file` | inspect a file; exit with `q` |
+| `wc -l file` | count lines |
+| `file filename` | identify the file type |
+| `gzip -cd file.gz` | decompress to standard output without changing the original |
+| `*` | wildcard: zero or more characters |
+| `?` | wildcard: one character |
+| `command1 \| command2` | send the first command's output to the second |
+| `>` | write and overwrite a file |
+| `>>` | append to a file |
+| `2>&1` | merge error and normal output |
+| `tee file.log` | show and save output |
+| `command -v program` | show which executable will be used |
+| `program --help` | display program help |
+| `Ctrl+C` | stop or cancel |
+| `Tab` | complete and verify names and paths |
+
+## What we did not cover
+
+In one hour it is not realistic to go deep into scripting, `for` loops, complex variables, `grep`, `awk`, `sed`, permissions, remote servers, and process management. Those topics become useful after navigation, paths, pipes, and logs are solid.
+
+For further reading:
+
+- [Unix Crash Course — Happy Belly Bioinformatics](https://astrobiomike.github.io/unix/)
+- [GNU Bash Reference Manual](https://www.gnu.org/software/bash/manual/)
+- [GNU Coreutils Manual](https://www.gnu.org/software/coreutils/manual/)
+- [SeqKit documentation](https://bioinf.shenwei.me/seqkit/)
+
+The teaching structure of this lesson is inspired by the introductory path from Happy Belly Bioinformatics, adapted to the goals and files typical of a metabarcoding workflow.
+:::

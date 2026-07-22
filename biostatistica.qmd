@@ -7,21 +7,46 @@ page-layout: full
 ::: {.lang-it}
 # SEA4BLUE Project
 
-Il materiale di questa pagina segue il flusso della lezione originale, ma in forma statica: leggiamo l'oggetto `phyloseq`, osserviamo i grafici già preparati e facciamo i passaggi uno alla volta.
+I campioni SEA4BLUE sono stati raccolti nell'Oceano Atlantico settentrionale, dalla Florida alle Azzorre, lungo un transetto longitudinale, tra maggio e giugno 2022. La raccolta è stata fatta con l'eDNA Citizen Scientist Sampler e il Self-preserving eDNA Filter. Ogni campione corrisponde a circa 8–10 litri di acqua filtrata. I filtri sono stati conservati a temperatura ambiente e il DNA è stato estratto con il kit DNeasy PowerWater di Qiagen.
 
-Prima di aprire RStudio, scaricate il dataset e decomprimetelo nella vostra cartella `Downloads`.
+Il gene 16S rRNA, regione V4, è stato amplificato partendo da 5 ng di DNA per campione.
 
 [Scarica Sea4Blue.zip](downloads/Sea4Blue.zip){.btn .btn-primary download="Sea4Blue.zip"}
 
-![](figures/intro/Sea4Blue_page-0001.jpg){fig-align="center" width="85%"}
+![](figures/intro/Sea4Blue_page-0001.jpg){fig-align="center" width="86%"}
 
-![](figures/intro/gel.png){fig-align="center" width="70%"}
+![](figures/intro/gel.png){fig-align="center" width="65%"}
 
-## Da dove arrivano i dati
+---
 
-I campioni provengono dal transetto oceanico SEA4BLUE. L'idea è semplice: seguire la comunità microbica lungo la rotta, confrontare le zone del transetto e vedere come cambiano ricchezza, composizione e ordinamento.
+## I dati che useremo sono già stati pre-processati con DADA2 e la tassonomia è stata assegnata con Silva DB
 
-## Come partire in R
+Che cosa significa "pre-processing"?
+
+- ispezione dei profili di qualità;
+- rimozione degli adaptor;
+- filtro di qualità e trimming;
+- inferenza delle ASV;
+- merge delle paired reads;
+- rimozione dei chimerici.
+
+Che cosa produce DADA2?
+
+- tabella ASV;
+- sequenze rappresentative.
+
+Che cosa serve a `phyloseq`?
+
+- tabella ASV;
+- sequenze rappresentative;
+- tabella tassonomica;
+- metadata.
+
+## Analisi in R
+
+Questa pagina è volutamente statica: il codice serve da guida, ma i grafici sono già pronti e mostrati nel flusso della lezione.
+
+Prima di aprire RStudio, scaricate il dataset e decomprimetelo nella vostra cartella `Downloads`.
 
 Se avete estratto lo zip in `~/Downloads/Sea4Blue`, la working directory deve puntare lì prima di leggere il file `.rds`.
 
@@ -54,6 +79,21 @@ head(t(otu_table(ps)))
 ::: {.callout-tip}
 Se avete salvato il dataset in un'altra posizione, cambiate solo il percorso di `setwd()`. Per esempio: `setwd("~/Desktop/Sea4Blue")`.
 :::
+
+### Controllo rapido dell'oggetto `phyloseq`
+
+Se volete capire subito cosa state caricando, guardate queste tre parti dell'oggetto:
+
+```r
+# Metadata dei campioni
+sample_data(ps)
+
+# Tabella dei taxa
+head(tax_table(ps))
+
+# Tabella di abbondanza
+head(t(otu_table(ps)))
+```
 
 ## Mappa del transetto
 
@@ -370,19 +410,46 @@ Questo tutorial resta statico apposta: il codice è mostrato per essere letto e 
 ::: {.lang-en}
 # SEA4BLUE Project
 
-This page follows the original lesson flow, but in a static format: we inspect the ready-made `phyloseq` object, read the plots, and go step by step.
+SEA4BLUE samples were collected in the North Atlantic, from Florida to the Azores, along a longitudinal transect during May and June 2022. They were collected with the eDNA Citizen Scientist Sampler and the Self-preserving eDNA Filter. Each sample corresponds to about 8–10 liters of filtered seawater. The filters were stored at room temperature, and DNA was extracted with the Qiagen DNeasy PowerWater kit.
 
-Before opening RStudio, download the dataset and unzip it into your `Downloads` folder.
+The V4 region of the 16S rRNA gene was amplified starting from 5 ng of DNA per sample.
 
 [Download Sea4Blue.zip](downloads/Sea4Blue.zip){.btn .btn-primary download="Sea4Blue.zip"}
 
-![](figures/intro/Sea4Blue_page-0001.jpg){fig-align="center" width="85%"}
+![](figures/intro/Sea4Blue_page-0001.jpg){fig-align="center" width="86%"}
 
-![](figures/intro/gel.png){fig-align="center" width="70%"}
+![](figures/intro/gel.png){fig-align="center" width="65%"}
 
-## Where the data come from
+---
 
-The samples come from the SEA4BLUE ocean transect. The goal is simple: follow the microbial community along the route, compare the transect zones, and inspect how richness, composition, and ordination change.
+## The data we will use have already been pre-processed with DADA2 and the taxonomy was assigned using Silva DB
+
+What does "pre-processing" include?
+
+- inspect read quality profiles;
+- remove adapters;
+- quality filter and trim;
+- infer ASVs;
+- merge paired reads;
+- remove chimeras.
+
+What are the outputs of DADA2?
+
+- ASV table;
+- representative sequences.
+
+What are the inputs for `phyloseq`?
+
+- ASV table;
+- representative sequences;
+- taxonomy table;
+- metadata.
+
+## Analysis in R
+
+This page is intentionally static: the code is there to guide the discussion, while the figures are already prepared and shown in sequence.
+
+Before opening RStudio, download the dataset and unzip it into your `Downloads` folder.
 
 ## Getting started in R
 
@@ -417,6 +484,21 @@ head(t(otu_table(ps)))
 ::: {.callout-tip}
 If you stored the dataset somewhere else, change only the `setwd()` path. For example: `setwd("~/Desktop/Sea4Blue")`.
 :::
+
+### Quick check of the `phyloseq` object
+
+If you want to see immediately what was loaded, inspect these three components:
+
+```r
+# Sample metadata
+sample_data(ps)
+
+# Taxonomy table
+head(tax_table(ps))
+
+# Abundance table
+head(t(otu_table(ps)))
+```
 
 ## Transect map
 
