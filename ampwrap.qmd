@@ -63,7 +63,6 @@ La figura riassuntiva del flusso AmpWrap e la stessa che useremo a lezione per s
 ```bash
 conda activate ampwrap
 
-cd /home/aula
 
 ampwrap short --help
 ```
