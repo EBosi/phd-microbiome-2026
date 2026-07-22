@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Terminale, percorsi, organizzazione dei file, controllo dei FASTQ compressi, pipe, log e ambienti Conda.">
 
-<title>Bash essenziale – Metabarcoding PhD 2026</title>
+<title>Bash essenziale per il metabarcoding – Metabarcoding PhD 2026</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -165,16 +166,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">In questa pagina</h2>
    
   <ul>
-  <li><a href="#copiare-senza-perdere-loriginale-copying-without-losing-the-original" id="toc-copiare-senza-perdere-loriginale-copying-without-losing-the-original" class="nav-link active" data-scroll-target="#copiare-senza-perdere-loriginale-copying-without-losing-the-original">2. Copiare senza perdere l’originale / Copying without losing the original</a></li>
-  <li><a href="#copying-without-losing-the-original" id="toc-copying-without-losing-the-original" class="nav-link" data-scroll-target="#copying-without-losing-the-original">2. Copying without losing the original</a></li>
-  <li><a href="#leggere-un-fastq-compresso-reading-a-compressed-fastq" id="toc-leggere-un-fastq-compresso-reading-a-compressed-fastq" class="nav-link" data-scroll-target="#leggere-un-fastq-compresso-reading-a-compressed-fastq">3. Leggere un FASTQ compresso / Reading a compressed FASTQ</a></li>
-  <li><a href="#reading-a-compressed-fastq" id="toc-reading-a-compressed-fastq" class="nav-link" data-scroll-target="#reading-a-compressed-fastq">3. Reading a compressed FASTQ</a></li>
-  <li><a href="#pipe-e-redirezione-pipes-and-redirection" id="toc-pipe-e-redirezione-pipes-and-redirection" class="nav-link" data-scroll-target="#pipe-e-redirezione-pipes-and-redirection">4. Pipe e redirezione / Pipes and redirection</a></li>
-  <li><a href="#pipes-and-redirection" id="toc-pipes-and-redirection" class="nav-link" data-scroll-target="#pipes-and-redirection">4. Pipes and redirection</a></li>
-  <li><a href="#ambiente-del-corso-course-environment" id="toc-ambiente-del-corso-course-environment" class="nav-link" data-scroll-target="#ambiente-del-corso-course-environment">5. Ambiente del corso / Course environment</a></li>
-  <li><a href="#course-environment" id="toc-course-environment" class="nav-link" data-scroll-target="#course-environment">5. Course environment</a></li>
-  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
-  <li><a href="#checklist-1" id="toc-checklist-1" class="nav-link" data-scroll-target="#checklist-1">Checklist</a></li>
+  <li><a href="#obiettivi-della-lezione" id="toc-obiettivi-della-lezione" class="nav-link active" data-scroll-target="#obiettivi-della-lezione">Obiettivi della lezione</a></li>
+  <li><a href="#scaletta-indicativa" id="toc-scaletta-indicativa" class="nav-link" data-scroll-target="#scaletta-indicativa">Scaletta indicativa</a></li>
+  <li><a href="#prima-di-iniziare" id="toc-prima-di-iniziare" class="nav-link" data-scroll-target="#prima-di-iniziare">Prima di iniziare</a>
+  <ul class="collapse">
+  <li><a href="#cinque-tasti-che-userai-spesso" id="toc-cinque-tasti-che-userai-spesso" class="nav-link" data-scroll-target="#cinque-tasti-che-userai-spesso">Cinque tasti che userai spesso</a></li>
+  </ul></li>
+  <li><a href="#preparare-il-progetto-di-esercitazione" id="toc-preparare-il-progetto-di-esercitazione" class="nav-link" data-scroll-target="#preparare-il-progetto-di-esercitazione">0. Preparare il progetto di esercitazione</a></li>
+  <li><a href="#terminale-shell-e-bash" id="toc-terminale-shell-e-bash" class="nav-link" data-scroll-target="#terminale-shell-e-bash">1. Terminale, shell e Bash</a>
+  <ul class="collapse">
+  <li><a href="#anatomia-di-un-comando" id="toc-anatomia-di-un-comando" class="nav-link" data-scroll-target="#anatomia-di-un-comando">Anatomia di un comando</a></li>
+  <li><a href="#non-serve-memorizzare-tutto" id="toc-non-serve-memorizzare-tutto" class="nav-link" data-scroll-target="#non-serve-memorizzare-tutto">Non serve memorizzare tutto</a></li>
+  </ul></li>
+  <li><a href="#dove-sono-che-cosa-cè-qui-come-mi-sposto" id="toc-dove-sono-che-cosa-cè-qui-come-mi-sposto" class="nav-link" data-scroll-target="#dove-sono-che-cosa-cè-qui-come-mi-sposto">2. Dove sono? Che cosa c’è qui? Come mi sposto?</a>
+  <ul class="collapse">
+  <li><a href="#percorsi-assoluti-e-relativi" id="toc-percorsi-assoluti-e-relativi" class="nav-link" data-scroll-target="#percorsi-assoluti-e-relativi">Percorsi assoluti e relativi</a></li>
+  <li><a href="#esercizio-guidato-di-navigazione" id="toc-esercizio-guidato-di-navigazione" class="nav-link" data-scroll-target="#esercizio-guidato-di-navigazione">Esercizio guidato di navigazione</a></li>
+  </ul></li>
+  <li><a href="#creare-copiare-spostare-e-rinominare" id="toc-creare-copiare-spostare-e-rinominare" class="nav-link" data-scroll-target="#creare-copiare-spostare-e-rinominare">3. Creare, copiare, spostare e rinominare</a>
+  <ul class="collapse">
+  <li><a href="#creare-directory-con-mkdir" id="toc-creare-directory-con-mkdir" class="nav-link" data-scroll-target="#creare-directory-con-mkdir">Creare directory con <code>mkdir</code></a></li>
+  <li><a href="#copiare-con-cp" id="toc-copiare-con-cp" class="nav-link" data-scroll-target="#copiare-con-cp">Copiare con <code>cp</code></a></li>
+  <li><a href="#spostare-o-rinominare-con-mv" id="toc-spostare-o-rinominare-con-mv" class="nav-link" data-scroll-target="#spostare-o-rinominare-con-mv">Spostare o rinominare con <code>mv</code></a></li>
+  <li><a href="#sicurezza-cancellare-non-equivale-al-cestino" id="toc-sicurezza-cancellare-non-equivale-al-cestino" class="nav-link" data-scroll-target="#sicurezza-cancellare-non-equivale-al-cestino">Sicurezza: cancellare non equivale al cestino</a></li>
+  </ul></li>
+  <li><a href="#ispezionare-file-di-testo-e-fastq-compressi" id="toc-ispezionare-file-di-testo-e-fastq-compressi" class="nav-link" data-scroll-target="#ispezionare-file-di-testo-e-fastq-compressi">4. Ispezionare file di testo e FASTQ compressi</a>
+  <ul class="collapse">
+  <li><a href="#file-di-testo" id="toc-file-di-testo" class="nav-link" data-scroll-target="#file-di-testo">File di testo</a></li>
+  <li><a href="#riconoscere-i-file-compressi" id="toc-riconoscere-i-file-compressi" class="nav-link" data-scroll-target="#riconoscere-i-file-compressi">Riconoscere i file compressi</a></li>
+  <li><a href="#controllo-rapido-delle-coppie-r1r2" id="toc-controllo-rapido-delle-coppie-r1r2" class="nav-link" data-scroll-target="#controllo-rapido-delle-coppie-r1r2">Controllo rapido delle coppie R1/R2</a></li>
+  </ul></li>
+  <li><a href="#wildcard-pipe-redirezioni-e-log" id="toc-wildcard-pipe-redirezioni-e-log" class="nav-link" data-scroll-target="#wildcard-pipe-redirezioni-e-log">5. Wildcard, pipe, redirezioni e log</a>
+  <ul class="collapse">
+  <li><a href="#wildcard-selezionare-più-file" id="toc-wildcard-selezionare-più-file" class="nav-link" data-scroll-target="#wildcard-selezionare-più-file">Wildcard: selezionare più file</a></li>
+  <li><a href="#pipe-usare-loutput-di-un-comando-come-input-del-successivo" id="toc-pipe-usare-loutput-di-un-comando-come-input-del-successivo" class="nav-link" data-scroll-target="#pipe-usare-loutput-di-un-comando-come-input-del-successivo">Pipe: usare l’output di un comando come input del successivo</a></li>
+  <li><a href="#redirezione-scrivere-loutput-in-un-file" id="toc-redirezione-scrivere-loutput-in-un-file" class="nav-link" data-scroll-target="#redirezione-scrivere-loutput-in-un-file">Redirezione: scrivere l’output in un file</a></li>
+  <li><a href="#tee-mostrare-e-salvare-nello-stesso-momento" id="toc-tee-mostrare-e-salvare-nello-stesso-momento" class="nav-link" data-scroll-target="#tee-mostrare-e-salvare-nello-stesso-momento"><code>tee</code>: mostrare e salvare nello stesso momento</a></li>
+  </ul></li>
+  <li><a href="#ambiente-conda-e-help-dei-programmi" id="toc-ambiente-conda-e-help-dei-programmi" class="nav-link" data-scroll-target="#ambiente-conda-e-help-dei-programmi">6. Ambiente Conda e help dei programmi</a></li>
+  <li><a href="#esercizio-finale-controllo-di-un-progetto-prima-del-workflow" id="toc-esercizio-finale-controllo-di-un-progetto-prima-del-workflow" class="nav-link" data-scroll-target="#esercizio-finale-controllo-di-un-progetto-prima-del-workflow">7. Esercizio finale: controllo di un progetto prima del workflow</a></li>
+  <li><a href="#routine-di-controllo-prima-di-lanciare-ampwrap" id="toc-routine-di-controllo-prima-di-lanciare-ampwrap" class="nav-link" data-scroll-target="#routine-di-controllo-prima-di-lanciare-ampwrap">Routine di controllo prima di lanciare AmpWrap</a></li>
+  <li><a href="#errori-comuni-e-diagnosi-rapida" id="toc-errori-comuni-e-diagnosi-rapida" class="nav-link" data-scroll-target="#errori-comuni-e-diagnosi-rapida">Errori comuni e diagnosi rapida</a>
+  <ul class="collapse">
+  <li><a href="#la-routine-dei-30-secondi" id="toc-la-routine-dei-30-secondi" class="nav-link" data-scroll-target="#la-routine-dei-30-secondi">La routine dei 30 secondi</a></li>
+  </ul></li>
+  <li><a href="#scheda-rapida-dei-comandi" id="toc-scheda-rapida-dei-comandi" class="nav-link" data-scroll-target="#scheda-rapida-dei-comandi">Scheda rapida dei comandi</a></li>
+  <li><a href="#che-cosa-non-abbiamo-coperto" id="toc-che-cosa-non-abbiamo-coperto" class="nav-link" data-scroll-target="#che-cosa-non-abbiamo-coperto">Che cosa non abbiamo coperto</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EBosi/phd-microbiome-2026/blob/main/bash.qmd" class="toc-action"><i class="bi bi-github"></i>Mostra il codice</a></li><li><a href="https://github.com/EBosi/phd-microbiome-2026/issues/new" class="toc-action"><i class="bi empty"></i>Segnala un problema</a></li></ul></div></nav>
 </nav>
@@ -187,9 +224,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Bash essenziale</h1>
+<h1 class="title">Bash essenziale per il metabarcoding</h1>
+<p class="subtitle lead">Una lezione pratica di 60 minuti per chi parte da zero</p>
 </div>
 
+<div>
+  <div class="description">
+    Terminale, percorsi, organizzazione dei file, controllo dei FASTQ compressi, pipe, log e ambienti Conda.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -204,131 +247,883 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="lang-block lang-it">
-<section id="obiettivo" class="level2">
-<h2 class="anchored" data-anchor-id="obiettivo">Obiettivo</h2>
-<p>Imparare il minimo indispensabile per sapere dove ci troviamo, ispezionare i FASTQ e capire dove AmpWrap scrive i risultati.</p>
-</section>
-<section id="orientarsi-getting-oriented" class="level2">
-<h2 class="anchored" data-anchor-id="orientarsi-getting-oriented">1. Orientarsi / Getting oriented</h2>
-</section>
-</div>
-<div class="lang-block lang-en">
-<section id="goal" class="level2">
-<h2 class="anchored" data-anchor-id="goal">Goal</h2>
-<p>Learn the minimum needed to know where we are, inspect FASTQ files, and understand where AmpWrap writes its results.</p>
-</section>
-<section id="getting-oriented" class="level2">
-<h2 class="anchored" data-anchor-id="getting-oriented">1. Getting oriented</h2>
-</section>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="lang-block lang-it">
+<p>Bash non è una lista di comandi da imparare a memoria. È un modo preciso e riproducibile per dire al computer <strong>dove sono i dati</strong>, <strong>quale programma deve usarli</strong> e <strong>dove devono finire i risultati</strong>.</p>
+<p>Questa lezione dura circa <strong>60 minuti</strong> ed è pensata per chi non ha mai usato un terminale. Lavoreremo su un piccolo progetto di esempio con file FASTQ compressi, organizzato come un’analisi reale.</p>
+<section id="obiettivi-della-lezione" class="level2">
+<h2 class="anchored" data-anchor-id="obiettivi-della-lezione">Obiettivi della lezione</h2>
+<p>Alla fine della lezione sarai in grado di:</p>
 <ul>
-<li><code>pwd</code> mostra la directory corrente;</li>
-<li><code>ls -lh</code> elenca i file con dimensioni leggibili;</li>
-<li><code>.</code> indica la directory corrente e <code>..</code> quella superiore.</li>
+<li>riconoscere terminale, shell, prompt, comando, opzione e argomento;</li>
+<li>orientarti nel filesystem con <code>pwd</code>, <code>ls</code> e <code>cd</code>;</li>
+<li>creare e organizzare cartelle con <code>mkdir</code>, <code>cp</code> e <code>mv</code>;</li>
+<li>ispezionare file di testo e file <code>FASTQ.gz</code> senza aprirli interamente;</li>
+<li>selezionare più file con i wildcard e collegare comandi con una pipe;</li>
+<li>salvare output e messaggi di errore in un log;</li>
+<li>attivare l’ambiente Conda del corso e trovare l’help di un programma.</li>
 </ul>
-</div>
-<div class="lang-block lang-en">
-<ul>
-<li><code>pwd</code> shows the current directory;</li>
-<li><code>ls -lh</code> lists files with human-readable sizes;</li>
-<li><code>.</code> means the current directory and <code>..</code> the parent one.</li>
-</ul>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> phd-microbiome-2026</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> corso_2026/raw_reads</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-tip callout-titled">
+</section>
+<section id="scaletta-indicativa" class="level2">
+<h2 class="anchored" data-anchor-id="scaletta-indicativa">Scaletta indicativa</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Minuti</th>
+<th>Argomento</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0–5</td>
+<td>Terminale, Bash e anatomia di un comando</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5–15</td>
+<td>Directory, percorsi e navigazione</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">15–25</td>
+<td>Creare, copiare e spostare file e cartelle</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">25–37</td>
+<td>Ispezionare testo e FASTQ compressi</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">37–50</td>
+<td>Wildcard, pipe, redirezioni e log</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">50–55</td>
+<td>Conda e help dei programmi</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">55–60</td>
+<td>Esercizio finale</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled" title="Come usare questa pagina">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Consiglio
+<span class="screen-reader-only">Nota</span>Come usare questa pagina
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Usate il tasto <code>Tab</code> per completare nomi e percorsi: riduce molti errori di battitura.</p>
+<p>Durante la lezione segui le sezioni dalla 1 alla 7. La scheda rapida e la diagnosi degli errori restano come riferimento per le esercitazioni successive. Il blocco di preparazione va eseguito una sola volta.</p>
 </div>
 </div>
-<section id="copiare-senza-perdere-loriginale-copying-without-losing-the-original" class="level2 lang-block lang-it">
-<h2 class="anchored" data-anchor-id="copiare-senza-perdere-loriginale-copying-without-losing-the-original">2. Copiare senza perdere l’originale / Copying without losing the original</h2>
 </section>
-<section id="copying-without-losing-the-original" class="level2 lang-block lang-en">
-<h2 class="anchored" data-anchor-id="copying-without-losing-the-original">2. Copying without losing the original</h2>
-</section>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> campione_R1.fastq.gz corso_2026/raw_reads/</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> vecchio_nome.txt nuovo_nome.txt</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="lang-block lang-it">
-<p><code>cp</code> conserva l’originale; <code>mv</code> sposta o rinomina. Prima di un comando su molti file controllate sempre <code>pwd</code> e <code>ls</code>.</p>
+<section id="prima-di-iniziare" class="level2">
+<h2 class="anchored" data-anchor-id="prima-di-iniziare">Prima di iniziare</h2>
+<p>Apri il <strong>terminale Ubuntu</strong>. Su Windows deve essere il terminale della distribuzione Ubuntu in WSL2, non PowerShell.</p>
+<p>Nei blocchi di codice di questa pagina sono riportati soltanto i comandi da digitare. Non aggiungere simboli come <code>$</code> o <code>&gt;</code> davanti al comando.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Regola fondamentale">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<div class="lang-block lang-en">
-<p><code>cp</code> keeps the original; <code>mv</code> moves or renames. Before running a command on many files, always check <code>pwd</code> and <code>ls</code>.</p>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Regola fondamentale
 </div>
-<section id="leggere-un-fastq-compresso-reading-a-compressed-fastq" class="level2 lang-block lang-it">
-<h2 class="anchored" data-anchor-id="leggere-un-fastq-compresso-reading-a-compressed-fastq">3. Leggere un FASTQ compresso / Reading a compressed FASTQ</h2>
+</div>
+<div class="callout-body-container callout-body">
+<p>Esegui un blocco alla volta e leggi sempre l’output prima di continuare.</p>
+</div>
+</div>
+<section id="cinque-tasti-che-userai-spesso" class="level3">
+<h3 class="anchored" data-anchor-id="cinque-tasti-che-userai-spesso">Cinque tasti che userai spesso</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tasto</th>
+<th>Effetto</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Tab</code></td>
+<td>completa nomi di file e cartelle; premuto due volte mostra le possibilità</td>
+</tr>
+<tr class="even">
+<td><code>Freccia su</code></td>
+<td>recupera i comandi precedenti</td>
+</tr>
+<tr class="odd">
+<td><code>Ctrl+C</code></td>
+<td>interrompe il comando corrente o annulla una riga incompleta</td>
+</tr>
+<tr class="even">
+<td><code>Ctrl+L</code></td>
+<td>pulisce visivamente il terminale senza cancellare i file</td>
+</tr>
+<tr class="odd">
+<td><code>q</code></td>
+<td>esce da programmi di consultazione come <code>less</code> e <code>man</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
 </section>
-<section id="reading-a-compressed-fastq" class="level2 lang-block lang-en">
-<h2 class="anchored" data-anchor-id="reading-a-compressed-fastq">3. Reading a compressed FASTQ</h2>
 </section>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> campione_R1.fastq.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 8</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Ogni read occupa quattro righe. Per stimare il numero di reads:</p>
-<p>Every read occupies four lines. To estimate the number of reads:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> campione_R1.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Dividete il numero di righe per quattro. Cosa contengono la seconda e la quarta riga di ogni record?</p>
-<p>Divide the number of lines by four. What do the second and fourth lines of each record contain?</p>
-<section id="pipe-e-redirezione-pipes-and-redirection" class="level2 lang-block lang-it">
-<h2 class="anchored" data-anchor-id="pipe-e-redirezione-pipes-and-redirection">4. Pipe e redirezione / Pipes and redirection</h2>
+<section id="preparare-il-progetto-di-esercitazione" class="level2">
+<h2 class="anchored" data-anchor-id="preparare-il-progetto-di-esercitazione">0. Preparare il progetto di esercitazione</h2>
+<p>Questa preparazione richiede circa un minuto e può essere eseguita dal docente prima della lezione. Copia e incolla l’intero blocco seguente. Crea un progetto nella tua home Linux e quattro piccoli FASTQ compressi. Non è necessario comprendere ora ogni carattere del blocco: i costrutti utilizzati verranno incontrati durante la lezione.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">/microbiome-bash-lab"</span>/<span class="dt">{input</span><span class="op">,</span><span class="dt">metadata</span><span class="op">,</span><span class="dt">output</span><span class="op">,</span><span class="dt">logs</span><span class="op">,</span><span class="dt">notes}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">/microbiome-bash-lab"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'@sample_A_read_1/1\nACGTACGTACGT\n+\nIIIIIIIIIIII\n@sample_A_read_2/1\nTGCATGCATGCA\n+\nIIIIIIIIIIII\n'</span> <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">gzip</span> <span class="op">&gt;</span> input/sample_A_R1.fastq.gz</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'@sample_A_read_1/2\nTACGTACGTACG\n+\nIIIIIIIIIIII\n@sample_A_read_2/2\nCATGCATGCATG\n+\nIIIIIIIIIIII\n'</span> <span class="dt">\</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">gzip</span> <span class="op">&gt;</span> input/sample_A_R2.fastq.gz</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'@sample_B_read_1/1\nAAAACCCCGGGG\n+\nIIIIIIIIIIII\n@sample_B_read_2/1\nTTTTGGGGCCCC\n+\nIIIIIIIIIIII\n'</span> <span class="dt">\</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">gzip</span> <span class="op">&gt;</span> input/sample_B_R1.fastq.gz</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'@sample_B_read_1/2\nCCCCGGGGTTTT\n+\nIIIIIIIIIIII\n@sample_B_read_2/2\nGGGGCCCCAAAA\n+\nIIIIIIIIIIII\n'</span> <span class="dt">\</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">gzip</span> <span class="op">&gt;</span> input/sample_B_R2.fastq.gz</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'sample\tgroup\nsample_A\tcontrol\nsample_B\ttreatment\n'</span> <span class="dt">\</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="op">&gt;</span> metadata/samples.tsv</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'Progetto creato in: %s\n'</span> <span class="st">"</span><span class="va">$PWD</span><span class="st">"</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-R</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La struttura risultante è:</p>
+<pre class="text"><code>microbiome-bash-lab/
+├── input/       # dati grezzi: non modificarli
+├── metadata/    # informazioni sui campioni
+├── output/      # risultati delle analisi
+├── logs/        # registrazione dei comandi e dei messaggi
+└── notes/       # appunti e copie di lavoro</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled" title="Buona pratica">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Consiglio</span>Buona pratica
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Conserva i dati originali in <code>input/</code> e scrivi risultati e file temporanei altrove. Un workflow è più facile da controllare quando input e output non sono mescolati.</p>
+</div>
+</div>
+<hr>
 </section>
-<section id="pipes-and-redirection" class="level2 lang-block lang-en">
-<h2 class="anchored" data-anchor-id="pipes-and-redirection">4. Pipes and redirection</h2>
-</section>
-<p>La pipe <code>|</code> passa l’output di un comando al successivo; <code>&gt;</code> lo scrive in un file.</p>
-<p>The pipe <code>|</code> sends the output of one command to the next; <code>&gt;</code> writes it to a file.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> campione_R1.fastq.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 40 <span class="op">&gt;</span> prime_10_reads.fastq</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> <span class="at">-S</span> prime_10_reads.fastq</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Uscire da <code>less</code> premendo <code>q</code>.</p>
-<p>Exit <code>less</code> by pressing <code>q</code>.</p>
-<section id="ambiente-del-corso-course-environment" class="level2 lang-block lang-it">
-<h2 class="anchored" data-anchor-id="ambiente-del-corso-course-environment">5. Ambiente del corso / Course environment</h2>
-</section>
-<section id="course-environment" class="level2 lang-block lang-en">
-<h2 class="anchored" data-anchor-id="course-environment">5. Course environment</h2>
-</section>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env list</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> ampwrap</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Se <code>which</code> non restituisce un percorso interno all’ambiente attivo, fermatevi e risolvete il problema prima di lanciare il workflow.</p>
-<p>If <code>which</code> does not return a path inside the active environment, stop and fix the problem before launching the workflow.</p>
-<section id="checklist" class="level2 lang-block lang-it">
-<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
-</section>
-<section id="checklist-1" class="level2 lang-block lang-en">
-<h2 class="anchored" data-anchor-id="checklist-1">Checklist</h2>
-</section>
-<div class="lang-block lang-it">
-<ul class="task-list">
-<li><label><input type="checkbox">So distinguere un percorso relativo da uno assoluto.</label></li>
-<li><label><input type="checkbox">So controllare nome e dimensione dei file.</label></li>
-<li><label><input type="checkbox">So visualizzare le prime due reads di un FASTQ compresso.</label></li>
-<li><label><input type="checkbox">So attivare e controllare l’ambiente Conda.</label></li>
+<section id="terminale-shell-e-bash" class="level2">
+<h2 class="anchored" data-anchor-id="terminale-shell-e-bash">1. Terminale, shell e Bash</h2>
+<p>Il <strong>terminale</strong> è la finestra in cui scriviamo. La <strong>shell</strong> interpreta ciò che scriviamo. <strong>Bash</strong> è la shell usata in questa lezione.</p>
+<p>Una riga del terminale può assomigliare a questa:</p>
+<pre class="text"><code>(metabarcoding-phd) nomeutente@computer:~/microbiome-bash-lab$</code></pre>
+<p>Le parti principali sono:</p>
+<ul>
+<li><code>(metabarcoding-phd)</code>: ambiente Conda attivo;</li>
+<li><code>nomeutente@computer</code>: utente e computer;</li>
+<li><code>~/microbiome-bash-lab</code>: directory corrente;</li>
+<li><code>$</code>: il terminale è pronto a ricevere un comando.</li>
 </ul>
-</div>
-<div class="lang-block lang-en">
-<ul class="task-list">
-<li><label><input type="checkbox">I can distinguish a relative path from an absolute one.</label></li>
-<li><label><input type="checkbox">I can check file names and sizes.</label></li>
-<li><label><input type="checkbox">I can inspect the first two reads of a compressed FASTQ.</label></li>
-<li><label><input type="checkbox">I can activate and verify the Conda environment.</label></li>
+<p>Il prompt è mostrato dal terminale: <strong>non va ricopiato</strong>.</p>
+<section id="anatomia-di-un-comando" class="level3">
+<h3 class="anchored" data-anchor-id="anatomia-di-un-comando">Anatomia di un comando</h3>
+<p>La struttura più comune è:</p>
+<pre class="text"><code>comando [opzioni] [argomenti]</code></pre>
+<p>Esempio:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> input/</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parte</th>
+<th>Ruolo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ls</code></td>
+<td>comando: elenca il contenuto di una directory</td>
+</tr>
+<tr class="even">
+<td><code>-l</code></td>
+<td>opzione: usa un elenco dettagliato</td>
+</tr>
+<tr class="odd">
+<td><code>-h</code></td>
+<td>opzione: mostra dimensioni leggibili, per esempio KB o MB</td>
+</tr>
+<tr class="even">
+<td><code>input/</code></td>
+<td>argomento: la directory su cui deve lavorare <code>ls</code></td>
+</tr>
+</tbody>
+</table>
+<p>Gli spazi separano le parti del comando. Bash distingue maiuscole e minuscole: <code>Input</code>, <code>input</code> e <code>INPUT</code> sono tre nomi diversi.</p>
+<p>Prova tre comandi semplici:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">whoami</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Sto usando Bash"</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le righe che iniziano con <code>#</code> sono commenti e non vengono eseguite:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Questo è un commento</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Questo invece viene eseguito"</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="non-serve-memorizzare-tutto" class="level3">
+<h3 class="anchored" data-anchor-id="non-serve-memorizzare-tutto">Non serve memorizzare tutto</h3>
+<p>Molti programmi mostrano una guida con <code>--help</code> o <code>-h</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">--help</span> <span class="kw">|</span> <span class="fu">less</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Scorri con le frecce e premi <code>q</code> per uscire. Per i comandi di sistema è spesso disponibile anche il manuale:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">man</span> ls</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+</section>
+<section id="dove-sono-che-cosa-cè-qui-come-mi-sposto" class="level2">
+<h2 class="anchored" data-anchor-id="dove-sono-che-cosa-cè-qui-come-mi-sposto">2. Dove sono? Che cosa c’è qui? Come mi sposto?</h2>
+<p>Tre comandi rispondono alle domande fondamentali:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Domanda</th>
+<th>Comando</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dove sono?</td>
+<td><code>pwd</code></td>
+</tr>
+<tr class="even">
+<td>Che cosa c’è qui?</td>
+<td><code>ls</code></td>
+</tr>
+<tr class="odd">
+<td>Come mi sposto?</td>
+<td><code>cd</code></td>
+</tr>
+</tbody>
+</table>
+<p>Torna all’inizio del progetto e osserva la directory:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">/microbiome-bash-lab"</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lah</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> input/</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>pwd</code> significa <em>print working directory</em>. Dovrebbe mostrare un percorso che termina con:</p>
+<pre class="text"><code>/microbiome-bash-lab</code></pre>
+<p>Con <code>ls -lah</code>:</p>
+<ul>
+<li><code>-l</code> mostra dettagli;</li>
+<li><code>-a</code> include gli elementi nascosti, i cui nomi iniziano con <code>.</code>;</li>
+<li><code>-h</code> mostra dimensioni leggibili.</li>
 </ul>
+<section id="percorsi-assoluti-e-relativi" class="level3">
+<h3 class="anchored" data-anchor-id="percorsi-assoluti-e-relativi">Percorsi assoluti e relativi</h3>
+<p>Un <strong>percorso</strong> è l’indirizzo di un file o di una directory.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Simbolo</th>
+<th>Significato</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>/</code></td>
+<td>radice del filesystem</td>
+</tr>
+<tr class="even">
+<td><code>~</code> oppure <code>$HOME</code></td>
+<td>home dell’utente corrente</td>
+</tr>
+<tr class="odd">
+<td><code>.</code></td>
+<td>directory corrente</td>
+</tr>
+<tr class="even">
+<td><code>..</code></td>
+<td>directory superiore</td>
+</tr>
+</tbody>
+</table>
+<p>Un percorso <strong>assoluto</strong> parte da <code>/</code> o dalla home:</p>
+<pre class="text"><code>/home/nomeutente/microbiome-bash-lab/input/sample_A_R1.fastq.gz</code></pre>
+<p>Un percorso <strong>relativo</strong> parte dalla directory in cui ci troviamo:</p>
+<pre class="text"><code>input/sample_A_R1.fastq.gz</code></pre>
+<p>Il percorso relativo funziona soltanto quando la posizione corrente è quella prevista. Per questo <code>pwd</code> è uno dei migliori strumenti di controllo.</p>
+</section>
+<section id="esercizio-guidato-di-navigazione" class="level3">
+<h3 class="anchored" data-anchor-id="esercizio-guidato-di-navigazione">Esercizio guidato di navigazione</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">/microbiome-bash-lab"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> input</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ..</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> metadata</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="at">-</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>cd -</code> torna alla directory precedente. <code>cd</code> senza argomenti torna alla home:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ora torna al progetto usando il completamento con <code>Tab</code>: inizia a scrivere <code>cd ~/micro</code> e premi <code>Tab</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">/microbiome-bash-lab"</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Abitudine utile">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Consiglio</span>Abitudine utile
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Prima di lanciare un’analisi esegui sempre <code>pwd</code> e <code>ls -lh</code>. Molti errori derivano semplicemente dal trovarsi nella directory sbagliata.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="creare-copiare-spostare-e-rinominare" class="level2">
+<h2 class="anchored" data-anchor-id="creare-copiare-spostare-e-rinominare">3. Creare, copiare, spostare e rinominare</h2>
+<section id="creare-directory-con-mkdir" class="level3">
+<h3 class="anchored" data-anchor-id="creare-directory-con-mkdir">Creare directory con <code>mkdir</code></h3>
+<p>Crea due sottodirectory per i risultati:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">/microbiome-bash-lab"</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> output/qc output/tables</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-R</span> output</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>L’opzione <code>-p</code> crea anche eventuali directory intermedie e non produce errore se la directory esiste già.</p>
+</section>
+<section id="copiare-con-cp" class="level3">
+<h3 class="anchored" data-anchor-id="copiare-con-cp">Copiare con <code>cp</code></h3>
+<p>La forma generale è:</p>
+<pre class="text"><code>cp origine destinazione</code></pre>
+<p>Crea una copia dei metadata nella directory degli appunti:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-i</span> metadata/samples.tsv notes/samples_copy.tsv</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> notes/</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>-i</code> significa <em>interactive</em>: se il file di destinazione esiste già, <code>cp</code> chiede conferma prima di sovrascriverlo.</p>
+</section>
+<section id="spostare-o-rinominare-con-mv" class="level3">
+<h3 class="anchored" data-anchor-id="spostare-o-rinominare-con-mv">Spostare o rinominare con <code>mv</code></h3>
+<p><code>mv</code> usa la stessa logica di origine e destinazione. Se origine e destinazione sono nella stessa directory, il file viene rinominato:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> <span class="at">-i</span> notes/samples_copy.tsv notes/samples_backup.tsv</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> notes/</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Per spostarlo in una directory mantenendo lo stesso nome, indica soltanto la directory come destinazione:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> <span class="at">-i</span> notes/samples_backup.tsv output/qc/</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> output/qc/</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="sicurezza-cancellare-non-equivale-al-cestino" class="level3">
+<h3 class="anchored" data-anchor-id="sicurezza-cancellare-non-equivale-al-cestino">Sicurezza: cancellare non equivale al cestino</h3>
+<p>Il comando <code>rm</code> cancella normalmente i file in modo permanente. Non è necessario usarlo in questa esercitazione.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Prima di cancellare qualsiasi cosa">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avviso</span>Prima di cancellare qualsiasi cosa
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Controlla <code>pwd</code>, controlla <code>ls</code>, completa il nome con <code>Tab</code> e non usare <code>sudo</code> come tentativo generico di risolvere un errore. Evita soprattutto comandi ricorsivi copiati senza comprenderli.</p>
+</div>
+</div>
+<p>Anche <code>cp</code> e <code>mv</code> possono sovrascrivere file. Durante l’apprendimento è prudente usare <code>cp -i</code> e <code>mv -i</code>.</p>
+<hr>
+</section>
+</section>
+<section id="ispezionare-file-di-testo-e-fastq-compressi" class="level2">
+<h2 class="anchored" data-anchor-id="ispezionare-file-di-testo-e-fastq-compressi">4. Ispezionare file di testo e FASTQ compressi</h2>
+<p>In bioinformatica molti file sono troppo grandi per essere aperti interamente. Conviene prima osservarne una piccola parte.</p>
+<section id="file-di-testo" class="level3">
+<h3 class="anchored" data-anchor-id="file-di-testo">File di testo</h3>
+<p>Il file <code>metadata/samples.tsv</code> è una tabella di testo separata da tabulazioni:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">/microbiome-bash-lab"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-n</span> 3 metadata/samples.tsv</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-n</span> 2 metadata/samples.tsv</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> metadata/samples.tsv</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Comando</th>
+<th>Funzione</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>head -n 3</code></td>
+<td>mostra le prime 3 righe</td>
+</tr>
+<tr class="even">
+<td><code>tail -n 2</code></td>
+<td>mostra le ultime 2 righe</td>
+</tr>
+<tr class="odd">
+<td><code>wc -l</code></td>
+<td>conta le righe</td>
+</tr>
+</tbody>
+</table>
+<p>Per consultare un file in modo interattivo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> metadata/samples.tsv</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dentro <code>less</code>:</p>
+<ul>
+<li>usa le frecce o <code>Page Up</code>/<code>Page Down</code> per spostarti;</li>
+<li>digita <code>/sample_B</code> e premi Invio per cercare;</li>
+<li>premi <code>n</code> per andare all’occorrenza successiva;</li>
+<li>premi <code>q</code> per uscire.</li>
+</ul>
+<p><code>cat</code> stampa tutto il contenuto di un file ed è adatto soltanto a file piccoli:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> metadata/samples.tsv</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="riconoscere-i-file-compressi" class="level3">
+<h3 class="anchored" data-anchor-id="riconoscere-i-file-compressi">Riconoscere i file compressi</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file</span> input/sample_A_R1.fastq.gz</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> input/<span class="pp">*</span>.fastq.gz</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Un file <code>.fastq.gz</code> è un FASTQ compresso con gzip. Non usare <code>cat</code> direttamente: vedresti dati compressi illeggibili.</p>
+<p><code>gzip -cd</code> decomprime verso il terminale senza modificare il file originale. Collegandolo a <code>head</code>, osserviamo soltanto le prime otto righe:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> input/sample_A_R1.fastq.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 8</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Un record FASTQ occupa quattro righe:</p>
+<pre class="text"><code>@identificativo_della_lettura
+SEQUENZA
++
+QUALITA</code></pre>
+<p>Otto righe corrispondono quindi a due letture. Possiamo verificarlo così:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> input/sample_A_R1.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Nel piccolo file di esercizio il risultato è <code>8</code>. Per file reali è preferibile usare un programma che comprenda direttamente il formato FASTQ, per esempio SeqKit:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> stats input/<span class="pp">*</span>.fastq.gz</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="controllo-rapido-delle-coppie-r1r2" class="level3">
+<h3 class="anchored" data-anchor-id="controllo-rapido-delle-coppie-r1r2">Controllo rapido delle coppie R1/R2</h3>
+<p>I file paired-end devono avere un file <code>R1</code> e un file <code>R2</code> per ciascun campione.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>_R1.fastq.gz</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>_R2.fastq.gz</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>_R1.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>_R2.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In questa esercitazione devono esserci due file <code>R1</code> e due file <code>R2</code>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="File compressi e conteggio delle righe">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>File compressi e conteggio delle righe
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>wc -l file.fastq.gz</code> non conta le letture: lavora sui dati binari compressi. Prima bisogna decomprimere verso lo standard output oppure usare un programma come SeqKit.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="wildcard-pipe-redirezioni-e-log" class="level2">
+<h2 class="anchored" data-anchor-id="wildcard-pipe-redirezioni-e-log">5. Wildcard, pipe, redirezioni e log</h2>
+<p>Questi operatori permettono di lavorare su molti file e di combinare comandi semplici.</p>
+<section id="wildcard-selezionare-più-file" class="level3">
+<h3 class="anchored" data-anchor-id="wildcard-selezionare-più-file">Wildcard: selezionare più file</h3>
+<p>L’asterisco <code>*</code> rappresenta zero o più caratteri.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>.fastq.gz</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/sample_A_<span class="pp">*</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>_R1.fastq.gz</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Interpretazione:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Espressione</th>
+<th>Seleziona</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>input/*.fastq.gz</code></td>
+<td>tutti i FASTQ compressi in <code>input/</code></td>
+</tr>
+<tr class="even">
+<td><code>input/sample_A_*</code></td>
+<td>tutti i file il cui nome inizia con <code>sample_A_</code></td>
+</tr>
+<tr class="odd">
+<td><code>input/*_R1.fastq.gz</code></td>
+<td>tutti i file forward <code>R1</code></td>
+</tr>
+</tbody>
+</table>
+<p>Bash espande il wildcard prima di avviare il comando. Prima di usare un wildcard con comandi che modificano file, controlla sempre la selezione con <code>ls</code>.</p>
+<p>Il punto interrogativo <code>?</code> rappresenta esattamente un carattere. Nel nostro esempio:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/sample_<span class="pp">?</span>_R1.fastq.gz</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>seleziona <code>sample_A_R1.fastq.gz</code> e <code>sample_B_R1.fastq.gz</code>.</p>
+</section>
+<section id="pipe-usare-loutput-di-un-comando-come-input-del-successivo" class="level3">
+<h3 class="anchored" data-anchor-id="pipe-usare-loutput-di-un-comando-come-input-del-successivo">Pipe: usare l’output di un comando come input del successivo</h3>
+<p>La pipe è il simbolo <code>|</code>:</p>
+<pre class="text"><code>comando_1 | comando_2</code></pre>
+<p>L’output di <code>comando_1</code> non viene stampato direttamente: diventa l’input di <code>comando_2</code>.</p>
+<p>Abbiamo già usato una pipe:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> input/sample_A_R1.fastq.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 8</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Altri esempi:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> stats input/<span class="pp">*</span>.fastq.gz <span class="kw">|</span> <span class="fu">less</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Il primo conta i file selezionati. Il secondo permette di consultare l’output di SeqKit con <code>less</code>.</p>
+</section>
+<section id="redirezione-scrivere-loutput-in-un-file" class="level3">
+<h3 class="anchored" data-anchor-id="redirezione-scrivere-loutput-in-un-file">Redirezione: scrivere l’output in un file</h3>
+<p>Il simbolo <code>&gt;</code> salva l’output in un file invece di mostrarlo sul terminale:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>.fastq.gz <span class="op">&gt;</span> logs/input-files.txt</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> logs/input-files.txt</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Attenzione alla sovrascrittura">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avviso</span>Attenzione alla sovrascrittura
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>&gt;</code> crea il file se non esiste, ma lo <strong>sovrascrive</strong> se esiste già.</p>
+</div>
+</div>
+<p>Il simbolo <code>&gt;&gt;</code> aggiunge l’output in fondo a un file esistente:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span> <span class="op">&gt;</span> logs/session.log</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>.fastq.gz <span class="op">&gt;&gt;</span> logs/session.log</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> logs/session.log</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="tee-mostrare-e-salvare-nello-stesso-momento" class="level3">
+<h3 class="anchored" data-anchor-id="tee-mostrare-e-salvare-nello-stesso-momento"><code>tee</code>: mostrare e salvare nello stesso momento</h3>
+<p><code>tee</code> copia l’output sia sul terminale sia in un file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> stats input/<span class="pp">*</span>.fastq.gz <span class="kw">|</span> <span class="fu">tee</span> logs/seqkit-stats.log</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Molti programmi inviano alcuni messaggi su un secondo canale chiamato <strong>standard error</strong>. Per salvare in un unico log sia l’output normale sia i messaggi di errore:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> stats input/<span class="pp">*</span>.fastq.gz <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span> <span class="kw">|</span> <span class="fu">tee</span> logs/seqkit-stats.log</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><code>2&gt;&amp;1</code> unisce standard error e standard output;</li>
+<li><code>| tee ...</code> mostra tutto e ne salva una copia.</li>
+</ul>
+<p>Questa è una struttura molto utile per i workflow:</p>
+<pre class="text"><code>comando_con_opzioni 2&gt;&amp;1 | tee logs/nome-analisi.log</code></pre>
+<p>Dopo l’esecuzione, controlla il log:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> logs/seqkit-stats.log</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> logs/seqkit-stats.log</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Perché conservare i log?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Consiglio</span>Perché conservare i log?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I log permettono di ricostruire ciò che è successo, individuare errori e comunicare al docente o a un collaboratore l’esatto messaggio prodotto dal programma.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="ambiente-conda-e-help-dei-programmi" class="level2">
+<h2 class="anchored" data-anchor-id="ambiente-conda-e-help-dei-programmi">6. Ambiente Conda e help dei programmi</h2>
+<p>Un ambiente Conda mantiene insieme versioni compatibili dei programmi necessari per il corso.</p>
+<p>Mostra gli ambienti disponibili:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env list</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Attiva l’ambiente del corso:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Il nome dell’ambiente dovrebbe comparire all’inizio del prompt. Controlla il percorso dell’ambiente e il programma che verrà eseguito:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">$CONDA_PREFIX</span><span class="st">"</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="bu">command</span> <span class="at">-v</span> seqkit</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> version</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>command -v</code> risponde alla domanda: “quale eseguibile userà Bash quando scrivo questo nome?”. Il percorso dovrebbe trovarsi dentro l’ambiente <code>metabarcoding-phd</code>.</p>
+<p>Per scoprire le opzioni di un programma:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> stats <span class="at">--help</span> <span class="kw">|</span> <span class="fu">less</span></span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Per vedere gli ultimi comandi eseguiti:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="bu">history</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Per uscire dall’ambiente:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Durante il corso, riattivalo prima di usare AmpWrap o gli altri programmi bioinformatici:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="esercizio-finale-controllo-di-un-progetto-prima-del-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="esercizio-finale-controllo-di-un-progetto-prima-del-workflow">7. Esercizio finale: controllo di un progetto prima del workflow</h2>
+<p>Senza guardare subito la soluzione, prova a:</p>
+<ol type="1">
+<li>tornare nella directory <code>microbiome-bash-lab</code> partendo da qualunque posizione;</li>
+<li>mostrare il percorso corrente;</li>
+<li>creare la directory <code>output/qc</code> senza errore anche se esiste già;</li>
+<li>elencare soltanto i file <code>R1</code>;</li>
+<li>mostrare i primi due record di <code>sample_B_R1.fastq.gz</code>;</li>
+<li>copiare <code>samples.tsv</code> dentro <code>output/qc/</code> senza sovrascrivere in silenzio;</li>
+<li>attivare l’ambiente del corso;</li>
+<li>produrre le statistiche di tutti i FASTQ, mostrandole sul terminale e salvandole in <code>logs/fastq-stats.log</code>;</li>
+<li>controllare le ultime righe del log.</li>
+</ol>
+<p>Risultati attesi:</p>
+<ul>
+<li>quattro FASTQ totali;</li>
+<li>due file <code>R1</code> e due file <code>R2</code>;</li>
+<li>due letture in ciascun piccolo file di esempio;</li>
+<li>un file <code>output/qc/samples.tsv</code>;</li>
+<li>un file <code>logs/fastq-stats.log</code>.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="Mostra una possibile soluzione">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Mostra una possibile soluzione
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">/microbiome-bash-lab"</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> output/qc</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> input/<span class="pp">*</span>_R1.fastq.gz</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> <span class="at">-cd</span> input/sample_B_R1.fastq.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 8</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-i</span> metadata/samples.tsv output/qc/</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> stats input/<span class="pp">*</span>.fastq.gz <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span> <span class="kw">|</span> <span class="fu">tee</span> logs/fastq-stats.log</span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-n</span> 5 logs/fastq-stats.log</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Controlli aggiuntivi:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>_R1.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>_R2.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> output/qc/ logs/</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="routine-di-controllo-prima-di-lanciare-ampwrap" class="level2">
+<h2 class="anchored" data-anchor-id="routine-di-controllo-prima-di-lanciare-ampwrap">Routine di controllo prima di lanciare AmpWrap</h2>
+<p>Questa sequenza riduce molti errori comuni:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding-phd</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">/microbiome-bash-lab"</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> input/</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>_R1.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> input/<span class="pp">*</span>_R2.fastq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> stats input/<span class="pp">*</span>.fastq.gz</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> output logs</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Solo dopo questi controlli si lancia il workflow, salvando un log completo:</p>
+<pre class="text"><code>comando_ampwrap_con_le_opzioni 2&gt;&amp;1 | tee logs/ampwrap.log</code></pre>
+<p>Non copiare letteralmente l’ultima riga: è uno schema. Nel modulo successivo verrà sostituita con il comando AmpWrap completo e con i parametri appropriati per i dati del corso.</p>
+<hr>
+</section>
+<section id="errori-comuni-e-diagnosi-rapida" class="level2">
+<h2 class="anchored" data-anchor-id="errori-comuni-e-diagnosi-rapida">Errori comuni e diagnosi rapida</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Messaggio o situazione</th>
+<th>Che cosa fare</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>No such file or directory</code></td>
+<td>esegui <code>pwd</code>, poi <code>ls -lah</code>; controlla maiuscole/minuscole e usa <code>Tab</code></td>
+</tr>
+<tr class="even">
+<td><code>command not found</code></td>
+<td>controlla l’ortografia, attiva Conda e prova <code>command -v nome_comando</code></td>
+</tr>
+<tr class="odd">
+<td><code>Permission denied</code></td>
+<td>controlla il percorso e i permessi con <code>ls -l</code>; non usare subito <code>sudo</code></td>
+</tr>
+<tr class="even">
+<td>il terminale mostra soltanto <code>&gt;</code> e aspetta</td>
+<td>probabilmente manca una virgoletta o il comando è incompleto; premi <code>Ctrl+C</code></td>
+</tr>
+<tr class="odd">
+<td>compaiono caratteri illeggibili aprendo un <code>.gz</code></td>
+<td>non usare <code>cat</code>; usa <code>gzip -cd file.fastq.gz | head</code></td>
+</tr>
+<tr class="even">
+<td><code>less</code> occupa tutto lo schermo</td>
+<td>premi <code>q</code></td>
+</tr>
+<tr class="odd">
+<td>un comando continua troppo a lungo</td>
+<td>premi <code>Ctrl+C</code>, poi rileggi comando e log</td>
+</tr>
+<tr class="even">
+<td>un percorso contiene spazi</td>
+<td>racchiudilo tra virgolette; nei nuovi progetti preferisci <code>_</code> o <code>-</code></td>
+</tr>
+</tbody>
+</table>
+<section id="la-routine-dei-30-secondi" class="level3">
+<h3 class="anchored" data-anchor-id="la-routine-dei-30-secondi">La routine dei 30 secondi</h3>
+<p>Quando qualcosa non funziona:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lah</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lah</span> percorso/che/ti/aspetti</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="bu">command</span> <span class="at">-v</span> nome_programma</span></code></pre></div><button title="Copia negli appunti" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Poi rileggi il messaggio di errore dall’inizio. Il messaggio spesso indica il file, il percorso o l’opzione che ha causato il problema.</p>
+<hr>
+</section>
+</section>
+<section id="scheda-rapida-dei-comandi" class="level2">
+<h2 class="anchored" data-anchor-id="scheda-rapida-dei-comandi">Scheda rapida dei comandi</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Comando o simbolo</th>
+<th>Uso essenziale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pwd</code></td>
+<td>mostra la directory corrente</td>
+</tr>
+<tr class="even">
+<td><code>ls -lah</code></td>
+<td>elenca contenuto, dettagli, file nascosti e dimensioni leggibili</td>
+</tr>
+<tr class="odd">
+<td><code>cd percorso</code></td>
+<td>entra in una directory</td>
+</tr>
+<tr class="even">
+<td><code>cd ..</code></td>
+<td>sale di un livello</td>
+</tr>
+<tr class="odd">
+<td><code>cd</code> oppure <code>cd ~</code></td>
+<td>torna alla home</td>
+</tr>
+<tr class="even">
+<td><code>cd -</code></td>
+<td>torna alla directory precedente</td>
+</tr>
+<tr class="odd">
+<td><code>mkdir -p percorso</code></td>
+<td>crea una directory e gli eventuali livelli mancanti</td>
+</tr>
+<tr class="even">
+<td><code>cp -i origine destinazione</code></td>
+<td>copia chiedendo conferma prima di sovrascrivere</td>
+</tr>
+<tr class="odd">
+<td><code>mv -i origine destinazione</code></td>
+<td>sposta o rinomina chiedendo conferma</td>
+</tr>
+<tr class="even">
+<td><code>head -n N file</code></td>
+<td>mostra le prime <code>N</code> righe</td>
+</tr>
+<tr class="odd">
+<td><code>tail -n N file</code></td>
+<td>mostra le ultime <code>N</code> righe</td>
+</tr>
+<tr class="even">
+<td><code>less file</code></td>
+<td>consulta un file; esci con <code>q</code></td>
+</tr>
+<tr class="odd">
+<td><code>wc -l file</code></td>
+<td>conta le righe</td>
+</tr>
+<tr class="even">
+<td><code>file nomefile</code></td>
+<td>identifica il tipo di file</td>
+</tr>
+<tr class="odd">
+<td><code>gzip -cd file.gz</code></td>
+<td>decomprime verso lo standard output senza modificare l’originale</td>
+</tr>
+<tr class="even">
+<td><code>*</code></td>
+<td>wildcard: zero o più caratteri</td>
+</tr>
+<tr class="odd">
+<td><code>?</code></td>
+<td>wildcard: un carattere</td>
+</tr>
+<tr class="even">
+<td><code>comando1 \| comando2</code></td>
+<td>passa l’output del primo comando al secondo</td>
+</tr>
+<tr class="odd">
+<td><code>&gt;</code></td>
+<td>scrive e sovrascrive un file</td>
+</tr>
+<tr class="even">
+<td><code>&gt;&gt;</code></td>
+<td>aggiunge in fondo a un file</td>
+</tr>
+<tr class="odd">
+<td><code>2&gt;&amp;1</code></td>
+<td>unisce messaggi di errore e output normale</td>
+</tr>
+<tr class="even">
+<td><code>tee file.log</code></td>
+<td>mostra l’output e lo salva</td>
+</tr>
+<tr class="odd">
+<td><code>command -v programma</code></td>
+<td>mostra quale eseguibile verrà usato</td>
+</tr>
+<tr class="even">
+<td><code>programma --help</code></td>
+<td>mostra l’help del programma</td>
+</tr>
+<tr class="odd">
+<td><code>Ctrl+C</code></td>
+<td>interrompe o annulla</td>
+</tr>
+<tr class="even">
+<td><code>Tab</code></td>
+<td>completa e verifica nomi e percorsi</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="che-cosa-non-abbiamo-coperto" class="level2">
+<h2 class="anchored" data-anchor-id="che-cosa-non-abbiamo-coperto">Che cosa non abbiamo coperto</h2>
+<p>In un’ora non è realistico affrontare bene scripting, cicli <code>for</code>, variabili complesse, <code>grep</code>, <code>awk</code>, <code>sed</code>, permessi, accesso a server remoti e gestione dei processi. Questi argomenti diventano utili dopo aver consolidato navigazione, percorsi, pipe e log.</p>
+<p>Per approfondire:</p>
+<ul>
+<li><a href="https://astrobiomike.github.io/unix/">Unix Crash Course — Happy Belly Bioinformatics</a></li>
+<li><a href="https://www.gnu.org/software/bash/manual/">GNU Bash Reference Manual</a></li>
+<li><a href="https://www.gnu.org/software/coreutils/manual/">GNU Coreutils Manual</a></li>
+<li><a href="https://bioinf.shenwei.me/seqkit/">SeqKit documentation</a></li>
+</ul>
+<p>La struttura didattica di questa lezione prende ispirazione dal percorso introduttivo di Happy Belly Bioinformatics, adattandolo agli obiettivi e ai file tipici di un workflow di metabarcoding.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <div class="lang-switch" aria-label="Language switch">

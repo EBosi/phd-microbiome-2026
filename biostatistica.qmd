@@ -1,509 +1,733 @@
 ---
-title: "Analisi biostatistica: SEA4BLUE"
-subtitle: "From counts to ecological interpretation"
+title: "Analisi biostatistica / Biostatistics"
+toc: true
+page-layout: full
 ---
 
-::: {.lang-block .lang-it}
-## Obiettivi della sessione
+::: {.lang-it}
+# SEA4BLUE Project
 
-Questa lezione segue il percorso biologico del dataset SEA4BLUE: dal transetto oceanico ai grafici di diversita, fino ai test multivariati.
+Il materiale di questa pagina segue il flusso della lezione originale, ma in forma statica: leggiamo l'oggetto `phyloseq`, osserviamo i grafici già preparati e facciamo i passaggi uno alla volta.
 
-- conti grezzi per profondita di sequenziamento e diversita alfa;
-- abbondanze relative per composizione e Bray-Curtis;
-- trasformazione di Hellinger per la RDA.
+Prima di aprire RStudio, scaricate il dataset e decomprimetelo nella vostra cartella `Downloads`.
 
-Il punto didattico non e fare tutto con un unico comando, ma vedere come cambia l'oggetto a ogni passaggio.
-:::
-
-::: {.lang-block .lang-en}
-## Session goals
-
-This lesson follows the biological story of the SEA4BLUE dataset: from the ocean transect to diversity plots and multivariate tests.
-
-- raw counts for sequencing depth and alpha diversity;
-- relative abundances for composition and Bray-Curtis;
-- Hellinger-transformed data for RDA.
-
-The teaching goal is not to compress everything into one command, but to watch how the object changes at each step.
-:::
-
-::: {.callout-important}
-Non eseguite l'intera pagina o lo script con un solo comando. Dopo ogni blocco controllate dimensioni, nomi e grafico ottenuto.
-:::
-
-::: {.lang-block .lang-it}
-## 0. Download e progetto RStudio
-:::
-
-::: {.lang-block .lang-en}
-## 0. Download and RStudio project
-:::
-
-::: {.download-box}
 [Scarica Sea4Blue.zip](downloads/Sea4Blue.zip){.btn .btn-primary download="Sea4Blue.zip"}
-:::
 
-::: {.callout-tip}
-Se avete scaricato lo zip nella cartella Download della vostra home, aprite la sessione da lì con:
+![](figures/intro/Sea4Blue_page-0001.jpg){fig-align="center" width="85%"}
 
-```bash
-setwd("~/Downloads/Sea4Blue")
-```
+![](figures/intro/gel.png){fig-align="center" width="70%"}
 
-`~` significa "home". Se la vostra cartella si chiama `Scaricati`, il percorso cambia di conseguenza. L'idea e sempre la stessa: portarsi nella cartella dove avete decompresso il dataset prima di lanciare lo script.
-:::
+## Da dove arrivano i dati
 
-::: {.lang-block .lang-it}
-1. Decomprimete lo zip.
-2. Aprite `Sea4Blue.Rproj`.
-3. Aprite `analysis_guided.R`.
-4. Verificate che `getwd()` termini con `Sea4Blue`.
-:::
+I campioni provengono dal transetto oceanico SEA4BLUE. L'idea è semplice: seguire la comunità microbica lungo la rotta, confrontare le zone del transetto e vedere come cambiano ricchezza, composizione e ordinamento.
 
-::: {.lang-block .lang-en}
-1. Unzip the archive.
-2. Open `Sea4Blue.Rproj`.
-3. Open `analysis_guided.R`.
-4. Check that `getwd()` ends with `Sea4Blue`.
-:::
+## Come partire in R
 
-::: {.lang-block .lang-it}
-## 1. Pacchetti e dati
-:::
+Se avete estratto lo zip in `~/Downloads/Sea4Blue`, la working directory deve puntare lì prima di leggere il file `.rds`.
 
-::: {.lang-block .lang-en}
-## 1. Packages and data
-:::
+```r
+# Puliamo la sessione
+rm(list = ls())
 
-```{r}
+# Carichiamo i pacchetti necessari
 library(phyloseq)
-library(vegan)
 library(ggplot2)
 library(dplyr)
 library(maps)
 library(ggrepel)
+library(ggside)
+library(metagenomeSeq)
+library(vegan)
 
-zone_colors <- c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a")
+# Impostiamo la cartella di lavoro dove avete estratto Sea4Blue.zip
+setwd("~/Downloads/Sea4Blue")
 
-ps <- readRDS("materials/Sea4Blue/phyloseq.rds")
+# Carichiamo l'oggetto phyloseq già pronto
+ps <- readRDS("phyloseq.rds")
 
+# Controlliamo che tutto sia a posto
 ps
+sample_data(ps)
+head(t(otu_table(ps)))
 ```
 
-Un oggetto `phyloseq` collega la tabella ASV, la tassonomia e i metadata dei campioni.
-
-An object of class `phyloseq` links the ASV table, taxonomy and sample metadata.
-
-```{r}
-head(t(otu_table(ps))[, 1:6])
-head(as.data.frame(tax_table(ps)))
-as.data.frame(sample_data(ps))
-```
-
-**Fermata / Stop.** Quanti campioni, quante ASV e quali ranghi tassonomici contiene l'oggetto? Individuate controllo positivo e negativo.
-
-::: {.lang-block .lang-it}
-## 2. Profondita di sequenziamento
+::: {.callout-tip}
+Se avete salvato il dataset in un'altra posizione, cambiate solo il percorso di `setwd()`. Per esempio: `setwd("~/Desktop/Sea4Blue")`.
 :::
 
-::: {.lang-block .lang-en}
-## 2. Sequencing depth
-:::
+## Mappa del transetto
 
-```{r}
-#| eval: false
-depth_df <- data.frame(
-  Sample = sample_names(ps),
-  Reads = sample_sums(ps),
-  Type = ifelse(is.na(sample_data(ps)$Zone), "Control", "Environmental")
-)
+Questa è la prima vista utile: mostra i siti di campionamento lungo il transetto e aiuta a leggere tutti i grafici successivi.
 
-ggplot(depth_df, aes(x = reorder(Sample, Reads), y = Reads, fill = Type)) +
-  geom_col() +
-  coord_flip() +
-  labs(x = NULL, y = "Reads", title = "Library size") +
-  theme_bw()
-```
+```r
+# Convertiamo il metadata in tabella
+samdf <- as.data.frame(sample_data(ps))
 
-![](figures/biostatistica/01-depth.png){fig-alt="Library size per campione"}
-
-::: {.lang-block .lang-it}
-I controlli vengono visualizzati insieme ai campioni ambientali per capire subito se hanno profondita anomala.
-:::
-
-::: {.lang-block .lang-en}
-Controls are shown together with environmental samples so we can immediately spot anomalous library sizes.
-:::
-
-**Discussione / Discussion.** Il negativo ha la stessa profondita dei campioni ambientali? Il positivo e un campione ambientale? Profondita elevata significa automaticamente qualita elevata?
-
-::: {.lang-block .lang-it}
-### 2.1 Il transetto di campionamento
-:::
-
-::: {.lang-block .lang-en}
-### 2.1 The sampling transect
-:::
-
-::: {.lang-block .lang-it}
-Le coordinate sono metadata: prima del grafico le ordiniamo per giorno di navigazione per far leggere il gradiente spaziale in modo corretto.
-:::
-
-::: {.lang-block .lang-en}
-Coordinates are metadata: before plotting them, we sort samples by navigation day so the spatial gradient is read correctly.
-:::
-
-```{r}
-#| eval: false
-samdf <- data.frame(sample_data(subset_samples(ps, !is.na(Zone))))
+# Ordiniamo i campioni lungo il transetto
 samdf <- samdf[order(samdf$NavigationDay), ]
+
+# Recuperiamo la mappa del mondo
 world <- map_data("world")
 
+# Disegniamo il transetto
 ggplot() +
   geom_polygon(
     data = world,
     aes(x = long, y = lat, group = group),
-    fill = "grey92", color = "grey65"
+    fill = "grey90",
+    color = "grey60"
   ) +
-  geom_path(data = samdf, aes(Longitude, Latitude), color = "grey25", linewidth = 0.8) +
-  geom_point(data = samdf, aes(Longitude, Latitude, color = Zone), size = 3) +
+  geom_path(
+    data = samdf,
+    aes(x = Longitude, y = Latitude, group = 1),
+    color = "black",
+    linewidth = 1
+  ) +
+  geom_point(
+    data = samdf,
+    aes(x = Longitude, y = Latitude, color = Zone),
+    size = 3
+  ) +
   coord_quickmap(xlim = c(-85, -5), ylim = c(20, 45)) +
-  scale_color_manual(values = zone_colors) +
-  labs(x = "Longitudine", y = "Latitudine", title = "SEA4BLUE transect") +
+  labs(x = "Longitudine", y = "Latitudine", color = "Zona") +
   theme_minimal()
 ```
 
-![](figures/biostatistica/02-transect.png){fig-alt="Mappa del transetto SEA4BLUE"}
+![](figures/biostatistica/02-transect.png){fig-align="center" width="90%"}
 
-**Fermata / Stop.** `Zone` rappresenta gruppi indipendenti dalla geografia oppure segmenti dello stesso gradiente? Questa risposta sara importante quando interpreteremo PERMANOVA e RDA.
+## Profondità di sequenziamento e rarefaction curves
 
-::: {.lang-block .lang-it}
-## 3. Curva di rarefazione
-:::
+Qui conviene ragionare in due passaggi: prima guardiamo quante reads ha ogni campione, poi verifichiamo se la profondità di sequenziamento è sufficiente per confrontare i campioni in modo equo.
 
-::: {.lang-block .lang-en}
-## 3. Rarefaction curve
-:::
-
-::: {.lang-block .lang-it}
-Qui usiamo `vegan::rarecurve` sui soli campioni ambientali. E uno strumento diagnostico, non la normalizzazione finale dell'analisi.
-:::
-
-::: {.lang-block .lang-en}
-Here we use `vegan::rarecurve` on environmental samples only. This is a diagnostic tool, not the final normalization for the analysis.
-:::
-
-```{r}
-#| eval: false
-ps_bio <- subset_samples(ps, !is.na(Zone))
-otu_bio <- as(otu_table(ps_bio), "matrix")
-if (taxa_are_rows(ps_bio)) otu_bio <- t(otu_bio)
-
-set.seed(42)
-rarecurve(
-  otu_bio,
-  step = 1000,
-  sample = min(rowSums(otu_bio)),
-  label = FALSE,
-  xlab = "Reads campionate",
-  ylab = "ASV osservate"
-)
-```
-
-![](figures/biostatistica/03-rarefaction.png){fig-alt="Curve di rarefazione"}
-
-**Fermata / Stop.** Le curve raggiungono un plateau? Quale informazione perderemmo portando tutti i campioni alla profondita del piu piccolo?
-
-::: {.lang-block .lang-it}
-## 4. Filtraggio esplicito
-:::
-
-::: {.lang-block .lang-en}
-## 4. Explicit filtering
-:::
-
-::: {.lang-block .lang-it}
-Ogni filtro viene applicato e controllato separatamente, cosi l'oggetto che prosegue nell'analisi e sempre verificabile.
-:::
-
-::: {.lang-block .lang-en}
-Each filter is applied and checked separately, so the object that continues through the analysis always remains inspectable.
-:::
-
-### 4.1 Rimuovere mitocondri e cloroplasti
-
-```{r}
-ps_clean <- subset_taxa(
-  ps,
-  (is.na(Family) | Family != "Mitochondria") &
-    (is.na(Order) | Order != "Chloroplast")
+```r
+# Usiamo i conteggi grezzi per stimare la profondità di sequenziamento
+depth_df <- data.frame(
+  Sample = sample_names(ps),
+  Reads = sample_sums(ps),
+  Zone = sample_data(ps)$Zone,
+  SampleName = sample_data(ps)$SampleName
 )
 
-c(before = ntaxa(ps), after_organelle = ntaxa(ps_clean))
-```
-
-### 4.2 Rimuovere ASV con un solo conteggio totale
-
-```{r}
-ps_clean <- prune_taxa(taxa_sums(ps_clean) > 1, ps_clean)
-ntaxa(ps_clean)
-```
-
-### 4.3 Separare i controlli dall'analisi ecologica
-
-```{r}
-ps_clean <- subset_samples(ps_clean, !is.na(Zone))
-ps_clean <- prune_taxa(taxa_sums(ps_clean) > 0, ps_clean)
-ps_clean
-```
-
-::: {.callout-note}
-I controlli non vengono eliminati per ignorarli: prima si ispezionano per valutare contaminazione e riuscita del run, poi si escludono dal confronto ecologico tra zone.
-:::
-
-::: {.callout-note}
-Controls are not removed to ignore them: first we inspect them to assess contamination and run success, then we exclude them from the ecological comparison between zones.
-:::
-
-::: {.lang-block .lang-it}
-## 5. Diversita alfa sui conteggi
-:::
-
-::: {.lang-block .lang-en}
-## 5. Alpha diversity on counts
-:::
-
-La richness e il numero di ASV osservate nel campione; Shannon combina richness ed evenness.
-
-Richness is the number of observed ASVs in a sample; Shannon combines richness and evenness.
-
-```{r}
-alpha <- estimate_richness(ps_clean, measures = c("Observed", "Shannon"))
-alpha$Sample <- rownames(alpha)
-
-metadata <- data.frame(sample_data(ps_clean))
-metadata$Sample <- rownames(metadata)
-
-alpha <- left_join(alpha, metadata, by = "Sample")
-head(alpha)
-```
-
-```{r}
-#| eval: false
-ggplot(alpha, aes(x = Longitude, y = Observed, color = Zone)) +
-  geom_point(size = 3) +
-  geom_smooth(method = "lm", se = TRUE, color = "grey30") +
-  scale_color_manual(values = zone_colors) +
-  labs(x = "Longitudine", y = "ASV osservate", title = "Richness lungo il transetto") +
+# Un controllo rapido della libreria
+ggplot(depth_df, aes(x = reorder(SampleName, Reads), y = Reads, fill = Zone)) +
+  geom_col(width = 0.8) +
+  coord_flip() +
+  scale_fill_manual(values = c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a"), na.translate = FALSE) +
+  labs(x = NULL, y = "Reads", title = "Library size") +
   theme_bw()
 ```
 
-![](figures/biostatistica/05-alpha-richness.png){fig-alt="Richness lungo il transetto"}
+![](figures/biostatistica/01-depth.png){fig-align="center" width="90%"}
 
-**Discussione / Discussion.** State descrivendo un'associazione o dimostrando un effetto causale? Profondita e posizione geografica possono essere confondenti?
-
-```{r}
-sample_data(ps_clean)$Richness <- alpha[
-  match(sample_names(ps_clean), alpha$Sample),
-  "Observed"
-]
-```
-
-::: {.lang-block .lang-it}
-## 6. Abbondanza relativa e beta diversity
-:::
-
-::: {.lang-block .lang-en}
-## 6. Relative abundance and beta diversity
-:::
-
-```{r}
-ps_rel <- transform_sample_counts(ps_clean, function(x) x / sum(x))
-sample_sums(ps_rel)
-```
-
-La somma di ogni campione deve essere circa 1. Ora calcoliamo Bray-Curtis e una PCoA.
-
-The sum for each sample should be approximately 1. Now we compute Bray-Curtis and a PCoA.
-
-```{r}
-#| eval: false
-pcoa_bray <- ordinate(ps_rel, method = "PCoA", distance = "bray")
-
-plot_ordination(ps_rel, pcoa_bray, color = "Zone") +
-  geom_point(size = 3) +
-  geom_text_repel(aes(label = SampleName), show.legend = FALSE) +
-  scale_color_manual(values = zone_colors) +
-  labs(title = "PCoA - Bray-Curtis") +
-  theme_bw()
-```
-
-![](figures/biostatistica/06-pcoa-bray.png){fig-alt="PCoA Bray-Curtis"}
-
-**Fermata / Stop.** Quali campioni sono piu lontani? La separazione sembra graduale lungo il transetto o discreta tra zone?
-
-::: {.lang-block .lang-it}
-## 7. PERMANOVA e dispersione
-:::
-
-::: {.lang-block .lang-en}
-## 7. PERMANOVA and dispersion
-:::
-
-Prima assicuriamoci che righe della matrice e metadata abbiano lo stesso ordine.
-
-First, make sure that matrix rows and metadata have the same order.
-
-```{r}
-otu_rel <- as(otu_table(ps_rel), "matrix")
-if (taxa_are_rows(ps_rel)) otu_rel <- t(otu_rel)
-
-meta_rel <- data.frame(sample_data(ps_rel))
-meta_rel <- meta_rel[rownames(otu_rel), , drop = FALSE]
-stopifnot(identical(rownames(otu_rel), rownames(meta_rel)))
-
-bray <- vegdist(otu_rel, method = "bray")
-
+```r
+# Fissiamo il seed per rendere riproducibile il downsampling
 set.seed(42)
-adonis2(bray ~ Zone, data = meta_rel, permutations = 999)
-```
 
-La PERMANOVA puo risentire di dispersioni diverse tra gruppi. Controlliamole.
+# Teniamo solo i campioni con zona assegnata
+ps_rarefaction <- subset_samples(ps, !is.na(Zone))
 
-PERMANOVA can be affected by different dispersions among groups. Check them.
-
-```{r}
-dispersion <- betadisper(bray, group = meta_rel$Zone)
-anova(dispersion)
-
-set.seed(42)
-permutest(dispersion, permutations = 999)
-```
-
-::: {.callout-warning}
-Le zone sono definite lungo lo stesso gradiente geografico. Un risultato significativo per `Zone` non separa automaticamente l'effetto della categoria da quello della longitudine, ne dimostra causalita.
-:::
-
-::: {.callout-warning}
-The zones are defined along the same geographic gradient. A significant result for `Zone` does not automatically separate category effects from longitude effects, and it does not demonstrate causality.
-:::
-
-::: {.lang-block .lang-it}
-## 8. Composizione tassonomica
-:::
-
-::: {.lang-block .lang-en}
-## 8. Taxonomic composition
-:::
-
-Aggregare a genere rende il grafico leggibile ma perde dettaglio. Mostriamo i 12 generi complessivamente piu abbondanti e raggruppiamo gli altri.
-
-Aggregating to genus makes the plot readable but loses detail. We show the 12 most abundant genera overall and group the rest.
-
-```{r}
-ps_genus <- tax_glom(ps_rel, taxrank = "Genus", NArm = FALSE)
-genus_df <- psmelt(ps_genus)
-
-top_genera <- genus_df |>
-  filter(!is.na(Genus)) |>
-  group_by(Genus) |>
-  summarise(total = sum(Abundance), .groups = "drop") |>
-  slice_max(total, n = 12) |>
-  pull(Genus)
-
-genus_plot <- genus_df |>
-  mutate(
-    Genus_plot = ifelse(
-      is.na(Genus) | !Genus %in% top_genera,
-      "Other",
-      as.character(Genus)
+# Funzione originale, resa esplicita passo per passo
+calculate_rarefaction_curves <- function(psdata, measures, depths) {
+  estimate_rarified_richness <- function(psdata, measures, depth) {
+    if (max(sample_sums(psdata)) < depth) return(NULL)
+    psdata <- prune_samples(sample_sums(psdata) >= depth, psdata)
+    rarified_psdata <- rarefy_even_depth(psdata, depth, verbose = FALSE)
+    alpha_diversity <- estimate_richness(rarified_psdata, measures = measures)
+    melt(
+      as.matrix(alpha_diversity),
+      varnames = c("Sample", "Measure"),
+      value.name = "Alpha_diversity"
     )
-  ) |>
-  group_by(Sample, Zone, Genus_plot) |>
-  summarise(Abundance = sum(Abundance), .groups = "drop")
-```
+  }
 
-```{r}
-#| eval: false
-ggplot(genus_plot, aes(x = Sample, y = Abundance, fill = Genus_plot)) +
-  geom_col(width = 0.85) +
-  facet_grid(~ Zone, scales = "free_x", space = "free_x") +
-  scale_y_continuous(labels = function(x) paste0(round(100 * x), "%")) +
-  labs(x = NULL, y = "Abbondanza relativa", fill = "Genere") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-```
+  names(depths) <- depths
+  rarefaction_curve_data <- plyr::ldply(
+    depths,
+    estimate_rarified_richness,
+    psdata = psdata,
+    measures = measures,
+    .id = "Depth"
+  )
+  rarefaction_curve_data$Depth <- as.numeric(levels(rarefaction_curve_data$Depth))[rarefaction_curve_data$Depth]
+  rarefaction_curve_data
+}
 
-![](figures/biostatistica/08-composition.png){fig-alt="Composizione tassonomica"}
-
-**Discussione / Discussion.** Quali pattern della PCoA possono essere collegati a questo grafico?
-
-::: {.lang-block .lang-it}
-## 9. RDA lungo il gradiente longitudinale
-:::
-
-::: {.lang-block .lang-en}
-## 9. RDA along the longitudinal gradient
-:::
-
-Per la RDA trasformiamo le abbondanze relative con Hellinger. Usiamo la longitudine come variabile esplicativa; la richness non viene usata come predittore perche e calcolata dalla stessa matrice biologica.
-
-For the RDA we transform relative abundances with Hellinger. Longitude is the explanatory variable; richness is not used as a predictor because it is derived from the same biological matrix.
-
-```{r}
-otu_hellinger <- decostand(otu_rel, method = "hellinger")
-rda_model <- rda(otu_hellinger ~ Longitude, data = meta_rel)
-
-set.seed(42)
-anova(rda_model, permutations = 999)
-RsquareAdj(rda_model)
-```
-
-```{r}
-#| eval: false
-site_scores <- as.data.frame(scores(rda_model, display = "sites", choices = 1:2))
-site_scores$Sample <- rownames(site_scores)
-site_scores <- left_join(
-  site_scores,
-  cbind(Sample = rownames(meta_rel), meta_rel),
-  by = "Sample"
+# Calcoliamo le curve
+rarefaction_curve_data <- calculate_rarefaction_curves(
+  ps_rarefaction,
+  c("Observed"),
+  rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10)
 )
 
-ggplot(site_scores, aes(x = RDA1, y = PC1, color = Zone, label = SampleName)) +
-  geom_hline(yintercept = 0, color = "grey85") +
-  geom_vline(xintercept = 0, color = "grey85") +
-  geom_point(size = 3) +
-  geom_text_repel(show.legend = FALSE) +
-  scale_color_manual(values = zone_colors) +
-  labs(title = "RDA vincolata dalla longitudine") +
+# Riassumiamo i valori per il grafico
+rarefaction_curve_data_summary <- plyr::ddply(
+  rarefaction_curve_data,
+  c("Depth", "Sample", "Measure"),
+  summarise,
+  Alpha_diversity_mean = mean(Alpha_diversity),
+  Alpha_diversity_sd = sd(Alpha_diversity)
+)
+rarefaction_curve_data_summary_verbose <- merge(
+  rarefaction_curve_data_summary,
+  data.frame(sample_data(ps_rarefaction)),
+  by.x = "Sample",
+  by.y = "row.names"
+)
+
+# Disegniamo le curve colorandole per zona
+ggplot(
+  data = rarefaction_curve_data_summary_verbose,
+  aes(x = Depth, y = Alpha_diversity_mean, group = Sample, color = Zone)
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  geom_label_repel(
+    data = rarefaction_curve_data_summary_verbose |>
+      dplyr::group_by(Sample) |>
+      dplyr::filter(Alpha_diversity_mean == max(Alpha_diversity_mean)),
+    aes(label = SampleName),
+    color = "black",
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a")) +
+  labs(x = "Profondità", y = "ASV osservate", title = "Rarefaction Curves") +
   theme_bw()
 ```
 
-![](figures/biostatistica/09-rda.png){fig-alt="RDA vincolata dalla longitudine"}
+![](figures/biostatistica/03-rarefaction.png){fig-align="center" width="90%"}
 
-::: {.lang-block .lang-it}
-## 10. Cosa riportare
+## Normalizzazione
+
+Qui facciamo i passaggi che servono davvero per la lezione: togliamo i taxa indesiderati, filtriamo i singletons, escludiamo i controlli e applichiamo CSS.
+
+```r
+# Partiamo dall'oggetto iniziale
+phyloseq_obj <- ps
+
+# Rimuoviamo cloroplasti e mitocondri
+phyloseq_obj <- phyloseq_obj |>
+  subset_taxa((is.na(Family) | Family != "Mitochondria") & (is.na(Order) | Order != "Chloroplast"))
+
+# Teniamo solo i taxa osservati più di una volta
+phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 1, phyloseq_obj)
+
+# Escludiamo i controlli
+phyloseq_obj <- subset_samples(
+  phyloseq_obj,
+  !is.na(Zone) & SampleName != "Positive" & SampleName != "Negative"
+)
+
+# Convertiamo in oggetto metagenomeSeq e applichiamo CSS
+data.metagenomeSeq <- phyloseq_to_metagenomeSeq(phyloseq_obj)
+p <- cumNormStat(data.metagenomeSeq)
+data.cumnorm <- cumNorm(data.metagenomeSeq, p = p)
+data.CSS <- MRcounts(data.cumnorm, norm = TRUE, log = TRUE)
+
+# Ricreiamo l'oggetto phyloseq normalizzato
+phyloseq_obj_css <- phyloseq_obj
+otu_table(phyloseq_obj_css) <- otu_table(data.CSS, taxa_are_rows = TRUE)
+
+# Rinominamo i campioni con il nome leggibile
+sample_names(phyloseq_obj_css) <- sample_data(phyloseq_obj_css)$SampleName
+```
+
+## Alpha diversity
+
+In questa pagina teniamo la stessa logica della lezione originale: prima arrotondiamo i conteggi normalizzati, poi stimiamo la richness e infine la leggiamo lungo il transetto.
+
+```r
+# Arrotondiamo i conteggi normalizzati per la richness
+phyloseq_obj_css_round <- phyloseq_obj_css
+otu_table(phyloseq_obj_css_round) <- round(otu_table(phyloseq_obj_css), digits = 0)
+
+# Calcoliamo la richness osservata
+p1 <- plot_richness(
+  phyloseq_obj_css_round,
+  x = "Longitude",
+  color = "Zone",
+  measures = c("Observed")
+)
+
+# Ordiniamo le zone come nel corso
+newSTorder <- c("ANW", "ANC", "ANE")
+p1$data$Zone <- factor(as.character(p1$data$Zone), levels = newSTorder)
+
+# Disegno finale
+ggplot(p1$data, aes(Longitude, value)) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5), ggside.panel.scale.y = 0.4) +
+  geom_point(aes(colour = Zone), alpha = 0.45) +
+  scale_color_manual(values = c("#4280fc", "#ffb452", "#f7170a", "#000000")) +
+  geom_ysideboxplot(aes(x = Zone, y = value, colour = Zone), orientation = "x") +
+  scale_ysidex_discrete() +
+  geom_smooth(aes(colour = variable), linewidth = 1.5) +
+  ylab("Richness")
+```
+
+![](figures/biostatistica/05-alpha-richness.png){fig-align="center" width="90%"}
+
+```r
+# Salviamo la richness nei metadata: ci servirà dopo
+sample_data(phyloseq_obj_css)$Richness <- p1$data$value
+```
+
+## Beta diversity
+
+Qui ci fermiamo alla PCoA su Bray-Curtis. La lezione originale mostrava anche il controllo sulle dispersioni, ma in questa versione didattica lo togliamo per mantenere il flusso più lineare.
+
+```r
+# Calcoliamo l'ordinamento Bray-Curtis
+otu.ord <- ordinate(phyloseq_obj_css, "PCoA", distance = "bray")
+
+# Disegniamo la PCoA con le etichette
+plot_ordination(phyloseq_obj_css, otu.ord, color = "Zone", axes = c(1, 2)) +
+  scale_color_manual(values = c("#4280fc", "#ffb452", "#f7170a")) +
+  geom_point(size = 3) +
+  geom_text_repel(aes(label = SampleName), max.overlaps = Inf, show.legend = FALSE) +
+  labs(title = "Beta Diversity based on Bray-Curtis") +
+  theme_bw()
+```
+
+![](figures/biostatistica/06-pcoa-bray.png){fig-align="center" width="90%"}
+
+## Composizione della comunità e RDA
+
+Prima guardiamo la composizione tassonomica a livello di genere, poi chiudiamo con una RDA vincolata dalla longitudine e dalla richness.
+
+```r
+# Convertiamo i conteggi in percentuale
+physeq_perc <- transform_sample_counts(phyloseq_obj_css, function(x) 100 * x / sum(x))
+
+# Agreghiamo al livello di genere
+glom <- tax_glom(physeq_perc, taxrank = "Genus")
+data_glom <- psmelt(glom)
+data_glom$Zone <- factor(as.character(data_glom$Zone), levels = c("ANW", "ANC", "ANE"))
+
+# Palette molto ampia per i generi
+color <- grDevices::colors()[grep("gr(a|e)y", grDevices::colors(), invert = TRUE)]
+
+# Barplot di tutti i generi
+ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
+  facet_grid(~Zone, scales = "free") +
+  geom_bar(stat = "identity", position = "fill", width = 0.7) +
+  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus)))) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), legend.position = "none")
+```
+
+![](figures/biostatistica/08-composition-all.png){fig-align="center" width="95%"}
+
+```r
+# Identifichiamo i taxa più abbondanti
+genus.sum <- tapply(taxa_sums(glom), tax_table(glom)[, "Genus"], sum, na.rm = TRUE)
+topGenera <- names(sort(genus.sum, TRUE))[1:20]
+
+# Stesso grafico, ma con i top genera evidenziati
+ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
+  facet_grid(~Zone, scales = "free") +
+  geom_bar(stat = "identity", position = "fill", width = 0.7) +
+  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus))), breaks = topGenera) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+```r
+# RDA sulla comunità
+RDA <- ordinate(phyloseq_obj_css ~ Richness + Longitude, "RDA")
+
+# Primo grafico: campioni colorati per zona
+p2 <- plot_ordination(phyloseq_obj_css, RDA, color = "Zone") +
+  theme_bw() +
+  geom_text_repel(aes(label = SampleName, color = Zone), max.overlaps = Inf, show.legend = FALSE) +
+  geom_point(size = 4) +
+  scale_color_manual(values = c("#4280fc", "#ffb452", "#f7170a"))
+
+# Aggiungiamo le frecce delle variabili esplicative
+arrowmat <- vegan::scores(RDA, display = "bp")
+arrowdf <- data.frame(labels = rownames(arrowmat), arrowmat)
+arrowhead <- grid::arrow(length = grid::unit(0.05, "npc"))
+
+p2 +
+  geom_segment(
+    aes(xend = RDA1, yend = RDA2, x = 0, y = 0),
+    data = arrowdf,
+    color = "black",
+    arrow = arrowhead,
+    linewidth = 1
+  ) +
+  geom_text(
+    aes(x = 1.7 * RDA1, y = 1.7 * RDA2, label = labels),
+    data = arrowdf,
+    size = 4
+  )
+```
+
+![](figures/biostatistica/09-rda.png){fig-align="center" width="90%"}
+
+## Nota finale
+
+Questo tutorial resta statico apposta: il codice è mostrato per essere letto e discusso, mentre le figure sono già pronte. In aula, il punto è capire la sequenza logica dell'analisi, non perdere tempo con output rumorosi o blocchi troppo automatici.
 :::
 
-::: {.lang-block .lang-en}
-## 10. What to report
+::: {.lang-en}
+# SEA4BLUE Project
+
+This page follows the original lesson flow, but in a static format: we inspect the ready-made `phyloseq` object, read the plots, and go step by step.
+
+Before opening RStudio, download the dataset and unzip it into your `Downloads` folder.
+
+[Download Sea4Blue.zip](downloads/Sea4Blue.zip){.btn .btn-primary download="Sea4Blue.zip"}
+
+![](figures/intro/Sea4Blue_page-0001.jpg){fig-align="center" width="85%"}
+
+![](figures/intro/gel.png){fig-align="center" width="70%"}
+
+## Where the data come from
+
+The samples come from the SEA4BLUE ocean transect. The goal is simple: follow the microbial community along the route, compare the transect zones, and inspect how richness, composition, and ordination change.
+
+## Getting started in R
+
+If you extracted the zip into `~/Downloads/Sea4Blue`, your working directory must point there before reading the `.rds` file.
+
+```r
+# Clear the workspace
+rm(list = ls())
+
+# Load the required packages
+library(phyloseq)
+library(ggplot2)
+library(dplyr)
+library(maps)
+library(ggrepel)
+library(ggside)
+library(metagenomeSeq)
+library(vegan)
+
+# Set the working directory where Sea4Blue.zip was extracted
+setwd("~/Downloads/Sea4Blue")
+
+# Load the ready-to-use phyloseq object
+ps <- readRDS("phyloseq.rds")
+
+# Quick sanity checks
+ps
+sample_data(ps)
+head(t(otu_table(ps)))
+```
+
+::: {.callout-tip}
+If you stored the dataset somewhere else, change only the `setwd()` path. For example: `setwd("~/Desktop/Sea4Blue")`.
 :::
 
-Nel resoconto indicate sempre:
+## Transect map
 
-In the report always include:
+This is the first useful view: it shows the sampling sites along the transect and makes the later plots easier to read.
 
-- numero iniziale e finale di campioni e ASV;
-- criterio di esclusione dei controlli e dei taxa;
-- rappresentazione o trasformazione usata in ogni analisi;
-- distanza e metodo di ordinamento;
-- formula, numero di permutazioni e controllo della dispersione per PERMANOVA;
-- limiti del disegno osservazionale e possibili fattori confondenti.
+```r
+# Turn sample metadata into a data frame
+samdf <- as.data.frame(sample_data(ps))
 
-::: {.callout-note}
-Se volete, il passo successivo e affiancare a questa pagina una versione compatta con il solo flusso operativo, da usare come handout durante la lezione.
-:::
+# Order samples along the transect
+samdf <- samdf[order(samdf$NavigationDay), ]
 
-::: {.callout-note}
-If you want, the next step is to add a compact operator view of the same material, to use as a handout during the lesson.
+# Retrieve the world map
+world <- map_data("world")
+
+# Plot the transect
+ggplot() +
+  geom_polygon(
+    data = world,
+    aes(x = long, y = lat, group = group),
+    fill = "grey90",
+    color = "grey60"
+  ) +
+  geom_path(
+    data = samdf,
+    aes(x = Longitude, y = Latitude, group = 1),
+    color = "black",
+    linewidth = 1
+  ) +
+  geom_point(
+    data = samdf,
+    aes(x = Longitude, y = Latitude, color = Zone),
+    size = 3
+  ) +
+  coord_quickmap(xlim = c(-85, -5), ylim = c(20, 45)) +
+  labs(x = "Longitude", y = "Latitude", color = "Zone") +
+  theme_minimal()
+```
+
+![](figures/biostatistica/02-transect.png){fig-align="center" width="90%"}
+
+## Sequencing depth and rarefaction curves
+
+Here we work in two stages: first we inspect how many reads each sample has, then we check whether sequencing depth is sufficient for fair comparisons.
+
+```r
+# Use raw counts to inspect sequencing depth
+depth_df <- data.frame(
+  Sample = sample_names(ps),
+  Reads = sample_sums(ps),
+  Zone = sample_data(ps)$Zone,
+  SampleName = sample_data(ps)$SampleName
+)
+
+# Quick library-size check
+ggplot(depth_df, aes(x = reorder(SampleName, Reads), y = Reads, fill = Zone)) +
+  geom_col(width = 0.8) +
+  coord_flip() +
+  scale_fill_manual(values = c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a"), na.translate = FALSE) +
+  labs(x = NULL, y = "Reads", title = "Library size") +
+  theme_bw()
+```
+
+![](figures/biostatistica/01-depth.png){fig-align="center" width="90%"}
+
+```r
+# Fix the seed to keep the downsampling reproducible
+set.seed(42)
+
+# Keep only samples with an assigned zone
+ps_rarefaction <- subset_samples(ps, !is.na(Zone))
+
+# Original logic, written out step by step
+calculate_rarefaction_curves <- function(psdata, measures, depths) {
+  estimate_rarified_richness <- function(psdata, measures, depth) {
+    if (max(sample_sums(psdata)) < depth) return(NULL)
+    psdata <- prune_samples(sample_sums(psdata) >= depth, psdata)
+    rarified_psdata <- rarefy_even_depth(psdata, depth, verbose = FALSE)
+    alpha_diversity <- estimate_richness(rarified_psdata, measures = measures)
+    melt(
+      as.matrix(alpha_diversity),
+      varnames = c("Sample", "Measure"),
+      value.name = "Alpha_diversity"
+    )
+  }
+
+  names(depths) <- depths
+  rarefaction_curve_data <- plyr::ldply(
+    depths,
+    estimate_rarified_richness,
+    psdata = psdata,
+    measures = measures,
+    .id = "Depth"
+  )
+  rarefaction_curve_data$Depth <- as.numeric(levels(rarefaction_curve_data$Depth))[rarefaction_curve_data$Depth]
+  rarefaction_curve_data
+}
+
+# Compute the curves
+rarefaction_curve_data <- calculate_rarefaction_curves(
+  ps_rarefaction,
+  c("Observed"),
+  rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10)
+)
+
+# Summarize values for plotting
+rarefaction_curve_data_summary <- plyr::ddply(
+  rarefaction_curve_data,
+  c("Depth", "Sample", "Measure"),
+  summarise,
+  Alpha_diversity_mean = mean(Alpha_diversity),
+  Alpha_diversity_sd = sd(Alpha_diversity)
+)
+rarefaction_curve_data_summary_verbose <- merge(
+  rarefaction_curve_data_summary,
+  data.frame(sample_data(ps_rarefaction)),
+  by.x = "Sample",
+  by.y = "row.names"
+)
+
+# Plot the curves colored by zone
+ggplot(
+  data = rarefaction_curve_data_summary_verbose,
+  aes(x = Depth, y = Alpha_diversity_mean, group = Sample, color = Zone)
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  geom_label_repel(
+    data = rarefaction_curve_data_summary_verbose |>
+      dplyr::group_by(Sample) |>
+      dplyr::filter(Alpha_diversity_mean == max(Alpha_diversity_mean)),
+    aes(label = SampleName),
+    color = "black",
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = c(ANW = "#4280fc", ANC = "#ffb452", ANE = "#f7170a")) +
+  labs(x = "Depth", y = "Observed ASVs", title = "Rarefaction Curves") +
+  theme_bw()
+```
+
+![](figures/biostatistica/03-rarefaction.png){fig-align="center" width="90%"}
+
+## Normalization
+
+Here we keep only the steps that matter for the lesson: remove unwanted taxa, filter singletons, exclude controls, and apply CSS.
+
+```r
+# Start from the initial object
+phyloseq_obj <- ps
+
+# Remove chloroplasts and mitochondria
+phyloseq_obj <- phyloseq_obj |>
+  subset_taxa((is.na(Family) | Family != "Mitochondria") & (is.na(Order) | Order != "Chloroplast"))
+
+# Keep only taxa observed more than once
+phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 1, phyloseq_obj)
+
+# Remove controls
+phyloseq_obj <- subset_samples(
+  phyloseq_obj,
+  !is.na(Zone) & SampleName != "Positive" & SampleName != "Negative"
+)
+
+# Convert to metagenomeSeq and apply CSS
+data.metagenomeSeq <- phyloseq_to_metagenomeSeq(phyloseq_obj)
+p <- cumNormStat(data.metagenomeSeq)
+data.cumnorm <- cumNorm(data.metagenomeSeq, p = p)
+data.CSS <- MRcounts(data.cumnorm, norm = TRUE, log = TRUE)
+
+# Rebuild the normalized phyloseq object
+phyloseq_obj_css <- phyloseq_obj
+otu_table(phyloseq_obj_css) <- otu_table(data.CSS, taxa_are_rows = TRUE)
+
+# Rename samples with their readable sample names
+sample_names(phyloseq_obj_css) <- sample_data(phyloseq_obj_css)$SampleName
+```
+
+## Alpha diversity
+
+We keep the same logic used in the original lesson: round the normalized counts, estimate richness, and read it along the transect.
+
+```r
+# Round normalized counts for richness
+phyloseq_obj_css_round <- phyloseq_obj_css
+otu_table(phyloseq_obj_css_round) <- round(otu_table(phyloseq_obj_css), digits = 0)
+
+# Compute observed richness
+p1 <- plot_richness(
+  phyloseq_obj_css_round,
+  x = "Longitude",
+  color = "Zone",
+  measures = c("Observed")
+)
+
+# Keep the same zone order as in the course
+newSTorder <- c("ANW", "ANC", "ANE")
+p1$data$Zone <- factor(as.character(p1$data$Zone), levels = newSTorder)
+
+# Final figure
+ggplot(p1$data, aes(Longitude, value)) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5), ggside.panel.scale.y = 0.4) +
+  geom_point(aes(colour = Zone), alpha = 0.45) +
+  scale_color_manual(values = c("#4280fc", "#ffb452", "#f7170a", "#000000")) +
+  geom_ysideboxplot(aes(x = Zone, y = value, colour = Zone), orientation = "x") +
+  scale_ysidex_discrete() +
+  geom_smooth(aes(colour = variable), linewidth = 1.5) +
+  ylab("Richness")
+```
+
+![](figures/biostatistica/05-alpha-richness.png){fig-align="center" width="90%"}
+
+```r
+# Save richness in the metadata for later use
+sample_data(phyloseq_obj_css)$Richness <- p1$data$value
+```
+
+## Beta diversity
+
+Here we stop at the PCoA on Bray-Curtis. The original lesson also discussed dispersion checks, but this static version keeps the flow simpler.
+
+```r
+# Compute the Bray-Curtis ordination
+otu.ord <- ordinate(phyloseq_obj_css, "PCoA", distance = "bray")
+
+# Draw the PCoA with labels
+plot_ordination(phyloseq_obj_css, otu.ord, color = "Zone", axes = c(1, 2)) +
+  scale_color_manual(values = c("#4280fc", "#ffb452", "#f7170a")) +
+  geom_point(size = 3) +
+  geom_text_repel(aes(label = SampleName), max.overlaps = Inf, show.legend = FALSE) +
+  labs(title = "Beta Diversity based on Bray-Curtis") +
+  theme_bw()
+```
+
+![](figures/biostatistica/06-pcoa-bray.png){fig-align="center" width="90%"}
+
+## Community composition and RDA
+
+First we look at the taxonomic composition at genus level, then we close with an RDA constrained by longitude and richness.
+
+```r
+# Convert counts to percentages
+physeq_perc <- transform_sample_counts(phyloseq_obj_css, function(x) 100 * x / sum(x))
+
+# Aggregate at genus level
+glom <- tax_glom(physeq_perc, taxrank = "Genus")
+data_glom <- psmelt(glom)
+data_glom$Zone <- factor(as.character(data_glom$Zone), levels = c("ANW", "ANC", "ANE"))
+
+# Large palette for genera
+color <- grDevices::colors()[grep("gr(a|e)y", grDevices::colors(), invert = TRUE)]
+
+# All genera
+ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
+  facet_grid(~Zone, scales = "free") +
+  geom_bar(stat = "identity", position = "fill", width = 0.7) +
+  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus)))) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), legend.position = "none")
+```
+
+![](figures/biostatistica/08-composition-all.png){fig-align="center" width="95%"}
+
+```r
+# Identify the most abundant taxa
+genus.sum <- tapply(taxa_sums(glom), tax_table(glom)[, "Genus"], sum, na.rm = TRUE)
+topGenera <- names(sort(genus.sum, TRUE))[1:20]
+
+# Same plot, highlighting the top genera
+ggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +
+  facet_grid(~Zone, scales = "free") +
+  geom_bar(stat = "identity", position = "fill", width = 0.7) +
+  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus))), breaks = topGenera) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+![](figures/biostatistica/08-composition-top.png){fig-align="center" width="95%"}
+
+```r
+# RDA on the community
+RDA <- ordinate(phyloseq_obj_css ~ Richness + Longitude, "RDA")
+
+# First plot: samples colored by zone
+p2 <- plot_ordination(phyloseq_obj_css, RDA, color = "Zone") +
+  theme_bw() +
+  geom_text_repel(aes(label = SampleName, color = Zone), max.overlaps = Inf, show.legend = FALSE) +
+  geom_point(size = 4) +
+  scale_color_manual(values = c("#4280fc", "#ffb452", "#f7170a"))
+
+# Add arrows for explanatory variables
+arrowmat <- vegan::scores(RDA, display = "bp")
+arrowdf <- data.frame(labels = rownames(arrowmat), arrowmat)
+arrowhead <- grid::arrow(length = grid::unit(0.05, "npc"))
+
+p2 +
+  geom_segment(
+    aes(xend = RDA1, yend = RDA2, x = 0, y = 0),
+    data = arrowdf,
+    color = "black",
+    arrow = arrowhead,
+    linewidth = 1
+  ) +
+  geom_text(
+    aes(x = 1.7 * RDA1, y = 1.7 * RDA2, label = labels),
+    data = arrowdf,
+    size = 4
+  )
+```
+
+![](figures/biostatistica/09-rda.png){fig-align="center" width="90%"}
+
+## Final note
+
+This tutorial is intentionally static: the code is there to be read and discussed, while the figures are already ready to use. The point in class is to understand the analytical sequence, not to spend time on noisy output or overly automated steps.
 :::

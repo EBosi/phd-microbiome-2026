@@ -2,177 +2,135 @@
   {
     "objectID": "biostatistica.html",
     "href": "biostatistica.html",
-    "title": "Analisi biostatistica: SEA4BLUE",
+    "title": "Analisi biostatistica / Biostatistics",
     "section": "",
-    "text": "Questa lezione segue il percorso biologico del dataset SEA4BLUE: dal transetto oceanico ai grafici di diversita, fino ai test multivariati.\n\nconti grezzi per profondita di sequenziamento e diversita alfa;\nabbondanze relative per composizione e Bray-Curtis;\ntrasformazione di Hellinger per la RDA.\n\nIl punto didattico non e fare tutto con un unico comando, ma vedere come cambia l’oggetto a ogni passaggio.\nlibrary(phyloseq)\n\nWarning: package 'phyloseq' was built under R version 4.5.2\n\nlibrary(vegan)\n\nWarning: package 'vegan' was built under R version 4.5.2\n\n\nLoading required package: permute\n\nlibrary(ggplot2)\n\nWarning: package 'ggplot2' was built under R version 4.5.2\n\nlibrary(dplyr)\n\nWarning: package 'dplyr' was built under R version 4.5.2\n\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nlibrary(maps)\nlibrary(ggrepel)\n\nWarning: package 'ggrepel' was built under R version 4.5.2\n\nzone_colors &lt;- c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\")\n\nps &lt;- readRDS(\"materials/Sea4Blue/phyloseq.rds\")\n\nps\n\nphyloseq-class experiment-level object\notu_table()   OTU Table:         [ 1312 taxa and 17 samples ]\nsample_data() Sample Data:       [ 17 samples by 9 sample variables ]\ntax_table()   Taxonomy Table:    [ 1312 taxa by 6 taxonomic ranks ]\nUn oggetto phyloseq collega la tabella ASV, la tassonomia e i metadata dei campioni.\nAn object of class phyloseq links the ASV table, taxonomy and sample metadata.\nhead(t(otu_table(ps))[, 1:6])\n\nOTU Table:          [6 taxa and 6 samples]\n                     taxa are rows\n      sa1  sa2  sa3   sa4  sa5   sa6\nASV1    0 7739 6895 11491 7234 12919\nASV2  342 4069 2989  3307 2785  2105\nASV3  199 3389 3019  2093 4187  3852\nASV4    0    0    0     0    0     0\nASV5 2231    0    0     0    0     0\nASV6   58 1060 2234  1593 3877  3089\n\nhead(as.data.frame(tax_table(ps)))\n\n      Kingdom         Phylum               Class            Order\nASV1 Bacteria  Cyanobacteria      Cyanobacteriia  Synechococcales\nASV2 Bacteria Proteobacteria Alphaproteobacteria Rhodospirillales\nASV3 Bacteria Proteobacteria Alphaproteobacteria      SAR11 clade\nASV4 Bacteria     Firmicutes             Bacilli  Lactobacillales\nASV5 Bacteria  Cyanobacteria      Cyanobacteriia  Synechococcales\nASV6 Bacteria Proteobacteria Alphaproteobacteria      SAR11 clade\n                      Family                   Genus\nASV1            Cyanobiaceae Prochlorococcus MIT9313\nASV2 AEGEAN-169 marine group                    &lt;NA&gt;\nASV3                 Clade I                Clade Ia\nASV4            Listeriaceae                Listeria\nASV5            Cyanobiaceae Prochlorococcus MIT9313\nASV6                 Clade I                Clade Ia\n\nas.data.frame(sample_data(ps))\n\n            X    IndexSequence SampleName NavigationDay       Date        Water\nsa1     eDNA1 TACTAGGTAAGCAGCA      eDNA1             1 23/05/2022 Superficiale\nsa2    eDNA18 TAACGTCCACGCGTGA     eDNA18            18 09/06/2022 Superficiale\nsa3    eDNA19 TACTAGGTTGCGTCAC     eDNA19            19 10/06/2022 Superficiale\nsa4    eDNA25 ACGTACGTTGCGTCAC     eDNA25            25 23/06/2022 Superficiale\nsa5    eDNA26 GCGATACGTGCGTCAC     eDNA26            26 24/06/2022 Superficiale\nsa6    eDNA27 TACTAGGTGTCTAGTG     eDNA27            27 25/06/2022 Superficiale\nsa7    eDNA28 ACGTACGTGTCTAGTG     eDNA28            28 26/06/2022 Superficiale\nsa8     eDNA3 ACGTACGTAAGCAGCA      eDNA3             3 25/05/2022 Superficiale\nsa9     eDNA4 GCGATACGAAGCAGCA      eDNA4             4 26/06/2022 Superficiale\nsa10    eDNA6 GTTACAGCAAGCAGCA      eDNA6             6 28/05/2022 Superficiale\nsa11    eDNA7 TAACGTCCAAGCAGCA      eDNA7             7 29/05/2022 Superficiale\nsa12    eDNA9 TACTAGGTACGCGTGA      eDNA9             9 31/05/2022 Superficiale\nsa13   eDNA15 ACGTACGTACGCGTGA     eDNA15            15 06/06/2022 Superficiale\nsa14   eDNA16 GCGATACGACGCGTGA     eDNA16            16 07/06/2022 Superficiale\nsa15   eDNA17 GTTACAGCACGCGTGA     eDNA17            17 08/06/2022 Superficiale\nsa16 Negative GCGATACGGTCTAGTG   Negative            NA       &lt;NA&gt; Superficiale\nsa17 Positive GTTACAGCGTCTAGTG   Positive            NA       &lt;NA&gt; Superficiale\n     Zone Latitude  Longitude\nsa1   ANW 29.30070 -77.936917\nsa2   ANC 35.79043 -34.595667\nsa3   ANC 36.99627 -32.055683\nsa4   ANE 35.89713 -17.887783\nsa5   ANE 36.13633 -14.540200\nsa6   ANE 36.25035 -11.687733\nsa7   ANE 36.07880  -7.874533\nsa8   ANW 30.65897 -75.508383\nsa9   ANW 31.18923 -74.859950\nsa10  ANW 31.75563 -69.329683\nsa11  ANW 31.82482 -67.287833\nsa12  ANW 31.99925 -62.128333\nsa13  ANC 34.21340 -44.076200\nsa14  ANC 34.55028 -40.685317\nsa15  ANC 35.44867 -37.395217\nsa16 &lt;NA&gt;       NA         NA\nsa17 &lt;NA&gt;       NA         NA\nFermata / Stop. Quanti campioni, quante ASV e quali ranghi tassonomici contiene l’oggetto? Individuate controllo positivo e negativo.\ndepth_df &lt;- data.frame(\n  Sample = sample_names(ps),\n  Reads = sample_sums(ps),\n  Type = ifelse(is.na(sample_data(ps)$Zone), \"Control\", \"Environmental\")\n)\n\nggplot(depth_df, aes(x = reorder(Sample, Reads), y = Reads, fill = Type)) +\n  geom_col() +\n  coord_flip() +\n  labs(x = NULL, y = \"Reads\", title = \"Library size\") +\n  theme_bw()\nDiscussione / Discussion. Il negativo ha la stessa profondita dei campioni ambientali? Il positivo e un campione ambientale? Profondita elevata significa automaticamente qualita elevata?\nsamdf &lt;- data.frame(sample_data(subset_samples(ps, !is.na(Zone))))\nsamdf &lt;- samdf[order(samdf$NavigationDay), ]\nworld &lt;- map_data(\"world\")\n\nggplot() +\n  geom_polygon(\n    data = world,\n    aes(x = long, y = lat, group = group),\n    fill = \"grey92\", color = \"grey65\"\n  ) +\n  geom_path(data = samdf, aes(Longitude, Latitude), color = \"grey25\", linewidth = 0.8) +\n  geom_point(data = samdf, aes(Longitude, Latitude, color = Zone), size = 3) +\n  coord_quickmap(xlim = c(-85, -5), ylim = c(20, 45)) +\n  scale_color_manual(values = zone_colors) +\n  labs(x = \"Longitudine\", y = \"Latitudine\", title = \"SEA4BLUE transect\") +\n  theme_minimal()\nFermata / Stop. Zone rappresenta gruppi indipendenti dalla geografia oppure segmenti dello stesso gradiente? Questa risposta sara importante quando interpreteremo PERMANOVA e RDA.\nps_bio &lt;- subset_samples(ps, !is.na(Zone))\notu_bio &lt;- as(otu_table(ps_bio), \"matrix\")\nif (taxa_are_rows(ps_bio)) otu_bio &lt;- t(otu_bio)\n\nset.seed(42)\nrarecurve(\n  otu_bio,\n  step = 1000,\n  sample = min(rowSums(otu_bio)),\n  label = FALSE,\n  xlab = \"Reads campionate\",\n  ylab = \"ASV osservate\"\n)\nFermata / Stop. Le curve raggiungono un plateau? Quale informazione perderemmo portando tutti i campioni alla profondita del piu piccolo?\nLa richness e il numero di ASV osservate nel campione; Shannon combina richness ed evenness.\nRichness is the number of observed ASVs in a sample; Shannon combines richness and evenness.\nalpha &lt;- estimate_richness(ps_clean, measures = c(\"Observed\", \"Shannon\"))\nalpha$Sample &lt;- rownames(alpha)\n\nmetadata &lt;- data.frame(sample_data(ps_clean))\nmetadata$Sample &lt;- rownames(metadata)\n\nalpha &lt;- left_join(alpha, metadata, by = \"Sample\")\nhead(alpha)\n\n  Observed  Shannon Sample      X    IndexSequence SampleName NavigationDay\n1      404 4.408477    sa1  eDNA1 TACTAGGTAAGCAGCA      eDNA1             1\n2      195 3.842454    sa2 eDNA18 TAACGTCCACGCGTGA     eDNA18            18\n3      234 3.870993    sa3 eDNA19 TACTAGGTTGCGTCAC     eDNA19            19\n4      205 3.700157    sa4 eDNA25 ACGTACGTTGCGTCAC     eDNA25            25\n5      192 3.603752    sa5 eDNA26 GCGATACGTGCGTCAC     eDNA26            26\n6      271 3.693940    sa6 eDNA27 TACTAGGTGTCTAGTG     eDNA27            27\n        Date        Water Zone Latitude Longitude\n1 23/05/2022 Superficiale  ANW 29.30070 -77.93692\n2 09/06/2022 Superficiale  ANC 35.79043 -34.59567\n3 10/06/2022 Superficiale  ANC 36.99627 -32.05568\n4 23/06/2022 Superficiale  ANE 35.89713 -17.88778\n5 24/06/2022 Superficiale  ANE 36.13633 -14.54020\n6 25/06/2022 Superficiale  ANE 36.25035 -11.68773\nggplot(alpha, aes(x = Longitude, y = Observed, color = Zone)) +\n  geom_point(size = 3) +\n  geom_smooth(method = \"lm\", se = TRUE, color = \"grey30\") +\n  scale_color_manual(values = zone_colors) +\n  labs(x = \"Longitudine\", y = \"ASV osservate\", title = \"Richness lungo il transetto\") +\n  theme_bw()\nDiscussione / Discussion. State descrivendo un’associazione o dimostrando un effetto causale? Profondita e posizione geografica possono essere confondenti?\nsample_data(ps_clean)$Richness &lt;- alpha[\n  match(sample_names(ps_clean), alpha$Sample),\n  \"Observed\"\n]\nps_rel &lt;- transform_sample_counts(ps_clean, function(x) x / sum(x))\nsample_sums(ps_rel)\n\n sa1  sa2  sa3  sa4  sa5  sa6  sa7  sa8  sa9 sa10 sa11 sa12 sa13 sa14 sa15 \n   1    1    1    1    1    1    1    1    1    1    1    1    1    1    1\nLa somma di ogni campione deve essere circa 1. Ora calcoliamo Bray-Curtis e una PCoA.\nThe sum for each sample should be approximately 1. Now we compute Bray-Curtis and a PCoA.\npcoa_bray &lt;- ordinate(ps_rel, method = \"PCoA\", distance = \"bray\")\n\nplot_ordination(ps_rel, pcoa_bray, color = \"Zone\") +\n  geom_point(size = 3) +\n  geom_text_repel(aes(label = SampleName), show.legend = FALSE) +\n  scale_color_manual(values = zone_colors) +\n  labs(title = \"PCoA - Bray-Curtis\") +\n  theme_bw()\nFermata / Stop. Quali campioni sono piu lontani? La separazione sembra graduale lungo il transetto o discreta tra zone?\nPrima assicuriamoci che righe della matrice e metadata abbiano lo stesso ordine.\nFirst, make sure that matrix rows and metadata have the same order.\notu_rel &lt;- as(otu_table(ps_rel), \"matrix\")\nif (taxa_are_rows(ps_rel)) otu_rel &lt;- t(otu_rel)\n\nmeta_rel &lt;- data.frame(sample_data(ps_rel))\nmeta_rel &lt;- meta_rel[rownames(otu_rel), , drop = FALSE]\nstopifnot(identical(rownames(otu_rel), rownames(meta_rel)))\n\nbray &lt;- vegdist(otu_rel, method = \"bray\")\n\nset.seed(42)\nadonis2(bray ~ Zone, data = meta_rel, permutations = 999)\n\nPermutation test for adonis under reduced model\nPermutation: free\nNumber of permutations: 999\n\nadonis2(formula = bray ~ Zone, data = meta_rel, permutations = 999)\n         Df SumOfSqs      R2      F Pr(&gt;F)    \nModel     2   1.1822 0.48721 5.7006  0.001 ***\nResidual 12   1.2443 0.51279                  \nTotal    14   2.4265 1.00000                  \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\nLa PERMANOVA puo risentire di dispersioni diverse tra gruppi. Controlliamole.\nPERMANOVA can be affected by different dispersions among groups. Check them.\ndispersion &lt;- betadisper(bray, group = meta_rel$Zone)\nanova(dispersion)\n\nAnalysis of Variance Table\n\nResponse: Distances\n          Df   Sum Sq  Mean Sq F value Pr(&gt;F)\nGroups     2 0.083249 0.041625  2.6847 0.1087\nResiduals 12 0.186054 0.015504               \n\nset.seed(42)\npermutest(dispersion, permutations = 999)\n\n\nPermutation test for homogeneity of multivariate dispersions\nPermutation: free\nNumber of permutations: 999\n\nResponse: Distances\n          Df   Sum Sq  Mean Sq      F N.Perm Pr(&gt;F)  \nGroups     2 0.083249 0.041625 2.6847    999   0.09 .\nResiduals 12 0.186054 0.015504                       \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\nAggregare a genere rende il grafico leggibile ma perde dettaglio. Mostriamo i 12 generi complessivamente piu abbondanti e raggruppiamo gli altri.\nAggregating to genus makes the plot readable but loses detail. We show the 12 most abundant genera overall and group the rest.\nps_genus &lt;- tax_glom(ps_rel, taxrank = \"Genus\", NArm = FALSE)\ngenus_df &lt;- psmelt(ps_genus)\n\ntop_genera &lt;- genus_df |&gt;\n  filter(!is.na(Genus)) |&gt;\n  group_by(Genus) |&gt;\n  summarise(total = sum(Abundance), .groups = \"drop\") |&gt;\n  slice_max(total, n = 12) |&gt;\n  pull(Genus)\n\ngenus_plot &lt;- genus_df |&gt;\n  mutate(\n    Genus_plot = ifelse(\n      is.na(Genus) | !Genus %in% top_genera,\n      \"Other\",\n      as.character(Genus)\n    )\n  ) |&gt;\n  group_by(Sample, Zone, Genus_plot) |&gt;\n  summarise(Abundance = sum(Abundance), .groups = \"drop\")\nggplot(genus_plot, aes(x = Sample, y = Abundance, fill = Genus_plot)) +\n  geom_col(width = 0.85) +\n  facet_grid(~ Zone, scales = \"free_x\", space = \"free_x\") +\n  scale_y_continuous(labels = function(x) paste0(round(100 * x), \"%\")) +\n  labs(x = NULL, y = \"Abbondanza relativa\", fill = \"Genere\") +\n  theme_bw() +\n  theme(axis.text.x = element_text(angle = 90, hjust = 1))\nDiscussione / Discussion. Quali pattern della PCoA possono essere collegati a questo grafico?\nPer la RDA trasformiamo le abbondanze relative con Hellinger. Usiamo la longitudine come variabile esplicativa; la richness non viene usata come predittore perche e calcolata dalla stessa matrice biologica.\nFor the RDA we transform relative abundances with Hellinger. Longitude is the explanatory variable; richness is not used as a predictor because it is derived from the same biological matrix.\notu_hellinger &lt;- decostand(otu_rel, method = \"hellinger\")\nrda_model &lt;- rda(otu_hellinger ~ Longitude, data = meta_rel)\n\nset.seed(42)\nanova(rda_model, permutations = 999)\n\nPermutation test for rda under reduced model\nPermutation: free\nNumber of permutations: 999\n\nModel: rda(formula = otu_hellinger ~ Longitude, data = meta_rel)\n         Df Variance      F Pr(&gt;F)    \nModel     1  0.15549 9.1159  0.001 ***\nResidual 13  0.22174                  \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nRsquareAdj(rda_model)\n\n$r.squared\n[1] 0.4121889\n\n$adj.r.squared\n[1] 0.3669727\nsite_scores &lt;- as.data.frame(scores(rda_model, display = \"sites\", choices = 1:2))\nsite_scores$Sample &lt;- rownames(site_scores)\nsite_scores &lt;- left_join(\n  site_scores,\n  cbind(Sample = rownames(meta_rel), meta_rel),\n  by = \"Sample\"\n)\n\nggplot(site_scores, aes(x = RDA1, y = PC1, color = Zone, label = SampleName)) +\n  geom_hline(yintercept = 0, color = \"grey85\") +\n  geom_vline(xintercept = 0, color = \"grey85\") +\n  geom_point(size = 3) +\n  geom_text_repel(show.legend = FALSE) +\n  scale_color_manual(values = zone_colors) +\n  labs(title = \"RDA vincolata dalla longitudine\") +\n  theme_bw()\nNel resoconto indicate sempre:\nIn the report always include:"
+    "text": "Il materiale di questa pagina segue il flusso della lezione originale, ma in forma statica: leggiamo l’oggetto phyloseq, osserviamo i grafici già preparati e facciamo i passaggi uno alla volta.\nPrima di aprire RStudio, scaricate il dataset e decomprimetelo nella vostra cartella Downloads.\nScarica Sea4Blue.zip\n\n\n\n\n\n\n\n\n\n\n\n\nI campioni provengono dal transetto oceanico SEA4BLUE. L’idea è semplice: seguire la comunità microbica lungo la rotta, confrontare le zone del transetto e vedere come cambiano ricchezza, composizione e ordinamento.\n\n\n\nSe avete estratto lo zip in ~/Downloads/Sea4Blue, la working directory deve puntare lì prima di leggere il file .rds.\n# Puliamo la sessione\nrm(list = ls())\n\n# Carichiamo i pacchetti necessari\nlibrary(phyloseq)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(maps)\nlibrary(ggrepel)\nlibrary(ggside)\nlibrary(metagenomeSeq)\nlibrary(vegan)\n\n# Impostiamo la cartella di lavoro dove avete estratto Sea4Blue.zip\nsetwd(\"~/Downloads/Sea4Blue\")\n\n# Carichiamo l'oggetto phyloseq già pronto\nps &lt;- readRDS(\"phyloseq.rds\")\n\n# Controlliamo che tutto sia a posto\nps\nsample_data(ps)\nhead(t(otu_table(ps)))\n\n\n\n\n\n\nConsiglio\n\n\n\nSe avete salvato il dataset in un’altra posizione, cambiate solo il percorso di setwd(). Per esempio: setwd(\"~/Desktop/Sea4Blue\").\n\n\n\n\n\nQuesta è la prima vista utile: mostra i siti di campionamento lungo il transetto e aiuta a leggere tutti i grafici successivi.\n# Convertiamo il metadata in tabella\nsamdf &lt;- as.data.frame(sample_data(ps))\n\n# Ordiniamo i campioni lungo il transetto\nsamdf &lt;- samdf[order(samdf$NavigationDay), ]\n\n# Recuperiamo la mappa del mondo\nworld &lt;- map_data(\"world\")\n\n# Disegniamo il transetto\nggplot() +\n  geom_polygon(\n    data = world,\n    aes(x = long, y = lat, group = group),\n    fill = \"grey90\",\n    color = \"grey60\"\n  ) +\n  geom_path(\n    data = samdf,\n    aes(x = Longitude, y = Latitude, group = 1),\n    color = \"black\",\n    linewidth = 1\n  ) +\n  geom_point(\n    data = samdf,\n    aes(x = Longitude, y = Latitude, color = Zone),\n    size = 3\n  ) +\n  coord_quickmap(xlim = c(-85, -5), ylim = c(20, 45)) +\n  labs(x = \"Longitudine\", y = \"Latitudine\", color = \"Zona\") +\n  theme_minimal()\n\n\n\n\n\n\n\n\nQui conviene ragionare in due passaggi: prima guardiamo quante reads ha ogni campione, poi verifichiamo se la profondità di sequenziamento è sufficiente per confrontare i campioni in modo equo.\n# Usiamo i conteggi grezzi per stimare la profondità di sequenziamento\ndepth_df &lt;- data.frame(\n  Sample = sample_names(ps),\n  Reads = sample_sums(ps),\n  Zone = sample_data(ps)$Zone,\n  SampleName = sample_data(ps)$SampleName\n)\n\n# Un controllo rapido della libreria\nggplot(depth_df, aes(x = reorder(SampleName, Reads), y = Reads, fill = Zone)) +\n  geom_col(width = 0.8) +\n  coord_flip() +\n  scale_fill_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\"), na.translate = FALSE) +\n  labs(x = NULL, y = \"Reads\", title = \"Library size\") +\n  theme_bw()\n\n\n\n\n\n# Fissiamo il seed per rendere riproducibile il downsampling\nset.seed(42)\n\n# Teniamo solo i campioni con zona assegnata\nps_rarefaction &lt;- subset_samples(ps, !is.na(Zone))\n\n# Funzione originale, resa esplicita passo per passo\ncalculate_rarefaction_curves &lt;- function(psdata, measures, depths) {\n  estimate_rarified_richness &lt;- function(psdata, measures, depth) {\n    if (max(sample_sums(psdata)) &lt; depth) return(NULL)\n    psdata &lt;- prune_samples(sample_sums(psdata) &gt;= depth, psdata)\n    rarified_psdata &lt;- rarefy_even_depth(psdata, depth, verbose = FALSE)\n    alpha_diversity &lt;- estimate_richness(rarified_psdata, measures = measures)\n    melt(\n      as.matrix(alpha_diversity),\n      varnames = c(\"Sample\", \"Measure\"),\n      value.name = \"Alpha_diversity\"\n    )\n  }\n\n  names(depths) &lt;- depths\n  rarefaction_curve_data &lt;- plyr::ldply(\n    depths,\n    estimate_rarified_richness,\n    psdata = psdata,\n    measures = measures,\n    .id = \"Depth\"\n  )\n  rarefaction_curve_data$Depth &lt;- as.numeric(levels(rarefaction_curve_data$Depth))[rarefaction_curve_data$Depth]\n  rarefaction_curve_data\n}\n\n# Calcoliamo le curve\nrarefaction_curve_data &lt;- calculate_rarefaction_curves(\n  ps_rarefaction,\n  c(\"Observed\"),\n  rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10)\n)\n\n# Riassumiamo i valori per il grafico\nrarefaction_curve_data_summary &lt;- plyr::ddply(\n  rarefaction_curve_data,\n  c(\"Depth\", \"Sample\", \"Measure\"),\n  summarise,\n  Alpha_diversity_mean = mean(Alpha_diversity),\n  Alpha_diversity_sd = sd(Alpha_diversity)\n)\nrarefaction_curve_data_summary_verbose &lt;- merge(\n  rarefaction_curve_data_summary,\n  data.frame(sample_data(ps_rarefaction)),\n  by.x = \"Sample\",\n  by.y = \"row.names\"\n)\n\n# Disegniamo le curve colorandole per zona\nggplot(\n  data = rarefaction_curve_data_summary_verbose,\n  aes(x = Depth, y = Alpha_diversity_mean, group = Sample, color = Zone)\n) +\n  geom_line(linewidth = 1) +\n  geom_point(size = 2.5) +\n  geom_label_repel(\n    data = rarefaction_curve_data_summary_verbose |&gt;\n      dplyr::group_by(Sample) |&gt;\n      dplyr::filter(Alpha_diversity_mean == max(Alpha_diversity_mean)),\n    aes(label = SampleName),\n    color = \"black\",\n    show.legend = FALSE\n  ) +\n  scale_color_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\")) +\n  labs(x = \"Profondità\", y = \"ASV osservate\", title = \"Rarefaction Curves\") +\n  theme_bw()\n\n\n\n\n\n\n\n\nQui facciamo i passaggi che servono davvero per la lezione: togliamo i taxa indesiderati, filtriamo i singletons, escludiamo i controlli e applichiamo CSS.\n# Partiamo dall'oggetto iniziale\nphyloseq_obj &lt;- ps\n\n# Rimuoviamo cloroplasti e mitocondri\nphyloseq_obj &lt;- phyloseq_obj |&gt;\n  subset_taxa((is.na(Family) | Family != \"Mitochondria\") & (is.na(Order) | Order != \"Chloroplast\"))\n\n# Teniamo solo i taxa osservati più di una volta\nphyloseq_obj &lt;- prune_taxa(taxa_sums(phyloseq_obj) &gt; 1, phyloseq_obj)\n\n# Escludiamo i controlli\nphyloseq_obj &lt;- subset_samples(\n  phyloseq_obj,\n  !is.na(Zone) & SampleName != \"Positive\" & SampleName != \"Negative\"\n)\n\n# Convertiamo in oggetto metagenomeSeq e applichiamo CSS\ndata.metagenomeSeq &lt;- phyloseq_to_metagenomeSeq(phyloseq_obj)\np &lt;- cumNormStat(data.metagenomeSeq)\ndata.cumnorm &lt;- cumNorm(data.metagenomeSeq, p = p)\ndata.CSS &lt;- MRcounts(data.cumnorm, norm = TRUE, log = TRUE)\n\n# Ricreiamo l'oggetto phyloseq normalizzato\nphyloseq_obj_css &lt;- phyloseq_obj\notu_table(phyloseq_obj_css) &lt;- otu_table(data.CSS, taxa_are_rows = TRUE)\n\n# Rinominamo i campioni con il nome leggibile\nsample_names(phyloseq_obj_css) &lt;- sample_data(phyloseq_obj_css)$SampleName\n\n\n\nIn questa pagina teniamo la stessa logica della lezione originale: prima arrotondiamo i conteggi normalizzati, poi stimiamo la richness e infine la leggiamo lungo il transetto.\n# Arrotondiamo i conteggi normalizzati per la richness\nphyloseq_obj_css_round &lt;- phyloseq_obj_css\notu_table(phyloseq_obj_css_round) &lt;- round(otu_table(phyloseq_obj_css), digits = 0)\n\n# Calcoliamo la richness osservata\np1 &lt;- plot_richness(\n  phyloseq_obj_css_round,\n  x = \"Longitude\",\n  color = \"Zone\",\n  measures = c(\"Observed\")\n)\n\n# Ordiniamo le zone come nel corso\nnewSTorder &lt;- c(\"ANW\", \"ANC\", \"ANE\")\np1$data$Zone &lt;- factor(as.character(p1$data$Zone), levels = newSTorder)\n\n# Disegno finale\nggplot(p1$data, aes(Longitude, value)) +\n  theme_bw() +\n  theme(plot.title = element_text(hjust = 0.5), ggside.panel.scale.y = 0.4) +\n  geom_point(aes(colour = Zone), alpha = 0.45) +\n  scale_color_manual(values = c(\"#4280fc\", \"#ffb452\", \"#f7170a\", \"#000000\")) +\n  geom_ysideboxplot(aes(x = Zone, y = value, colour = Zone), orientation = \"x\") +\n  scale_ysidex_discrete() +\n  geom_smooth(aes(colour = variable), linewidth = 1.5) +\n  ylab(\"Richness\")\n\n\n\n\n\n# Salviamo la richness nei metadata: ci servirà dopo\nsample_data(phyloseq_obj_css)$Richness &lt;- p1$data$value\n\n\n\nQui ci fermiamo alla PCoA su Bray-Curtis. La lezione originale mostrava anche il controllo sulle dispersioni, ma in questa versione didattica lo togliamo per mantenere il flusso più lineare.\n# Calcoliamo l'ordinamento Bray-Curtis\notu.ord &lt;- ordinate(phyloseq_obj_css, \"PCoA\", distance = \"bray\")\n\n# Disegniamo la PCoA con le etichette\nplot_ordination(phyloseq_obj_css, otu.ord, color = \"Zone\", axes = c(1, 2)) +\n  scale_color_manual(values = c(\"#4280fc\", \"#ffb452\", \"#f7170a\")) +\n  geom_point(size = 3) +\n  geom_text_repel(aes(label = SampleName), max.overlaps = Inf, show.legend = FALSE) +\n  labs(title = \"Beta Diversity based on Bray-Curtis\") +\n  theme_bw()\n\n\n\n\n\n\n\n\nPrima guardiamo la composizione tassonomica a livello di genere, poi chiudiamo con una RDA vincolata dalla longitudine e dalla richness.\n# Convertiamo i conteggi in percentuale\nphyseq_perc &lt;- transform_sample_counts(phyloseq_obj_css, function(x) 100 * x / sum(x))\n\n# Agreghiamo al livello di genere\nglom &lt;- tax_glom(physeq_perc, taxrank = \"Genus\")\ndata_glom &lt;- psmelt(glom)\ndata_glom$Zone &lt;- factor(as.character(data_glom$Zone), levels = c(\"ANW\", \"ANC\", \"ANE\"))\n\n# Palette molto ampia per i generi\ncolor &lt;- grDevices::colors()[grep(\"gr(a|e)y\", grDevices::colors(), invert = TRUE)]\n\n# Barplot di tutti i generi\nggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +\n  facet_grid(~Zone, scales = \"free\") +\n  geom_bar(stat = \"identity\", position = \"fill\", width = 0.7) +\n  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus)))) +\n  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), legend.position = \"none\")\n\n\n\n\n\n# Identifichiamo i taxa più abbondanti\ngenus.sum &lt;- tapply(taxa_sums(glom), tax_table(glom)[, \"Genus\"], sum, na.rm = TRUE)\ntopGenera &lt;- names(sort(genus.sum, TRUE))[1:20]\n\n# Stesso grafico, ma con i top genera evidenziati\nggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +\n  facet_grid(~Zone, scales = \"free\") +\n  geom_bar(stat = \"identity\", position = \"fill\", width = 0.7) +\n  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus))), breaks = topGenera) +\n  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))\n# RDA sulla comunità\nRDA &lt;- ordinate(phyloseq_obj_css ~ Richness + Longitude, \"RDA\")\n\n# Primo grafico: campioni colorati per zona\np2 &lt;- plot_ordination(phyloseq_obj_css, RDA, color = \"Zone\") +\n  theme_bw() +\n  geom_text_repel(aes(label = SampleName, color = Zone), max.overlaps = Inf, show.legend = FALSE) +\n  geom_point(size = 4) +\n  scale_color_manual(values = c(\"#4280fc\", \"#ffb452\", \"#f7170a\"))\n\n# Aggiungiamo le frecce delle variabili esplicative\narrowmat &lt;- vegan::scores(RDA, display = \"bp\")\narrowdf &lt;- data.frame(labels = rownames(arrowmat), arrowmat)\narrowhead &lt;- grid::arrow(length = grid::unit(0.05, \"npc\"))\n\np2 +\n  geom_segment(\n    aes(xend = RDA1, yend = RDA2, x = 0, y = 0),\n    data = arrowdf,\n    color = \"black\",\n    arrow = arrowhead,\n    linewidth = 1\n  ) +\n  geom_text(\n    aes(x = 1.7 * RDA1, y = 1.7 * RDA2, label = labels),\n    data = arrowdf,\n    size = 4\n  )\n\n\n\n\n\n\n\n\nQuesto tutorial resta statico apposta: il codice è mostrato per essere letto e discusso, mentre le figure sono già pronte. In aula, il punto è capire la sequenza logica dell’analisi, non perdere tempo con output rumorosi o blocchi troppo automatici."
   },
   {
-    "objectID": "biostatistica.html#obiettivi-della-sessione",
-    "href": "biostatistica.html#obiettivi-della-sessione",
-    "title": "Analisi biostatistica: SEA4BLUE",
+    "objectID": "biostatistica.html#da-dove-arrivano-i-dati",
+    "href": "biostatistica.html#da-dove-arrivano-i-dati",
+    "title": "Analisi biostatistica / Biostatistics",
     "section": "",
-    "text": "Questa lezione segue il percorso biologico del dataset SEA4BLUE: dal transetto oceanico ai grafici di diversita, fino ai test multivariati.\n\nconti grezzi per profondita di sequenziamento e diversita alfa;\nabbondanze relative per composizione e Bray-Curtis;\ntrasformazione di Hellinger per la RDA.\n\nIl punto didattico non e fare tutto con un unico comando, ma vedere come cambia l’oggetto a ogni passaggio."
+    "text": "I campioni provengono dal transetto oceanico SEA4BLUE. L’idea è semplice: seguire la comunità microbica lungo la rotta, confrontare le zone del transetto e vedere come cambiano ricchezza, composizione e ordinamento."
   },
   {
-    "objectID": "biostatistica.html#session-goals",
-    "href": "biostatistica.html#session-goals",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "Session goals",
-    "text": "Session goals\nThis lesson follows the biological story of the SEA4BLUE dataset: from the ocean transect to diversity plots and multivariate tests.\n\nraw counts for sequencing depth and alpha diversity;\nrelative abundances for composition and Bray-Curtis;\nHellinger-transformed data for RDA.\n\nThe teaching goal is not to compress everything into one command, but to watch how the object changes at each step."
+    "objectID": "biostatistica.html#come-partire-in-r",
+    "href": "biostatistica.html#come-partire-in-r",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "",
+    "text": "Se avete estratto lo zip in ~/Downloads/Sea4Blue, la working directory deve puntare lì prima di leggere il file .rds.\n# Puliamo la sessione\nrm(list = ls())\n\n# Carichiamo i pacchetti necessari\nlibrary(phyloseq)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(maps)\nlibrary(ggrepel)\nlibrary(ggside)\nlibrary(metagenomeSeq)\nlibrary(vegan)\n\n# Impostiamo la cartella di lavoro dove avete estratto Sea4Blue.zip\nsetwd(\"~/Downloads/Sea4Blue\")\n\n# Carichiamo l'oggetto phyloseq già pronto\nps &lt;- readRDS(\"phyloseq.rds\")\n\n# Controlliamo che tutto sia a posto\nps\nsample_data(ps)\nhead(t(otu_table(ps)))\n\n\n\n\n\n\nConsiglio\n\n\n\nSe avete salvato il dataset in un’altra posizione, cambiate solo il percorso di setwd(). Per esempio: setwd(\"~/Desktop/Sea4Blue\")."
   },
   {
-    "objectID": "biostatistica.html#download-e-progetto-rstudio",
-    "href": "biostatistica.html#download-e-progetto-rstudio",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "0. Download e progetto RStudio",
-    "text": "0. Download e progetto RStudio"
+    "objectID": "biostatistica.html#mappa-del-transetto",
+    "href": "biostatistica.html#mappa-del-transetto",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "",
+    "text": "Questa è la prima vista utile: mostra i siti di campionamento lungo il transetto e aiuta a leggere tutti i grafici successivi.\n# Convertiamo il metadata in tabella\nsamdf &lt;- as.data.frame(sample_data(ps))\n\n# Ordiniamo i campioni lungo il transetto\nsamdf &lt;- samdf[order(samdf$NavigationDay), ]\n\n# Recuperiamo la mappa del mondo\nworld &lt;- map_data(\"world\")\n\n# Disegniamo il transetto\nggplot() +\n  geom_polygon(\n    data = world,\n    aes(x = long, y = lat, group = group),\n    fill = \"grey90\",\n    color = \"grey60\"\n  ) +\n  geom_path(\n    data = samdf,\n    aes(x = Longitude, y = Latitude, group = 1),\n    color = \"black\",\n    linewidth = 1\n  ) +\n  geom_point(\n    data = samdf,\n    aes(x = Longitude, y = Latitude, color = Zone),\n    size = 3\n  ) +\n  coord_quickmap(xlim = c(-85, -5), ylim = c(20, 45)) +\n  labs(x = \"Longitudine\", y = \"Latitudine\", color = \"Zona\") +\n  theme_minimal()"
   },
   {
-    "objectID": "biostatistica.html#download-and-rstudio-project",
-    "href": "biostatistica.html#download-and-rstudio-project",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "0. Download and RStudio project",
-    "text": "0. Download and RStudio project"
+    "objectID": "biostatistica.html#profondità-di-sequenziamento-e-rarefaction-curves",
+    "href": "biostatistica.html#profondità-di-sequenziamento-e-rarefaction-curves",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "",
+    "text": "Qui conviene ragionare in due passaggi: prima guardiamo quante reads ha ogni campione, poi verifichiamo se la profondità di sequenziamento è sufficiente per confrontare i campioni in modo equo.\n# Usiamo i conteggi grezzi per stimare la profondità di sequenziamento\ndepth_df &lt;- data.frame(\n  Sample = sample_names(ps),\n  Reads = sample_sums(ps),\n  Zone = sample_data(ps)$Zone,\n  SampleName = sample_data(ps)$SampleName\n)\n\n# Un controllo rapido della libreria\nggplot(depth_df, aes(x = reorder(SampleName, Reads), y = Reads, fill = Zone)) +\n  geom_col(width = 0.8) +\n  coord_flip() +\n  scale_fill_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\"), na.translate = FALSE) +\n  labs(x = NULL, y = \"Reads\", title = \"Library size\") +\n  theme_bw()\n\n\n\n\n\n# Fissiamo il seed per rendere riproducibile il downsampling\nset.seed(42)\n\n# Teniamo solo i campioni con zona assegnata\nps_rarefaction &lt;- subset_samples(ps, !is.na(Zone))\n\n# Funzione originale, resa esplicita passo per passo\ncalculate_rarefaction_curves &lt;- function(psdata, measures, depths) {\n  estimate_rarified_richness &lt;- function(psdata, measures, depth) {\n    if (max(sample_sums(psdata)) &lt; depth) return(NULL)\n    psdata &lt;- prune_samples(sample_sums(psdata) &gt;= depth, psdata)\n    rarified_psdata &lt;- rarefy_even_depth(psdata, depth, verbose = FALSE)\n    alpha_diversity &lt;- estimate_richness(rarified_psdata, measures = measures)\n    melt(\n      as.matrix(alpha_diversity),\n      varnames = c(\"Sample\", \"Measure\"),\n      value.name = \"Alpha_diversity\"\n    )\n  }\n\n  names(depths) &lt;- depths\n  rarefaction_curve_data &lt;- plyr::ldply(\n    depths,\n    estimate_rarified_richness,\n    psdata = psdata,\n    measures = measures,\n    .id = \"Depth\"\n  )\n  rarefaction_curve_data$Depth &lt;- as.numeric(levels(rarefaction_curve_data$Depth))[rarefaction_curve_data$Depth]\n  rarefaction_curve_data\n}\n\n# Calcoliamo le curve\nrarefaction_curve_data &lt;- calculate_rarefaction_curves(\n  ps_rarefaction,\n  c(\"Observed\"),\n  rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10)\n)\n\n# Riassumiamo i valori per il grafico\nrarefaction_curve_data_summary &lt;- plyr::ddply(\n  rarefaction_curve_data,\n  c(\"Depth\", \"Sample\", \"Measure\"),\n  summarise,\n  Alpha_diversity_mean = mean(Alpha_diversity),\n  Alpha_diversity_sd = sd(Alpha_diversity)\n)\nrarefaction_curve_data_summary_verbose &lt;- merge(\n  rarefaction_curve_data_summary,\n  data.frame(sample_data(ps_rarefaction)),\n  by.x = \"Sample\",\n  by.y = \"row.names\"\n)\n\n# Disegniamo le curve colorandole per zona\nggplot(\n  data = rarefaction_curve_data_summary_verbose,\n  aes(x = Depth, y = Alpha_diversity_mean, group = Sample, color = Zone)\n) +\n  geom_line(linewidth = 1) +\n  geom_point(size = 2.5) +\n  geom_label_repel(\n    data = rarefaction_curve_data_summary_verbose |&gt;\n      dplyr::group_by(Sample) |&gt;\n      dplyr::filter(Alpha_diversity_mean == max(Alpha_diversity_mean)),\n    aes(label = SampleName),\n    color = \"black\",\n    show.legend = FALSE\n  ) +\n  scale_color_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\")) +\n  labs(x = \"Profondità\", y = \"ASV osservate\", title = \"Rarefaction Curves\") +\n  theme_bw()"
   },
   {
-    "objectID": "biostatistica.html#pacchetti-e-dati",
-    "href": "biostatistica.html#pacchetti-e-dati",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "1. Pacchetti e dati",
-    "text": "1. Pacchetti e dati"
+    "objectID": "biostatistica.html#normalizzazione",
+    "href": "biostatistica.html#normalizzazione",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "",
+    "text": "Qui facciamo i passaggi che servono davvero per la lezione: togliamo i taxa indesiderati, filtriamo i singletons, escludiamo i controlli e applichiamo CSS.\n# Partiamo dall'oggetto iniziale\nphyloseq_obj &lt;- ps\n\n# Rimuoviamo cloroplasti e mitocondri\nphyloseq_obj &lt;- phyloseq_obj |&gt;\n  subset_taxa((is.na(Family) | Family != \"Mitochondria\") & (is.na(Order) | Order != \"Chloroplast\"))\n\n# Teniamo solo i taxa osservati più di una volta\nphyloseq_obj &lt;- prune_taxa(taxa_sums(phyloseq_obj) &gt; 1, phyloseq_obj)\n\n# Escludiamo i controlli\nphyloseq_obj &lt;- subset_samples(\n  phyloseq_obj,\n  !is.na(Zone) & SampleName != \"Positive\" & SampleName != \"Negative\"\n)\n\n# Convertiamo in oggetto metagenomeSeq e applichiamo CSS\ndata.metagenomeSeq &lt;- phyloseq_to_metagenomeSeq(phyloseq_obj)\np &lt;- cumNormStat(data.metagenomeSeq)\ndata.cumnorm &lt;- cumNorm(data.metagenomeSeq, p = p)\ndata.CSS &lt;- MRcounts(data.cumnorm, norm = TRUE, log = TRUE)\n\n# Ricreiamo l'oggetto phyloseq normalizzato\nphyloseq_obj_css &lt;- phyloseq_obj\notu_table(phyloseq_obj_css) &lt;- otu_table(data.CSS, taxa_are_rows = TRUE)\n\n# Rinominamo i campioni con il nome leggibile\nsample_names(phyloseq_obj_css) &lt;- sample_data(phyloseq_obj_css)$SampleName"
   },
   {
-    "objectID": "biostatistica.html#packages-and-data",
-    "href": "biostatistica.html#packages-and-data",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "1. Packages and data",
-    "text": "1. Packages and data"
+    "objectID": "biostatistica.html#alpha-diversity",
+    "href": "biostatistica.html#alpha-diversity",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "",
+    "text": "In questa pagina teniamo la stessa logica della lezione originale: prima arrotondiamo i conteggi normalizzati, poi stimiamo la richness e infine la leggiamo lungo il transetto.\n# Arrotondiamo i conteggi normalizzati per la richness\nphyloseq_obj_css_round &lt;- phyloseq_obj_css\notu_table(phyloseq_obj_css_round) &lt;- round(otu_table(phyloseq_obj_css), digits = 0)\n\n# Calcoliamo la richness osservata\np1 &lt;- plot_richness(\n  phyloseq_obj_css_round,\n  x = \"Longitude\",\n  color = \"Zone\",\n  measures = c(\"Observed\")\n)\n\n# Ordiniamo le zone come nel corso\nnewSTorder &lt;- c(\"ANW\", \"ANC\", \"ANE\")\np1$data$Zone &lt;- factor(as.character(p1$data$Zone), levels = newSTorder)\n\n# Disegno finale\nggplot(p1$data, aes(Longitude, value)) +\n  theme_bw() +\n  theme(plot.title = element_text(hjust = 0.5), ggside.panel.scale.y = 0.4) +\n  geom_point(aes(colour = Zone), alpha = 0.45) +\n  scale_color_manual(values = c(\"#4280fc\", \"#ffb452\", \"#f7170a\", \"#000000\")) +\n  geom_ysideboxplot(aes(x = Zone, y = value, colour = Zone), orientation = \"x\") +\n  scale_ysidex_discrete() +\n  geom_smooth(aes(colour = variable), linewidth = 1.5) +\n  ylab(\"Richness\")\n\n\n\n\n\n# Salviamo la richness nei metadata: ci servirà dopo\nsample_data(phyloseq_obj_css)$Richness &lt;- p1$data$value"
   },
   {
-    "objectID": "biostatistica.html#profondita-di-sequenziamento",
-    "href": "biostatistica.html#profondita-di-sequenziamento",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "2. Profondita di sequenziamento",
-    "text": "2. Profondita di sequenziamento"
+    "objectID": "biostatistica.html#beta-diversity",
+    "href": "biostatistica.html#beta-diversity",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "",
+    "text": "Qui ci fermiamo alla PCoA su Bray-Curtis. La lezione originale mostrava anche il controllo sulle dispersioni, ma in questa versione didattica lo togliamo per mantenere il flusso più lineare.\n# Calcoliamo l'ordinamento Bray-Curtis\notu.ord &lt;- ordinate(phyloseq_obj_css, \"PCoA\", distance = \"bray\")\n\n# Disegniamo la PCoA con le etichette\nplot_ordination(phyloseq_obj_css, otu.ord, color = \"Zone\", axes = c(1, 2)) +\n  scale_color_manual(values = c(\"#4280fc\", \"#ffb452\", \"#f7170a\")) +\n  geom_point(size = 3) +\n  geom_text_repel(aes(label = SampleName), max.overlaps = Inf, show.legend = FALSE) +\n  labs(title = \"Beta Diversity based on Bray-Curtis\") +\n  theme_bw()"
   },
   {
-    "objectID": "biostatistica.html#sequencing-depth",
-    "href": "biostatistica.html#sequencing-depth",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "2. Sequencing depth",
-    "text": "2. Sequencing depth"
+    "objectID": "biostatistica.html#composizione-della-comunità-e-rda",
+    "href": "biostatistica.html#composizione-della-comunità-e-rda",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "",
+    "text": "Prima guardiamo la composizione tassonomica a livello di genere, poi chiudiamo con una RDA vincolata dalla longitudine e dalla richness.\n# Convertiamo i conteggi in percentuale\nphyseq_perc &lt;- transform_sample_counts(phyloseq_obj_css, function(x) 100 * x / sum(x))\n\n# Agreghiamo al livello di genere\nglom &lt;- tax_glom(physeq_perc, taxrank = \"Genus\")\ndata_glom &lt;- psmelt(glom)\ndata_glom$Zone &lt;- factor(as.character(data_glom$Zone), levels = c(\"ANW\", \"ANC\", \"ANE\"))\n\n# Palette molto ampia per i generi\ncolor &lt;- grDevices::colors()[grep(\"gr(a|e)y\", grDevices::colors(), invert = TRUE)]\n\n# Barplot di tutti i generi\nggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +\n  facet_grid(~Zone, scales = \"free\") +\n  geom_bar(stat = \"identity\", position = \"fill\", width = 0.7) +\n  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus)))) +\n  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), legend.position = \"none\")\n\n\n\n\n\n# Identifichiamo i taxa più abbondanti\ngenus.sum &lt;- tapply(taxa_sums(glom), tax_table(glom)[, \"Genus\"], sum, na.rm = TRUE)\ntopGenera &lt;- names(sort(genus.sum, TRUE))[1:20]\n\n# Stesso grafico, ma con i top genera evidenziati\nggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +\n  facet_grid(~Zone, scales = \"free\") +\n  geom_bar(stat = \"identity\", position = \"fill\", width = 0.7) +\n  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus))), breaks = topGenera) +\n  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))\n# RDA sulla comunità\nRDA &lt;- ordinate(phyloseq_obj_css ~ Richness + Longitude, \"RDA\")\n\n# Primo grafico: campioni colorati per zona\np2 &lt;- plot_ordination(phyloseq_obj_css, RDA, color = \"Zone\") +\n  theme_bw() +\n  geom_text_repel(aes(label = SampleName, color = Zone), max.overlaps = Inf, show.legend = FALSE) +\n  geom_point(size = 4) +\n  scale_color_manual(values = c(\"#4280fc\", \"#ffb452\", \"#f7170a\"))\n\n# Aggiungiamo le frecce delle variabili esplicative\narrowmat &lt;- vegan::scores(RDA, display = \"bp\")\narrowdf &lt;- data.frame(labels = rownames(arrowmat), arrowmat)\narrowhead &lt;- grid::arrow(length = grid::unit(0.05, \"npc\"))\n\np2 +\n  geom_segment(\n    aes(xend = RDA1, yend = RDA2, x = 0, y = 0),\n    data = arrowdf,\n    color = \"black\",\n    arrow = arrowhead,\n    linewidth = 1\n  ) +\n  geom_text(\n    aes(x = 1.7 * RDA1, y = 1.7 * RDA2, label = labels),\n    data = arrowdf,\n    size = 4\n  )"
   },
   {
-    "objectID": "biostatistica.html#curva-di-rarefazione",
-    "href": "biostatistica.html#curva-di-rarefazione",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "3. Curva di rarefazione",
-    "text": "3. Curva di rarefazione"
+    "objectID": "biostatistica.html#nota-finale",
+    "href": "biostatistica.html#nota-finale",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "",
+    "text": "Questo tutorial resta statico apposta: il codice è mostrato per essere letto e discusso, mentre le figure sono già pronte. In aula, il punto è capire la sequenza logica dell’analisi, non perdere tempo con output rumorosi o blocchi troppo automatici."
   },
   {
-    "objectID": "biostatistica.html#rarefaction-curve",
-    "href": "biostatistica.html#rarefaction-curve",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "3. Rarefaction curve",
-    "text": "3. Rarefaction curve"
+    "objectID": "biostatistica.html#where-the-data-come-from",
+    "href": "biostatistica.html#where-the-data-come-from",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "Where the data come from",
+    "text": "Where the data come from\nThe samples come from the SEA4BLUE ocean transect. The goal is simple: follow the microbial community along the route, compare the transect zones, and inspect how richness, composition, and ordination change."
   },
   {
-    "objectID": "biostatistica.html#filtraggio-esplicito",
-    "href": "biostatistica.html#filtraggio-esplicito",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "4. Filtraggio esplicito",
-    "text": "4. Filtraggio esplicito"
+    "objectID": "biostatistica.html#getting-started-in-r",
+    "href": "biostatistica.html#getting-started-in-r",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "Getting started in R",
+    "text": "Getting started in R\nIf you extracted the zip into ~/Downloads/Sea4Blue, your working directory must point there before reading the .rds file.\n# Clear the workspace\nrm(list = ls())\n\n# Load the required packages\nlibrary(phyloseq)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(maps)\nlibrary(ggrepel)\nlibrary(ggside)\nlibrary(metagenomeSeq)\nlibrary(vegan)\n\n# Set the working directory where Sea4Blue.zip was extracted\nsetwd(\"~/Downloads/Sea4Blue\")\n\n# Load the ready-to-use phyloseq object\nps &lt;- readRDS(\"phyloseq.rds\")\n\n# Quick sanity checks\nps\nsample_data(ps)\nhead(t(otu_table(ps)))\n\n\n\n\n\n\nConsiglio\n\n\n\nIf you stored the dataset somewhere else, change only the setwd() path. For example: setwd(\"~/Desktop/Sea4Blue\")."
   },
   {
-    "objectID": "biostatistica.html#explicit-filtering",
-    "href": "biostatistica.html#explicit-filtering",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "4. Explicit filtering",
-    "text": "4. Explicit filtering"
+    "objectID": "biostatistica.html#transect-map",
+    "href": "biostatistica.html#transect-map",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "Transect map",
+    "text": "Transect map\nThis is the first useful view: it shows the sampling sites along the transect and makes the later plots easier to read.\n# Turn sample metadata into a data frame\nsamdf &lt;- as.data.frame(sample_data(ps))\n\n# Order samples along the transect\nsamdf &lt;- samdf[order(samdf$NavigationDay), ]\n\n# Retrieve the world map\nworld &lt;- map_data(\"world\")\n\n# Plot the transect\nggplot() +\n  geom_polygon(\n    data = world,\n    aes(x = long, y = lat, group = group),\n    fill = \"grey90\",\n    color = \"grey60\"\n  ) +\n  geom_path(\n    data = samdf,\n    aes(x = Longitude, y = Latitude, group = 1),\n    color = \"black\",\n    linewidth = 1\n  ) +\n  geom_point(\n    data = samdf,\n    aes(x = Longitude, y = Latitude, color = Zone),\n    size = 3\n  ) +\n  coord_quickmap(xlim = c(-85, -5), ylim = c(20, 45)) +\n  labs(x = \"Longitude\", y = \"Latitude\", color = \"Zone\") +\n  theme_minimal()"
   },
   {
-    "objectID": "biostatistica.html#diversita-alfa-sui-conteggi",
-    "href": "biostatistica.html#diversita-alfa-sui-conteggi",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "5. Diversita alfa sui conteggi",
-    "text": "5. Diversita alfa sui conteggi"
+    "objectID": "biostatistica.html#sequencing-depth-and-rarefaction-curves",
+    "href": "biostatistica.html#sequencing-depth-and-rarefaction-curves",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "Sequencing depth and rarefaction curves",
+    "text": "Sequencing depth and rarefaction curves\nHere we work in two stages: first we inspect how many reads each sample has, then we check whether sequencing depth is sufficient for fair comparisons.\n# Use raw counts to inspect sequencing depth\ndepth_df &lt;- data.frame(\n  Sample = sample_names(ps),\n  Reads = sample_sums(ps),\n  Zone = sample_data(ps)$Zone,\n  SampleName = sample_data(ps)$SampleName\n)\n\n# Quick library-size check\nggplot(depth_df, aes(x = reorder(SampleName, Reads), y = Reads, fill = Zone)) +\n  geom_col(width = 0.8) +\n  coord_flip() +\n  scale_fill_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\"), na.translate = FALSE) +\n  labs(x = NULL, y = \"Reads\", title = \"Library size\") +\n  theme_bw()\n\n\n\n\n\n# Fix the seed to keep the downsampling reproducible\nset.seed(42)\n\n# Keep only samples with an assigned zone\nps_rarefaction &lt;- subset_samples(ps, !is.na(Zone))\n\n# Original logic, written out step by step\ncalculate_rarefaction_curves &lt;- function(psdata, measures, depths) {\n  estimate_rarified_richness &lt;- function(psdata, measures, depth) {\n    if (max(sample_sums(psdata)) &lt; depth) return(NULL)\n    psdata &lt;- prune_samples(sample_sums(psdata) &gt;= depth, psdata)\n    rarified_psdata &lt;- rarefy_even_depth(psdata, depth, verbose = FALSE)\n    alpha_diversity &lt;- estimate_richness(rarified_psdata, measures = measures)\n    melt(\n      as.matrix(alpha_diversity),\n      varnames = c(\"Sample\", \"Measure\"),\n      value.name = \"Alpha_diversity\"\n    )\n  }\n\n  names(depths) &lt;- depths\n  rarefaction_curve_data &lt;- plyr::ldply(\n    depths,\n    estimate_rarified_richness,\n    psdata = psdata,\n    measures = measures,\n    .id = \"Depth\"\n  )\n  rarefaction_curve_data$Depth &lt;- as.numeric(levels(rarefaction_curve_data$Depth))[rarefaction_curve_data$Depth]\n  rarefaction_curve_data\n}\n\n# Compute the curves\nrarefaction_curve_data &lt;- calculate_rarefaction_curves(\n  ps_rarefaction,\n  c(\"Observed\"),\n  rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10)\n)\n\n# Summarize values for plotting\nrarefaction_curve_data_summary &lt;- plyr::ddply(\n  rarefaction_curve_data,\n  c(\"Depth\", \"Sample\", \"Measure\"),\n  summarise,\n  Alpha_diversity_mean = mean(Alpha_diversity),\n  Alpha_diversity_sd = sd(Alpha_diversity)\n)\nrarefaction_curve_data_summary_verbose &lt;- merge(\n  rarefaction_curve_data_summary,\n  data.frame(sample_data(ps_rarefaction)),\n  by.x = \"Sample\",\n  by.y = \"row.names\"\n)\n\n# Plot the curves colored by zone\nggplot(\n  data = rarefaction_curve_data_summary_verbose,\n  aes(x = Depth, y = Alpha_diversity_mean, group = Sample, color = Zone)\n) +\n  geom_line(linewidth = 1) +\n  geom_point(size = 2.5) +\n  geom_label_repel(\n    data = rarefaction_curve_data_summary_verbose |&gt;\n      dplyr::group_by(Sample) |&gt;\n      dplyr::filter(Alpha_diversity_mean == max(Alpha_diversity_mean)),\n    aes(label = SampleName),\n    color = \"black\",\n    show.legend = FALSE\n  ) +\n  scale_color_manual(values = c(ANW = \"#4280fc\", ANC = \"#ffb452\", ANE = \"#f7170a\")) +\n  labs(x = \"Depth\", y = \"Observed ASVs\", title = \"Rarefaction Curves\") +\n  theme_bw()"
   },
   {
-    "objectID": "biostatistica.html#alpha-diversity-on-counts",
-    "href": "biostatistica.html#alpha-diversity-on-counts",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "5. Alpha diversity on counts",
-    "text": "5. Alpha diversity on counts"
+    "objectID": "biostatistica.html#normalization",
+    "href": "biostatistica.html#normalization",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "Normalization",
+    "text": "Normalization\nHere we keep only the steps that matter for the lesson: remove unwanted taxa, filter singletons, exclude controls, and apply CSS.\n# Start from the initial object\nphyloseq_obj &lt;- ps\n\n# Remove chloroplasts and mitochondria\nphyloseq_obj &lt;- phyloseq_obj |&gt;\n  subset_taxa((is.na(Family) | Family != \"Mitochondria\") & (is.na(Order) | Order != \"Chloroplast\"))\n\n# Keep only taxa observed more than once\nphyloseq_obj &lt;- prune_taxa(taxa_sums(phyloseq_obj) &gt; 1, phyloseq_obj)\n\n# Remove controls\nphyloseq_obj &lt;- subset_samples(\n  phyloseq_obj,\n  !is.na(Zone) & SampleName != \"Positive\" & SampleName != \"Negative\"\n)\n\n# Convert to metagenomeSeq and apply CSS\ndata.metagenomeSeq &lt;- phyloseq_to_metagenomeSeq(phyloseq_obj)\np &lt;- cumNormStat(data.metagenomeSeq)\ndata.cumnorm &lt;- cumNorm(data.metagenomeSeq, p = p)\ndata.CSS &lt;- MRcounts(data.cumnorm, norm = TRUE, log = TRUE)\n\n# Rebuild the normalized phyloseq object\nphyloseq_obj_css &lt;- phyloseq_obj\notu_table(phyloseq_obj_css) &lt;- otu_table(data.CSS, taxa_are_rows = TRUE)\n\n# Rename samples with their readable sample names\nsample_names(phyloseq_obj_css) &lt;- sample_data(phyloseq_obj_css)$SampleName"
   },
   {
-    "objectID": "biostatistica.html#abbondanza-relativa-e-beta-diversity",
-    "href": "biostatistica.html#abbondanza-relativa-e-beta-diversity",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "6. Abbondanza relativa e beta diversity",
-    "text": "6. Abbondanza relativa e beta diversity"
+    "objectID": "biostatistica.html#alpha-diversity-1",
+    "href": "biostatistica.html#alpha-diversity-1",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "Alpha diversity",
+    "text": "Alpha diversity\nWe keep the same logic used in the original lesson: round the normalized counts, estimate richness, and read it along the transect.\n# Round normalized counts for richness\nphyloseq_obj_css_round &lt;- phyloseq_obj_css\notu_table(phyloseq_obj_css_round) &lt;- round(otu_table(phyloseq_obj_css), digits = 0)\n\n# Compute observed richness\np1 &lt;- plot_richness(\n  phyloseq_obj_css_round,\n  x = \"Longitude\",\n  color = \"Zone\",\n  measures = c(\"Observed\")\n)\n\n# Keep the same zone order as in the course\nnewSTorder &lt;- c(\"ANW\", \"ANC\", \"ANE\")\np1$data$Zone &lt;- factor(as.character(p1$data$Zone), levels = newSTorder)\n\n# Final figure\nggplot(p1$data, aes(Longitude, value)) +\n  theme_bw() +\n  theme(plot.title = element_text(hjust = 0.5), ggside.panel.scale.y = 0.4) +\n  geom_point(aes(colour = Zone), alpha = 0.45) +\n  scale_color_manual(values = c(\"#4280fc\", \"#ffb452\", \"#f7170a\", \"#000000\")) +\n  geom_ysideboxplot(aes(x = Zone, y = value, colour = Zone), orientation = \"x\") +\n  scale_ysidex_discrete() +\n  geom_smooth(aes(colour = variable), linewidth = 1.5) +\n  ylab(\"Richness\")\n\n\n\n\n\n# Save richness in the metadata for later use\nsample_data(phyloseq_obj_css)$Richness &lt;- p1$data$value"
   },
   {
-    "objectID": "biostatistica.html#relative-abundance-and-beta-diversity",
-    "href": "biostatistica.html#relative-abundance-and-beta-diversity",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "6. Relative abundance and beta diversity",
-    "text": "6. Relative abundance and beta diversity"
+    "objectID": "biostatistica.html#beta-diversity-1",
+    "href": "biostatistica.html#beta-diversity-1",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "Beta diversity",
+    "text": "Beta diversity\nHere we stop at the PCoA on Bray-Curtis. The original lesson also discussed dispersion checks, but this static version keeps the flow simpler.\n# Compute the Bray-Curtis ordination\notu.ord &lt;- ordinate(phyloseq_obj_css, \"PCoA\", distance = \"bray\")\n\n# Draw the PCoA with labels\nplot_ordination(phyloseq_obj_css, otu.ord, color = \"Zone\", axes = c(1, 2)) +\n  scale_color_manual(values = c(\"#4280fc\", \"#ffb452\", \"#f7170a\")) +\n  geom_point(size = 3) +\n  geom_text_repel(aes(label = SampleName), max.overlaps = Inf, show.legend = FALSE) +\n  labs(title = \"Beta Diversity based on Bray-Curtis\") +\n  theme_bw()"
   },
   {
-    "objectID": "biostatistica.html#permanova-e-dispersione",
-    "href": "biostatistica.html#permanova-e-dispersione",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "7. PERMANOVA e dispersione",
-    "text": "7. PERMANOVA e dispersione"
+    "objectID": "biostatistica.html#community-composition-and-rda",
+    "href": "biostatistica.html#community-composition-and-rda",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "Community composition and RDA",
+    "text": "Community composition and RDA\nFirst we look at the taxonomic composition at genus level, then we close with an RDA constrained by longitude and richness.\n# Convert counts to percentages\nphyseq_perc &lt;- transform_sample_counts(phyloseq_obj_css, function(x) 100 * x / sum(x))\n\n# Aggregate at genus level\nglom &lt;- tax_glom(physeq_perc, taxrank = \"Genus\")\ndata_glom &lt;- psmelt(glom)\ndata_glom$Zone &lt;- factor(as.character(data_glom$Zone), levels = c(\"ANW\", \"ANC\", \"ANE\"))\n\n# Large palette for genera\ncolor &lt;- grDevices::colors()[grep(\"gr(a|e)y\", grDevices::colors(), invert = TRUE)]\n\n# All genera\nggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +\n  facet_grid(~Zone, scales = \"free\") +\n  geom_bar(stat = \"identity\", position = \"fill\", width = 0.7) +\n  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus)))) +\n  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), legend.position = \"none\")\n\n\n\n\n\n# Identify the most abundant taxa\ngenus.sum &lt;- tapply(taxa_sums(glom), tax_table(glom)[, \"Genus\"], sum, na.rm = TRUE)\ntopGenera &lt;- names(sort(genus.sum, TRUE))[1:20]\n\n# Same plot, highlighting the top genera\nggplot(data = data_glom, aes(x = Sample, y = Abundance, fill = Genus)) +\n  facet_grid(~Zone, scales = \"free\") +\n  geom_bar(stat = \"identity\", position = \"fill\", width = 0.7) +\n  scale_fill_manual(values = sample(color, length(unique(data_glom$Genus))), breaks = topGenera) +\n  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))\n\n\n\n\n\n# RDA on the community\nRDA &lt;- ordinate(phyloseq_obj_css ~ Richness + Longitude, \"RDA\")\n\n# First plot: samples colored by zone\np2 &lt;- plot_ordination(phyloseq_obj_css, RDA, color = \"Zone\") +\n  theme_bw() +\n  geom_text_repel(aes(label = SampleName, color = Zone), max.overlaps = Inf, show.legend = FALSE) +\n  geom_point(size = 4) +\n  scale_color_manual(values = c(\"#4280fc\", \"#ffb452\", \"#f7170a\"))\n\n# Add arrows for explanatory variables\narrowmat &lt;- vegan::scores(RDA, display = \"bp\")\narrowdf &lt;- data.frame(labels = rownames(arrowmat), arrowmat)\narrowhead &lt;- grid::arrow(length = grid::unit(0.05, \"npc\"))\n\np2 +\n  geom_segment(\n    aes(xend = RDA1, yend = RDA2, x = 0, y = 0),\n    data = arrowdf,\n    color = \"black\",\n    arrow = arrowhead,\n    linewidth = 1\n  ) +\n  geom_text(\n    aes(x = 1.7 * RDA1, y = 1.7 * RDA2, label = labels),\n    data = arrowdf,\n    size = 4\n  )"
   },
   {
-    "objectID": "biostatistica.html#permanova-and-dispersion",
-    "href": "biostatistica.html#permanova-and-dispersion",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "7. PERMANOVA and dispersion",
-    "text": "7. PERMANOVA and dispersion"
-  },
-  {
-    "objectID": "biostatistica.html#composizione-tassonomica",
-    "href": "biostatistica.html#composizione-tassonomica",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "8. Composizione tassonomica",
-    "text": "8. Composizione tassonomica"
-  },
-  {
-    "objectID": "biostatistica.html#taxonomic-composition",
-    "href": "biostatistica.html#taxonomic-composition",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "8. Taxonomic composition",
-    "text": "8. Taxonomic composition"
-  },
-  {
-    "objectID": "biostatistica.html#rda-lungo-il-gradiente-longitudinale",
-    "href": "biostatistica.html#rda-lungo-il-gradiente-longitudinale",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "9. RDA lungo il gradiente longitudinale",
-    "text": "9. RDA lungo il gradiente longitudinale"
-  },
-  {
-    "objectID": "biostatistica.html#rda-along-the-longitudinal-gradient",
-    "href": "biostatistica.html#rda-along-the-longitudinal-gradient",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "9. RDA along the longitudinal gradient",
-    "text": "9. RDA along the longitudinal gradient"
-  },
-  {
-    "objectID": "biostatistica.html#cosa-riportare",
-    "href": "biostatistica.html#cosa-riportare",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "10. Cosa riportare",
-    "text": "10. Cosa riportare"
-  },
-  {
-    "objectID": "biostatistica.html#what-to-report",
-    "href": "biostatistica.html#what-to-report",
-    "title": "Analisi biostatistica: SEA4BLUE",
-    "section": "10. What to report",
-    "text": "10. What to report"
+    "objectID": "biostatistica.html#final-note",
+    "href": "biostatistica.html#final-note",
+    "title": "Analisi biostatistica / Biostatistics",
+    "section": "Final note",
+    "text": "Final note\nThis tutorial is intentionally static: the code is there to be read and discussed, while the figures are already ready to use. The point in class is to understand the analytical sequence, not to spend time on noisy output or overly automated steps."
   },
   {
     "objectID": "ampwrap.html",
@@ -214,7 +172,7 @@
     "href": "ampwrap.html#help-del-comando-command-help",
     "title": "Pretrattamento con AmpWrap",
     "section": "Help del comando / Command help",
-    "text": "Help del comando / Command help\nconda activate metabarcoding-phd\n\ncd /home/aula\n\nampwrap short --help"
+    "text": "Help del comando / Command help\nconda activate ampwrap\n\ncd /home/aula\n\nampwrap short --help"
   },
   {
     "objectID": "ampwrap.html#uso-di-base-basic-usage",
@@ -380,100 +338,114 @@
   {
     "objectID": "bash.html",
     "href": "bash.html",
-    "title": "Bash essenziale",
+    "title": "Bash essenziale per il metabarcoding",
     "section": "",
-    "text": "Imparare il minimo indispensabile per sapere dove ci troviamo, ispezionare i FASTQ e capire dove AmpWrap scrive i risultati.\nOgni read occupa quattro righe. Per stimare il numero di reads:\nEvery read occupies four lines. To estimate the number of reads:\nDividete il numero di righe per quattro. Cosa contengono la seconda e la quarta riga di ogni record?\nDivide the number of lines by four. What do the second and fourth lines of each record contain?\nLa pipe | passa l’output di un comando al successivo; &gt; lo scrive in un file.\nThe pipe | sends the output of one command to the next; &gt; writes it to a file.\nUscire da less premendo q.\nExit less by pressing q.\nSe which non restituisce un percorso interno all’ambiente attivo, fermatevi e risolvete il problema prima di lanciare il workflow.\nIf which does not return a path inside the active environment, stop and fix the problem before launching the workflow."
+    "text": "Bash non è una lista di comandi da imparare a memoria. È un modo preciso e riproducibile per dire al computer dove sono i dati, quale programma deve usarli e dove devono finire i risultati.\nQuesta lezione dura circa 60 minuti ed è pensata per chi non ha mai usato un terminale. Lavoreremo su un piccolo progetto di esempio con file FASTQ compressi, organizzato come un’analisi reale."
   },
   {
-    "objectID": "bash.html#obiettivo",
-    "href": "bash.html#obiettivo",
-    "title": "Bash essenziale",
-    "section": "",
-    "text": "Imparare il minimo indispensabile per sapere dove ci troviamo, ispezionare i FASTQ e capire dove AmpWrap scrive i risultati."
+    "objectID": "bash.html#obiettivi-della-lezione",
+    "href": "bash.html#obiettivi-della-lezione",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "Obiettivi della lezione",
+    "text": "Obiettivi della lezione\nAlla fine della lezione sarai in grado di:\n\nriconoscere terminale, shell, prompt, comando, opzione e argomento;\norientarti nel filesystem con pwd, ls e cd;\ncreare e organizzare cartelle con mkdir, cp e mv;\nispezionare file di testo e file FASTQ.gz senza aprirli interamente;\nselezionare più file con i wildcard e collegare comandi con una pipe;\nsalvare output e messaggi di errore in un log;\nattivare l’ambiente Conda del corso e trovare l’help di un programma."
   },
   {
-    "objectID": "bash.html#goal",
-    "href": "bash.html#goal",
-    "title": "Bash essenziale",
-    "section": "Goal",
-    "text": "Goal\nLearn the minimum needed to know where we are, inspect FASTQ files, and understand where AmpWrap writes its results."
+    "objectID": "bash.html#scaletta-indicativa",
+    "href": "bash.html#scaletta-indicativa",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "Scaletta indicativa",
+    "text": "Scaletta indicativa\n\n\n\nMinuti\nArgomento\n\n\n\n\n0–5\nTerminale, Bash e anatomia di un comando\n\n\n5–15\nDirectory, percorsi e navigazione\n\n\n15–25\nCreare, copiare e spostare file e cartelle\n\n\n25–37\nIspezionare testo e FASTQ compressi\n\n\n37–50\nWildcard, pipe, redirezioni e log\n\n\n50–55\nConda e help dei programmi\n\n\n55–60\nEsercizio finale\n\n\n\n\n\n\n\n\n\nNotaCome usare questa pagina\n\n\n\nDurante la lezione segui le sezioni dalla 1 alla 7. La scheda rapida e la diagnosi degli errori restano come riferimento per le esercitazioni successive. Il blocco di preparazione va eseguito una sola volta."
   },
   {
-    "objectID": "bash.html#getting-oriented",
-    "href": "bash.html#getting-oriented",
-    "title": "Bash essenziale",
-    "section": "1. Getting oriented",
-    "text": "1. Getting oriented"
+    "objectID": "bash.html#prima-di-iniziare",
+    "href": "bash.html#prima-di-iniziare",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "Prima di iniziare",
+    "text": "Prima di iniziare\nApri il terminale Ubuntu. Su Windows deve essere il terminale della distribuzione Ubuntu in WSL2, non PowerShell.\nNei blocchi di codice di questa pagina sono riportati soltanto i comandi da digitare. Non aggiungere simboli come $ o &gt; davanti al comando.\n\n\n\n\n\n\nImportanteRegola fondamentale\n\n\n\nEsegui un blocco alla volta e leggi sempre l’output prima di continuare.\n\n\n\nCinque tasti che userai spesso\n\n\n\n\n\n\n\nTasto\nEffetto\n\n\n\n\nTab\ncompleta nomi di file e cartelle; premuto due volte mostra le possibilità\n\n\nFreccia su\nrecupera i comandi precedenti\n\n\nCtrl+C\ninterrompe il comando corrente o annulla una riga incompleta\n\n\nCtrl+L\npulisce visivamente il terminale senza cancellare i file\n\n\nq\nesce da programmi di consultazione come less e man"
   },
   {
-    "objectID": "bash.html#copiare-senza-perdere-loriginale-copying-without-losing-the-original",
-    "href": "bash.html#copiare-senza-perdere-loriginale-copying-without-losing-the-original",
-    "title": "Bash essenziale",
-    "section": "2. Copiare senza perdere l’originale / Copying without losing the original",
-    "text": "2. Copiare senza perdere l’originale / Copying without losing the original"
+    "objectID": "bash.html#preparare-il-progetto-di-esercitazione",
+    "href": "bash.html#preparare-il-progetto-di-esercitazione",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "0. Preparare il progetto di esercitazione",
+    "text": "0. Preparare il progetto di esercitazione\nQuesta preparazione richiede circa un minuto e può essere eseguita dal docente prima della lezione. Copia e incolla l’intero blocco seguente. Crea un progetto nella tua home Linux e quattro piccoli FASTQ compressi. Non è necessario comprendere ora ogni carattere del blocco: i costrutti utilizzati verranno incontrati durante la lezione.\nmkdir -p \"$HOME/microbiome-bash-lab\"/{input,metadata,output,logs,notes}\ncd \"$HOME/microbiome-bash-lab\"\n\nprintf '@sample_A_read_1/1\\nACGTACGTACGT\\n+\\nIIIIIIIIIIII\\n@sample_A_read_2/1\\nTGCATGCATGCA\\n+\\nIIIIIIIIIIII\\n' \\\n  | gzip &gt; input/sample_A_R1.fastq.gz\n\nprintf '@sample_A_read_1/2\\nTACGTACGTACG\\n+\\nIIIIIIIIIIII\\n@sample_A_read_2/2\\nCATGCATGCATG\\n+\\nIIIIIIIIIIII\\n' \\\n  | gzip &gt; input/sample_A_R2.fastq.gz\n\nprintf '@sample_B_read_1/1\\nAAAACCCCGGGG\\n+\\nIIIIIIIIIIII\\n@sample_B_read_2/1\\nTTTTGGGGCCCC\\n+\\nIIIIIIIIIIII\\n' \\\n  | gzip &gt; input/sample_B_R1.fastq.gz\n\nprintf '@sample_B_read_1/2\\nCCCCGGGGTTTT\\n+\\nIIIIIIIIIIII\\n@sample_B_read_2/2\\nGGGGCCCCAAAA\\n+\\nIIIIIIIIIIII\\n' \\\n  | gzip &gt; input/sample_B_R2.fastq.gz\n\nprintf 'sample\\tgroup\\nsample_A\\tcontrol\\nsample_B\\ttreatment\\n' \\\n  &gt; metadata/samples.tsv\n\nprintf 'Progetto creato in: %s\\n' \"$PWD\"\nls -R\nLa struttura risultante è:\nmicrobiome-bash-lab/\n├── input/       # dati grezzi: non modificarli\n├── metadata/    # informazioni sui campioni\n├── output/      # risultati delle analisi\n├── logs/        # registrazione dei comandi e dei messaggi\n└── notes/       # appunti e copie di lavoro\n\n\n\n\n\n\nConsiglioBuona pratica\n\n\n\nConserva i dati originali in input/ e scrivi risultati e file temporanei altrove. Un workflow è più facile da controllare quando input e output non sono mescolati."
   },
   {
-    "objectID": "bash.html#copying-without-losing-the-original",
-    "href": "bash.html#copying-without-losing-the-original",
-    "title": "Bash essenziale",
-    "section": "2. Copying without losing the original",
-    "text": "2. Copying without losing the original"
+    "objectID": "bash.html#terminale-shell-e-bash",
+    "href": "bash.html#terminale-shell-e-bash",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "1. Terminale, shell e Bash",
+    "text": "1. Terminale, shell e Bash\nIl terminale è la finestra in cui scriviamo. La shell interpreta ciò che scriviamo. Bash è la shell usata in questa lezione.\nUna riga del terminale può assomigliare a questa:\n(metabarcoding-phd) nomeutente@computer:~/microbiome-bash-lab$\nLe parti principali sono:\n\n(metabarcoding-phd): ambiente Conda attivo;\nnomeutente@computer: utente e computer;\n~/microbiome-bash-lab: directory corrente;\n$: il terminale è pronto a ricevere un comando.\n\nIl prompt è mostrato dal terminale: non va ricopiato.\n\nAnatomia di un comando\nLa struttura più comune è:\ncomando [opzioni] [argomenti]\nEsempio:\nls -lh input/\n\n\n\nParte\nRuolo\n\n\n\n\nls\ncomando: elenca il contenuto di una directory\n\n\n-l\nopzione: usa un elenco dettagliato\n\n\n-h\nopzione: mostra dimensioni leggibili, per esempio KB o MB\n\n\ninput/\nargomento: la directory su cui deve lavorare ls\n\n\n\nGli spazi separano le parti del comando. Bash distingue maiuscole e minuscole: Input, input e INPUT sono tre nomi diversi.\nProva tre comandi semplici:\ndate\nwhoami\necho \"Sto usando Bash\"\nLe righe che iniziano con # sono commenti e non vengono eseguite:\n# Questo è un commento\necho \"Questo invece viene eseguito\"\n\n\nNon serve memorizzare tutto\nMolti programmi mostrano una guida con --help o -h:\nls --help | less\nScorri con le frecce e premi q per uscire. Per i comandi di sistema è spesso disponibile anche il manuale:\nman ls"
   },
   {
-    "objectID": "bash.html#leggere-un-fastq-compresso-reading-a-compressed-fastq",
-    "href": "bash.html#leggere-un-fastq-compresso-reading-a-compressed-fastq",
-    "title": "Bash essenziale",
-    "section": "3. Leggere un FASTQ compresso / Reading a compressed FASTQ",
-    "text": "3. Leggere un FASTQ compresso / Reading a compressed FASTQ"
+    "objectID": "bash.html#dove-sono-che-cosa-cè-qui-come-mi-sposto",
+    "href": "bash.html#dove-sono-che-cosa-cè-qui-come-mi-sposto",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "2. Dove sono? Che cosa c’è qui? Come mi sposto?",
+    "text": "2. Dove sono? Che cosa c’è qui? Come mi sposto?\nTre comandi rispondono alle domande fondamentali:\n\n\n\nDomanda\nComando\n\n\n\n\nDove sono?\npwd\n\n\nChe cosa c’è qui?\nls\n\n\nCome mi sposto?\ncd\n\n\n\nTorna all’inizio del progetto e osserva la directory:\ncd \"$HOME/microbiome-bash-lab\"\npwd\nls\nls -lah\nls -lh input/\npwd significa print working directory. Dovrebbe mostrare un percorso che termina con:\n/microbiome-bash-lab\nCon ls -lah:\n\n-l mostra dettagli;\n-a include gli elementi nascosti, i cui nomi iniziano con .;\n-h mostra dimensioni leggibili.\n\n\nPercorsi assoluti e relativi\nUn percorso è l’indirizzo di un file o di una directory.\n\n\n\nSimbolo\nSignificato\n\n\n\n\n/\nradice del filesystem\n\n\n~ oppure $HOME\nhome dell’utente corrente\n\n\n.\ndirectory corrente\n\n\n..\ndirectory superiore\n\n\n\nUn percorso assoluto parte da / o dalla home:\n/home/nomeutente/microbiome-bash-lab/input/sample_A_R1.fastq.gz\nUn percorso relativo parte dalla directory in cui ci troviamo:\ninput/sample_A_R1.fastq.gz\nIl percorso relativo funziona soltanto quando la posizione corrente è quella prevista. Per questo pwd è uno dei migliori strumenti di controllo.\n\n\nEsercizio guidato di navigazione\ncd \"$HOME/microbiome-bash-lab\"\npwd\n\ncd input\npwd\nls -lh\n\ncd ..\npwd\n\ncd metadata\npwd\n\ncd -\npwd\ncd - torna alla directory precedente. cd senza argomenti torna alla home:\ncd\npwd\nOra torna al progetto usando il completamento con Tab: inizia a scrivere cd ~/micro e premi Tab.\ncd \"$HOME/microbiome-bash-lab\"\n\n\n\n\n\n\nConsiglioAbitudine utile\n\n\n\nPrima di lanciare un’analisi esegui sempre pwd e ls -lh. Molti errori derivano semplicemente dal trovarsi nella directory sbagliata."
   },
   {
-    "objectID": "bash.html#reading-a-compressed-fastq",
-    "href": "bash.html#reading-a-compressed-fastq",
-    "title": "Bash essenziale",
-    "section": "3. Reading a compressed FASTQ",
-    "text": "3. Reading a compressed FASTQ"
+    "objectID": "bash.html#creare-copiare-spostare-e-rinominare",
+    "href": "bash.html#creare-copiare-spostare-e-rinominare",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "3. Creare, copiare, spostare e rinominare",
+    "text": "3. Creare, copiare, spostare e rinominare\n\nCreare directory con mkdir\nCrea due sottodirectory per i risultati:\ncd \"$HOME/microbiome-bash-lab\"\nmkdir -p output/qc output/tables\nls -R output\nL’opzione -p crea anche eventuali directory intermedie e non produce errore se la directory esiste già.\n\n\nCopiare con cp\nLa forma generale è:\ncp origine destinazione\nCrea una copia dei metadata nella directory degli appunti:\ncp -i metadata/samples.tsv notes/samples_copy.tsv\nls -lh notes/\n-i significa interactive: se il file di destinazione esiste già, cp chiede conferma prima di sovrascriverlo.\n\n\nSpostare o rinominare con mv\nmv usa la stessa logica di origine e destinazione. Se origine e destinazione sono nella stessa directory, il file viene rinominato:\nmv -i notes/samples_copy.tsv notes/samples_backup.tsv\nls -lh notes/\nPer spostarlo in una directory mantenendo lo stesso nome, indica soltanto la directory come destinazione:\nmv -i notes/samples_backup.tsv output/qc/\nls -lh output/qc/\n\n\nSicurezza: cancellare non equivale al cestino\nIl comando rm cancella normalmente i file in modo permanente. Non è necessario usarlo in questa esercitazione.\n\n\n\n\n\n\nAvvisoPrima di cancellare qualsiasi cosa\n\n\n\nControlla pwd, controlla ls, completa il nome con Tab e non usare sudo come tentativo generico di risolvere un errore. Evita soprattutto comandi ricorsivi copiati senza comprenderli.\n\n\nAnche cp e mv possono sovrascrivere file. Durante l’apprendimento è prudente usare cp -i e mv -i."
   },
   {
-    "objectID": "bash.html#pipe-e-redirezione-pipes-and-redirection",
-    "href": "bash.html#pipe-e-redirezione-pipes-and-redirection",
-    "title": "Bash essenziale",
-    "section": "4. Pipe e redirezione / Pipes and redirection",
-    "text": "4. Pipe e redirezione / Pipes and redirection"
+    "objectID": "bash.html#ispezionare-file-di-testo-e-fastq-compressi",
+    "href": "bash.html#ispezionare-file-di-testo-e-fastq-compressi",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "4. Ispezionare file di testo e FASTQ compressi",
+    "text": "4. Ispezionare file di testo e FASTQ compressi\nIn bioinformatica molti file sono troppo grandi per essere aperti interamente. Conviene prima osservarne una piccola parte.\n\nFile di testo\nIl file metadata/samples.tsv è una tabella di testo separata da tabulazioni:\ncd \"$HOME/microbiome-bash-lab\"\nhead -n 3 metadata/samples.tsv\ntail -n 2 metadata/samples.tsv\nwc -l metadata/samples.tsv\n\n\n\nComando\nFunzione\n\n\n\n\nhead -n 3\nmostra le prime 3 righe\n\n\ntail -n 2\nmostra le ultime 2 righe\n\n\nwc -l\nconta le righe\n\n\n\nPer consultare un file in modo interattivo:\nless metadata/samples.tsv\nDentro less:\n\nusa le frecce o Page Up/Page Down per spostarti;\ndigita /sample_B e premi Invio per cercare;\npremi n per andare all’occorrenza successiva;\npremi q per uscire.\n\ncat stampa tutto il contenuto di un file ed è adatto soltanto a file piccoli:\ncat metadata/samples.tsv\n\n\nRiconoscere i file compressi\nfile input/sample_A_R1.fastq.gz\nls -lh input/*.fastq.gz\nUn file .fastq.gz è un FASTQ compresso con gzip. Non usare cat direttamente: vedresti dati compressi illeggibili.\ngzip -cd decomprime verso il terminale senza modificare il file originale. Collegandolo a head, osserviamo soltanto le prime otto righe:\ngzip -cd input/sample_A_R1.fastq.gz | head -n 8\nUn record FASTQ occupa quattro righe:\n@identificativo_della_lettura\nSEQUENZA\n+\nQUALITA\nOtto righe corrispondono quindi a due letture. Possiamo verificarlo così:\ngzip -cd input/sample_A_R1.fastq.gz | wc -l\nNel piccolo file di esercizio il risultato è 8. Per file reali è preferibile usare un programma che comprenda direttamente il formato FASTQ, per esempio SeqKit:\nconda activate metabarcoding-phd\nseqkit stats input/*.fastq.gz\n\n\nControllo rapido delle coppie R1/R2\nI file paired-end devono avere un file R1 e un file R2 per ciascun campione.\nls input/*_R1.fastq.gz\nls input/*_R2.fastq.gz\n\nls input/*_R1.fastq.gz | wc -l\nls input/*_R2.fastq.gz | wc -l\nIn questa esercitazione devono esserci due file R1 e due file R2.\n\n\n\n\n\n\nNotaFile compressi e conteggio delle righe\n\n\n\nwc -l file.fastq.gz non conta le letture: lavora sui dati binari compressi. Prima bisogna decomprimere verso lo standard output oppure usare un programma come SeqKit."
   },
   {
-    "objectID": "bash.html#pipes-and-redirection",
-    "href": "bash.html#pipes-and-redirection",
-    "title": "Bash essenziale",
-    "section": "4. Pipes and redirection",
-    "text": "4. Pipes and redirection"
+    "objectID": "bash.html#wildcard-pipe-redirezioni-e-log",
+    "href": "bash.html#wildcard-pipe-redirezioni-e-log",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "5. Wildcard, pipe, redirezioni e log",
+    "text": "5. Wildcard, pipe, redirezioni e log\nQuesti operatori permettono di lavorare su molti file e di combinare comandi semplici.\n\nWildcard: selezionare più file\nL’asterisco * rappresenta zero o più caratteri.\nls input/*.fastq.gz\nls input/sample_A_*\nls input/*_R1.fastq.gz\nInterpretazione:\n\n\n\nEspressione\nSeleziona\n\n\n\n\ninput/*.fastq.gz\ntutti i FASTQ compressi in input/\n\n\ninput/sample_A_*\ntutti i file il cui nome inizia con sample_A_\n\n\ninput/*_R1.fastq.gz\ntutti i file forward R1\n\n\n\nBash espande il wildcard prima di avviare il comando. Prima di usare un wildcard con comandi che modificano file, controlla sempre la selezione con ls.\nIl punto interrogativo ? rappresenta esattamente un carattere. Nel nostro esempio:\nls input/sample_?_R1.fastq.gz\nseleziona sample_A_R1.fastq.gz e sample_B_R1.fastq.gz.\n\n\nPipe: usare l’output di un comando come input del successivo\nLa pipe è il simbolo |:\ncomando_1 | comando_2\nL’output di comando_1 non viene stampato direttamente: diventa l’input di comando_2.\nAbbiamo già usato una pipe:\ngzip -cd input/sample_A_R1.fastq.gz | head -n 8\nAltri esempi:\nls input/*.fastq.gz | wc -l\nseqkit stats input/*.fastq.gz | less\nIl primo conta i file selezionati. Il secondo permette di consultare l’output di SeqKit con less.\n\n\nRedirezione: scrivere l’output in un file\nIl simbolo &gt; salva l’output in un file invece di mostrarlo sul terminale:\nls input/*.fastq.gz &gt; logs/input-files.txt\nhead logs/input-files.txt\n\n\n\n\n\n\nAvvisoAttenzione alla sovrascrittura\n\n\n\n&gt; crea il file se non esiste, ma lo sovrascrive se esiste già.\n\n\nIl simbolo &gt;&gt; aggiunge l’output in fondo a un file esistente:\ndate &gt; logs/session.log\nls input/*.fastq.gz &gt;&gt; logs/session.log\ncat logs/session.log\n\n\ntee: mostrare e salvare nello stesso momento\ntee copia l’output sia sul terminale sia in un file:\nseqkit stats input/*.fastq.gz | tee logs/seqkit-stats.log\nMolti programmi inviano alcuni messaggi su un secondo canale chiamato standard error. Per salvare in un unico log sia l’output normale sia i messaggi di errore:\nseqkit stats input/*.fastq.gz 2&gt;&1 | tee logs/seqkit-stats.log\n\n2&gt;&1 unisce standard error e standard output;\n| tee ... mostra tutto e ne salva una copia.\n\nQuesta è una struttura molto utile per i workflow:\ncomando_con_opzioni 2&gt;&1 | tee logs/nome-analisi.log\nDopo l’esecuzione, controlla il log:\nhead logs/seqkit-stats.log\ntail logs/seqkit-stats.log\n\n\n\n\n\n\nConsiglioPerché conservare i log?\n\n\n\nI log permettono di ricostruire ciò che è successo, individuare errori e comunicare al docente o a un collaboratore l’esatto messaggio prodotto dal programma."
   },
   {
-    "objectID": "bash.html#ambiente-del-corso-course-environment",
-    "href": "bash.html#ambiente-del-corso-course-environment",
-    "title": "Bash essenziale",
-    "section": "5. Ambiente del corso / Course environment",
-    "text": "5. Ambiente del corso / Course environment"
+    "objectID": "bash.html#ambiente-conda-e-help-dei-programmi",
+    "href": "bash.html#ambiente-conda-e-help-dei-programmi",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "6. Ambiente Conda e help dei programmi",
+    "text": "6. Ambiente Conda e help dei programmi\nUn ambiente Conda mantiene insieme versioni compatibili dei programmi necessari per il corso.\nMostra gli ambienti disponibili:\nconda env list\nAttiva l’ambiente del corso:\nconda activate metabarcoding-phd\nIl nome dell’ambiente dovrebbe comparire all’inizio del prompt. Controlla il percorso dell’ambiente e il programma che verrà eseguito:\necho \"$CONDA_PREFIX\"\ncommand -v seqkit\nseqkit version\ncommand -v risponde alla domanda: “quale eseguibile userà Bash quando scrivo questo nome?”. Il percorso dovrebbe trovarsi dentro l’ambiente metabarcoding-phd.\nPer scoprire le opzioni di un programma:\nseqkit stats --help | less\nPer vedere gli ultimi comandi eseguiti:\nhistory | tail -n 10\nPer uscire dall’ambiente:\nconda deactivate\nDurante il corso, riattivalo prima di usare AmpWrap o gli altri programmi bioinformatici:\nconda activate metabarcoding-phd"
   },
   {
-    "objectID": "bash.html#course-environment",
-    "href": "bash.html#course-environment",
-    "title": "Bash essenziale",
-    "section": "5. Course environment",
-    "text": "5. Course environment"
+    "objectID": "bash.html#esercizio-finale-controllo-di-un-progetto-prima-del-workflow",
+    "href": "bash.html#esercizio-finale-controllo-di-un-progetto-prima-del-workflow",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "7. Esercizio finale: controllo di un progetto prima del workflow",
+    "text": "7. Esercizio finale: controllo di un progetto prima del workflow\nSenza guardare subito la soluzione, prova a:\n\ntornare nella directory microbiome-bash-lab partendo da qualunque posizione;\nmostrare il percorso corrente;\ncreare la directory output/qc senza errore anche se esiste già;\nelencare soltanto i file R1;\nmostrare i primi due record di sample_B_R1.fastq.gz;\ncopiare samples.tsv dentro output/qc/ senza sovrascrivere in silenzio;\nattivare l’ambiente del corso;\nprodurre le statistiche di tutti i FASTQ, mostrandole sul terminale e salvandole in logs/fastq-stats.log;\ncontrollare le ultime righe del log.\n\nRisultati attesi:\n\nquattro FASTQ totali;\ndue file R1 e due file R2;\ndue letture in ciascun piccolo file di esempio;\nun file output/qc/samples.tsv;\nun file logs/fastq-stats.log.\n\n\n\n\n\n\n\nNotaMostra una possibile soluzione\n\n\n\n\n\ncd \"$HOME/microbiome-bash-lab\"\npwd\n\nmkdir -p output/qc\n\nls -lh input/*_R1.fastq.gz\n\ngzip -cd input/sample_B_R1.fastq.gz | head -n 8\n\ncp -i metadata/samples.tsv output/qc/\n\nconda activate metabarcoding-phd\nseqkit stats input/*.fastq.gz 2&gt;&1 | tee logs/fastq-stats.log\n\ntail -n 5 logs/fastq-stats.log\nControlli aggiuntivi:\nls input/*.fastq.gz | wc -l\nls input/*_R1.fastq.gz | wc -l\nls input/*_R2.fastq.gz | wc -l\nls -lh output/qc/ logs/"
   },
   {
-    "objectID": "bash.html#checklist",
-    "href": "bash.html#checklist",
-    "title": "Bash essenziale",
-    "section": "Checklist",
-    "text": "Checklist"
+    "objectID": "bash.html#routine-di-controllo-prima-di-lanciare-ampwrap",
+    "href": "bash.html#routine-di-controllo-prima-di-lanciare-ampwrap",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "Routine di controllo prima di lanciare AmpWrap",
+    "text": "Routine di controllo prima di lanciare AmpWrap\nQuesta sequenza riduce molti errori comuni:\nconda activate metabarcoding-phd\ncd \"$HOME/microbiome-bash-lab\"\n\npwd\nls -lh input/\nls input/*_R1.fastq.gz | wc -l\nls input/*_R2.fastq.gz | wc -l\nseqkit stats input/*.fastq.gz\n\nmkdir -p output logs\nSolo dopo questi controlli si lancia il workflow, salvando un log completo:\ncomando_ampwrap_con_le_opzioni 2&gt;&1 | tee logs/ampwrap.log\nNon copiare letteralmente l’ultima riga: è uno schema. Nel modulo successivo verrà sostituita con il comando AmpWrap completo e con i parametri appropriati per i dati del corso."
   },
   {
-    "objectID": "bash.html#checklist-1",
-    "href": "bash.html#checklist-1",
-    "title": "Bash essenziale",
-    "section": "Checklist",
-    "text": "Checklist"
+    "objectID": "bash.html#errori-comuni-e-diagnosi-rapida",
+    "href": "bash.html#errori-comuni-e-diagnosi-rapida",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "Errori comuni e diagnosi rapida",
+    "text": "Errori comuni e diagnosi rapida\n\n\n\n\n\n\n\nMessaggio o situazione\nChe cosa fare\n\n\n\n\nNo such file or directory\nesegui pwd, poi ls -lah; controlla maiuscole/minuscole e usa Tab\n\n\ncommand not found\ncontrolla l’ortografia, attiva Conda e prova command -v nome_comando\n\n\nPermission denied\ncontrolla il percorso e i permessi con ls -l; non usare subito sudo\n\n\nil terminale mostra soltanto &gt; e aspetta\nprobabilmente manca una virgoletta o il comando è incompleto; premi Ctrl+C\n\n\ncompaiono caratteri illeggibili aprendo un .gz\nnon usare cat; usa gzip -cd file.fastq.gz | head\n\n\nless occupa tutto lo schermo\npremi q\n\n\nun comando continua troppo a lungo\npremi Ctrl+C, poi rileggi comando e log\n\n\nun percorso contiene spazi\nracchiudilo tra virgolette; nei nuovi progetti preferisci _ o -\n\n\n\n\nLa routine dei 30 secondi\nQuando qualcosa non funziona:\npwd\nls -lah\nls -lah percorso/che/ti/aspetti\ncommand -v nome_programma\nPoi rileggi il messaggio di errore dall’inizio. Il messaggio spesso indica il file, il percorso o l’opzione che ha causato il problema."
+  },
+  {
+    "objectID": "bash.html#scheda-rapida-dei-comandi",
+    "href": "bash.html#scheda-rapida-dei-comandi",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "Scheda rapida dei comandi",
+    "text": "Scheda rapida dei comandi\n\n\n\n\n\n\n\nComando o simbolo\nUso essenziale\n\n\n\n\npwd\nmostra la directory corrente\n\n\nls -lah\nelenca contenuto, dettagli, file nascosti e dimensioni leggibili\n\n\ncd percorso\nentra in una directory\n\n\ncd ..\nsale di un livello\n\n\ncd oppure cd ~\ntorna alla home\n\n\ncd -\ntorna alla directory precedente\n\n\nmkdir -p percorso\ncrea una directory e gli eventuali livelli mancanti\n\n\ncp -i origine destinazione\ncopia chiedendo conferma prima di sovrascrivere\n\n\nmv -i origine destinazione\nsposta o rinomina chiedendo conferma\n\n\nhead -n N file\nmostra le prime N righe\n\n\ntail -n N file\nmostra le ultime N righe\n\n\nless file\nconsulta un file; esci con q\n\n\nwc -l file\nconta le righe\n\n\nfile nomefile\nidentifica il tipo di file\n\n\ngzip -cd file.gz\ndecomprime verso lo standard output senza modificare l’originale\n\n\n*\nwildcard: zero o più caratteri\n\n\n?\nwildcard: un carattere\n\n\ncomando1 \\| comando2\npassa l’output del primo comando al secondo\n\n\n&gt;\nscrive e sovrascrive un file\n\n\n&gt;&gt;\naggiunge in fondo a un file\n\n\n2&gt;&1\nunisce messaggi di errore e output normale\n\n\ntee file.log\nmostra l’output e lo salva\n\n\ncommand -v programma\nmostra quale eseguibile verrà usato\n\n\nprogramma --help\nmostra l’help del programma\n\n\nCtrl+C\ninterrompe o annulla\n\n\nTab\ncompleta e verifica nomi e percorsi"
+  },
+  {
+    "objectID": "bash.html#che-cosa-non-abbiamo-coperto",
+    "href": "bash.html#che-cosa-non-abbiamo-coperto",
+    "title": "Bash essenziale per il metabarcoding",
+    "section": "Che cosa non abbiamo coperto",
+    "text": "Che cosa non abbiamo coperto\nIn un’ora non è realistico affrontare bene scripting, cicli for, variabili complesse, grep, awk, sed, permessi, accesso a server remoti e gestione dei processi. Questi argomenti diventano utili dopo aver consolidato navigazione, percorsi, pipe e log.\nPer approfondire:\n\nUnix Crash Course — Happy Belly Bioinformatics\nGNU Bash Reference Manual\nGNU Coreutils Manual\nSeqKit documentation\n\nLa struttura didattica di questa lezione prende ispirazione dal percorso introduttivo di Happy Belly Bioinformatics, adattandolo agli obiettivi e ai file tipici di un workflow di metabarcoding."
   },
   {
     "objectID": "intro-r.html",
