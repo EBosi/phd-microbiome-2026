@@ -1,0 +1,95 @@
+.navbar-brand {
+  font-weight: 650;
+}
+
+.hero {
+  padding: 2.75rem 2.25rem;
+  margin: 0 0 2rem;
+  border-radius: 1rem;
+  color: white;
+  background:
+    radial-gradient(circle at 92% 15%, rgba(103, 216, 208, 0.42), transparent 28%),
+    linear-gradient(135deg, #063970 0%, #087e8b 100%);
+}
+
+.hero h1 {
+  margin-top: 0;
+  font-size: clamp(2rem, 5vw, 3.35rem);
+}
+
+.hero p {
+  max-width: 48rem;
+  margin-bottom: 0;
+  font-size: 1.15rem;
+}
+
+.course-card {
+  height: 100%;
+  padding: 1.15rem;
+  border: 1px solid #d9e3ea;
+  border-radius: 0.8rem;
+  background: #fff;
+}
+
+.course-card h3 {
+  margin-top: 0;
+  color: #075985;
+}
+
+.download-box {
+  padding: 1.25rem;
+  border-left: 0.35rem solid #087e8b;
+  border-radius: 0.45rem;
+  background: #edfafa;
+}
+
+.step-label {
+  color: #087e8b;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.lang-switch {
+  position: fixed;
+  top: 4.3rem;
+  right: 1rem;
+  z-index: 1030;
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border: 1px solid #d6e1e8;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0.8rem 1.8rem rgba(8, 21, 34, 0.12);
+}
+
+.lang-toggle {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.38rem 0.75rem;
+  background: transparent;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.lang-toggle.is-active {
+  background: #087e8b;
+  color: #fff;
+}
+
+html.lang-it .lang-en,
+html.lang-en .lang-it {
+  display: none !important;
+}
+
+html:not(.lang-it):not(.lang-en) .lang-en {
+  display: none;
+}
+
+.quarto-figure img,
+figure img {
+  border-radius: 0.85rem;
+  box-shadow: 0 0.8rem 1.8rem rgba(8, 21, 34, 0.12);
+}
