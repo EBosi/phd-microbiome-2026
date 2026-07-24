@@ -1,109 +1,1120 @@
 ---
-title: "Introduzione a R e RStudio"
+title: "Introduzione a R e RStudio / Introduction to R and RStudio"
+subtitle: "Una lezione pratica di 60 minuti per chi parte da zero / A 60-minute practical lesson for complete beginners"
+description: "Script, oggetti, vettori, data frame, valori mancanti, importazione, dplyr, grafici e riproducibilita."
+execute:
+  eval: false
+  echo: true
+  warning: false
+  message: false
+toc-depth: 2
 ---
 
 ::: {.lang-block .lang-it}
-## Script e console
+R non è soltanto una calcolatrice e RStudio non è R. **R** è il linguaggio che esegue i comandi; **RStudio** è l'ambiente nel quale scriviamo script, osserviamo oggetti, consultiamo l'help e costruiamo analisi riproducibili.
 
-Scrivete il codice nello script e inviate una riga o una selezione alla console con `Ctrl+Enter`. Conservare lo script rende l'analisi riproducibile; la cronologia della console non e un protocollo di analisi.
+Questa lezione dura circa **60 minuti** ed è pensata per chi non ha mai programmato. Useremo un piccolo dataset microbiologico creato direttamente nella sessione, senza bisogno di scaricare file aggiuntivi.
 :::
 
 ::: {.lang-block .lang-en}
-## Scripts and console
+R is not only a calculator, and RStudio is not R. **R** is the language that executes commands; **RStudio** is the environment in which we write scripts, inspect objects, read documentation, and build reproducible analyses.
 
-Write code in the script and send a line or a selection to the console with `Ctrl+Enter`. Keeping the script makes the analysis reproducible; the console history is not an analysis protocol.
+This lesson takes approximately **60 minutes** and is designed for learners with no previous programming experience. We will use a small microbiology dataset created directly in the session, with no additional downloads required.
 :::
 
-## 1. Dove siamo? / Where are we?
+## Obiettivi della lezione / Learning goals
+
+::: {.lang-block .lang-it}
+Alla fine della lezione sarai in grado di:
+
+- distinguere console, script, comando, oggetto, funzione e argomento;
+- eseguire codice da uno script con `Ctrl+Enter`;
+- creare oggetti e vettori con `<-` e `c()`;
+- riconoscere dati numerici, testuali, logici e valori mancanti;
+- esplorare e filtrare un data frame;
+- importare e salvare una tabella;
+- riassumere dati con `dplyr` e la pipe `|>`;
+- creare un primo grafico con `ggplot2`;
+- leggere un errore senza cancellare tutto o ricominciare da capo.
+:::
+
+::: {.lang-block .lang-en}
+By the end of the lesson, you will be able to:
+
+- distinguish the console, a script, a command, an object, a function, and an argument;
+- run code from a script with `Ctrl+Enter`;
+- create objects and vectors with `<-` and `c()`;
+- recognise numeric, character, logical, and missing values;
+- inspect and filter a data frame;
+- import and save a table;
+- summarise data with `dplyr` and the `|>` pipe;
+- create a first plot with `ggplot2`;
+- read an error without deleting everything or starting again from scratch.
+:::
+
+## Scaletta indicativa / Suggested schedule
+
+::: {.lang-block .lang-it}
+| Minuti | Argomento |
+|---:|---|
+| 0–5 | R, RStudio, console e script |
+| 5–15 | Espressioni, oggetti e funzioni |
+| 15–25 | Vettori, tipi di dato e selezione |
+| 25–36 | Data frame e valori mancanti |
+| 36–44 | Importare e salvare dati |
+| 44–53 | Filtrare e riassumere con `dplyr` |
+| 53–58 | Un primo grafico con `ggplot2` |
+| 58–60 | Esercizio finale e checklist |
+:::
+
+::: {.lang-block .lang-en}
+| Minutes | Topic |
+|---:|---|
+| 0–5 | R, RStudio, the console, and scripts |
+| 5–15 | Expressions, objects, and functions |
+| 15–25 | Vectors, data types, and selection |
+| 25–36 | Data frames and missing values |
+| 36–44 | Importing and saving data |
+| 44–53 | Filtering and summarising with `dplyr` |
+| 53–58 | A first plot with `ggplot2` |
+| 58–60 | Final exercise and checklist |
+:::
+
+:::: {.lang-block .lang-it}
+::: {.callout-note title="Come usare questa pagina"}
+Durante la lezione esegui i blocchi nell'ordine indicato. Scrivi il codice in uno **script `.R`** e invialo alla console una riga o una selezione alla volta. Non limitarti a copiare: dopo ogni comando osserva quale oggetto è stato creato o modificato.
+:::
+::::
+
+:::: {.lang-block .lang-en}
+::: {.callout-note title="How to use this page"}
+During the lesson, run the blocks in the order shown. Write the code in an **`.R` script** and send one line or selection at a time to the console. Do not only copy commands: after each one, inspect which object was created or changed.
+:::
+::::
+
+## Prima di iniziare / Before you start
+
+::: {.lang-block .lang-it}
+Apri il terminale Ubuntu, attiva l'ambiente del corso e avvia RStudio. Su Windows, usa il terminale Ubuntu di WSL2, non PowerShell.
+:::
+
+::: {.lang-block .lang-en}
+Open the Ubuntu terminal, activate the course environment, and start RStudio. On Windows, use the Ubuntu terminal in WSL2, not PowerShell.
+:::
+
+```bash
+conda activate metabarcoding-phd
+rstudio
+```
+
+::: {.lang-block .lang-it}
+Se RStudio non si apre, puoi comunque avviare R nel terminale con `R`, ma durante la lezione l'interfaccia di RStudio sarà più comoda.
+:::
+
+::: {.lang-block .lang-en}
+If RStudio does not open, you can still start R in the terminal with `R`, but the RStudio interface will be more convenient during the lesson.
+:::
+
+### Controllo dell'ambiente / Environment check
+
+::: {.lang-block .lang-it}
+Nella **console di RStudio**, esegui:
+:::
+
+::: {.lang-block .lang-en}
+In the **RStudio console**, run:
+:::
 
 ```{r}
-#| eval: false
+R.version.string
+Sys.which(c("R", "Rscript"))
+.libPaths()
+```
+
+::: {.lang-block .lang-it}
+I percorsi dovrebbero appartenere all'ambiente `metabarcoding-phd`. Se non è così, chiudi RStudio, attiva nuovamente Conda nel terminale e riaprilo.
+:::
+
+::: {.lang-block .lang-en}
+The paths should belong to the `metabarcoding-phd` environment. If they do not, close RStudio, activate Conda again in the terminal, and reopen it.
+:::
+
+---
+
+## 1. R, RStudio, console e script / R, RStudio, the console, and scripts
+
+::: {.lang-block .lang-it}
+RStudio mostra normalmente quattro aree:
+
+| Area | A cosa serve |
+|---|---|
+| **Source** | contiene gli script che possiamo salvare e riutilizzare |
+| **Console** | esegue il codice e mostra risultati, messaggi ed errori |
+| **Environment** | elenca gli oggetti presenti nella sessione |
+| **Files/Plots/Packages/Help** | mostra file, grafici, pacchetti e documentazione |
+
+Crea un nuovo script con **File → New File → R Script** e salvalo come `intro-r.R`.
+:::
+
+::: {.lang-block .lang-en}
+RStudio normally displays four areas:
+
+| Area | Purpose |
+|---|---|
+| **Source** | contains scripts that can be saved and reused |
+| **Console** | runs code and displays results, messages, and errors |
+| **Environment** | lists the objects available in the session |
+| **Files/Plots/Packages/Help** | displays files, plots, packages, and documentation |
+
+Create a new script with **File → New File → R Script** and save it as `intro-r.R`.
+:::
+
+::: {.lang-block .lang-it}
+Scrivi nello script:
+:::
+
+::: {.lang-block .lang-en}
+Write this in the script:
+:::
+
+```{r}
+# La mia prima riga di R
+2 + 3
+```
+
+::: {.lang-block .lang-it}
+Posiziona il cursore sulla seconda riga e premi `Ctrl+Enter`. Il comando viene inviato alla console e R restituisce `5`.
+
+Il simbolo `>` nella console è il **prompt**: indica che R è pronto. Non deve essere copiato nello script. Una riga che inizia con `#` è un commento e non viene eseguita.
+:::
+
+::: {.lang-block .lang-en}
+Place the cursor on the second line and press `Ctrl+Enter`. The command is sent to the console, and R returns `5`.
+
+The `>` symbol in the console is the **prompt**: it means that R is ready. Do not copy it into the script. A line beginning with `#` is a comment and is not executed.
+:::
+
+:::: {.lang-block .lang-it}
+::: {.callout-important title="Script, non cronologia"}
+La console è utile per provare, ma lo script è il protocollo dell'analisi. Salva nello script tutti i passaggi necessari per riprodurre il risultato.
+:::
+::::
+
+:::: {.lang-block .lang-en}
+::: {.callout-important title="Scripts, not console history"}
+The console is useful for testing, but the script is the analysis protocol. Save every step needed to reproduce the result in the script.
+:::
+::::
+
+### Interrompere o ricominciare / Interrupting or restarting
+
+::: {.lang-block .lang-it}
+- `Esc` interrompe un comando in RStudio;
+- **Session → Restart R** riavvia una sessione pulita;
+- riavviare R non cancella i file sul disco;
+- evita di usare `rm(list = ls())` come soluzione automatica a ogni problema: spesso nasconde il passaggio che ha causato l'errore.
+:::
+
+::: {.lang-block .lang-en}
+- `Esc` interrupts a command in RStudio;
+- **Session → Restart R** starts a clean session;
+- restarting R does not delete files from disk;
+- avoid using `rm(list = ls())` as an automatic solution to every problem: it often hides the step that caused the error.
+:::
+
+---
+
+## 2. Espressioni, oggetti e funzioni / Expressions, objects, and functions
+
+### Usare R come calcolatrice / Using R as a calculator
+
+```{r}
+10 + 5
+10 - 5
+10 * 5
+10 / 5
+2^3
+(10 + 5) / 3
+```
+
+::: {.lang-block .lang-it}
+Le parentesi rendono esplicito l'ordine delle operazioni. R ignora quasi tutti gli spazi, ma usarli bene rende il codice leggibile.
+:::
+
+::: {.lang-block .lang-en}
+Parentheses make the order of operations explicit. R ignores most spaces, but using them consistently makes code easier to read.
+:::
+
+### Creare un oggetto con `<-` / Creating an object with `<-`
+
+```{r}
+sequencing_depth <- 15200
+sequencing_depth
+```
+
+::: {.lang-block .lang-it}
+L'operatore `<-` assegna il valore a destra al nome a sinistra. L'oggetto compare nel pannello **Environment**.
+
+Un nome chiaro descrive il contenuto. Usa lettere, numeri e underscore; non iniziare con un numero e non inserire spazi.
+:::
+
+::: {.lang-block .lang-en}
+The `<-` operator assigns the value on the right to the name on the left. The object appears in the **Environment** pane.
+
+A clear name describes its content. Use letters, numbers, and underscores; do not begin with a number or include spaces.
+:::
+
+```{r}
+sample_name <- "S01"
+passed_qc <- TRUE
+```
+
+::: {.lang-block .lang-it}
+R distingue maiuscole e minuscole: `sample_name`, `Sample_name` e `SAMPLE_NAME` sono oggetti differenti. Il testo deve essere racchiuso tra virgolette; i valori logici `TRUE` e `FALSE` non richiedono virgolette.
+:::
+
+::: {.lang-block .lang-en}
+R is case-sensitive: `sample_name`, `Sample_name`, and `SAMPLE_NAME` are different objects. Text must be enclosed in quotation marks; the logical values `TRUE` and `FALSE` do not require quotes.
+:::
+
+### Chiamare una funzione / Calling a function
+
+```{r}
+sqrt(16)
+round(3.14159, digits = 2)
+```
+
+::: {.lang-block .lang-it}
+Una funzione riceve uno o più **argomenti** tra parentesi e restituisce un risultato. In `round()`:
+
+- `3.14159` è il valore da arrotondare;
+- `digits = 2` è un argomento nominato;
+- la virgola separa gli argomenti.
+
+Per consultare l'help:
+:::
+
+::: {.lang-block .lang-en}
+A function receives one or more **arguments** inside parentheses and returns a result. In `round()`:
+
+- `3.14159` is the value to round;
+- `digits = 2` is a named argument;
+- the comma separates arguments.
+
+To read the documentation:
+:::
+
+```{r}
+?round
+args(round)
+```
+
+:::: {.lang-block .lang-it}
+::: {.callout-tip title="Leggere una funzione"}
+Quando incontri una funzione nuova, identifica prima il nome, poi gli argomenti tra parentesi e infine l'oggetto al quale viene assegnato il risultato.
+:::
+::::
+
+:::: {.lang-block .lang-en}
+::: {.callout-tip title="Reading a function call"}
+When you encounter a new function, first identify its name, then the arguments inside parentheses, and finally the object receiving the result.
+:::
+::::
+
+---
+
+## 3. Vettori, tipi di dato e selezione / Vectors, data types, and selection
+
+::: {.lang-block .lang-it}
+Un **vettore** contiene più valori dello stesso tipo. La funzione `c()` combina i valori.
+:::
+
+::: {.lang-block .lang-en}
+A **vector** contains multiple values of the same type. The `c()` function combines values.
+:::
+
+```{r}
+reads <- c(15200, 9800, 12400, 17100, NA, 14300)
+sample_ids <- c("S01", "S02", "S03", "S04", "S05", "S06")
+treatment <- c("control", "control", "control", "treatment", "treatment", "treatment")
+```
+
+### Ispezionare un vettore / Inspecting a vector
+
+```{r}
+reads
+length(reads)
+class(reads)
+str(reads)
+```
+
+::: {.lang-block .lang-it}
+Le classi che incontreremo più spesso sono:
+
+| Classe | Esempio | Significato |
+|---|---|---|
+| `numeric` | `15200` | numero |
+| `character` | `"S01"` | testo |
+| `logical` | `TRUE` | vero o falso |
+| `factor` | livelli sperimentali | categoria con livelli definiti |
+
+`NA` significa **valore mancante**. Non significa zero e non è una stringa di testo.
+:::
+
+::: {.lang-block .lang-en}
+The classes we will encounter most often are:
+
+| Class | Example | Meaning |
+|---|---|---|
+| `numeric` | `15200` | number |
+| `character` | `"S01"` | text |
+| `logical` | `TRUE` | true or false |
+| `factor` | experimental levels | category with defined levels |
+
+`NA` means **missing value**. It is not zero and it is not a text string.
+:::
+
+### Operazioni vettoriali / Vectorised operations
+
+```{r}
+reads / 1000
+reads >= 12000
+reads == 9800
+```
+
+::: {.lang-block .lang-it}
+R applica l'operazione a ogni elemento. Il confronto `>= 12000` produce un vettore logico della stessa lunghezza.
+
+Attenzione agli operatori:
+
+| Operatore | Significato |
+|---|---|
+| `<`, `<=`, `>`, `>=` | confronti numerici |
+| `==` | uguale a |
+| `!=` | diverso da |
+| `&` | entrambe le condizioni vere |
+| `|` | almeno una condizione vera |
+| `!` | negazione |
+
+`=` e `==` non sono intercambiabili: nei confronti si usa `==`.
+:::
+
+::: {.lang-block .lang-en}
+R applies the operation to every element. The comparison `>= 12000` produces a logical vector of the same length.
+
+Pay attention to operators:
+
+| Operator | Meaning |
+|---|---|
+| `<`, `<=`, `>`, `>=` | numeric comparisons |
+| `==` | equal to |
+| `!=` | not equal to |
+| `&` | both conditions are true |
+| `|` | at least one condition is true |
+| `!` | negation |
+
+`=` and `==` are not interchangeable: comparisons use `==`.
+:::
+
+### Selezionare elementi con `[]` / Selecting elements with `[]`
+
+```{r}
+reads[1]
+reads[2:4]
+reads[c(1, 4, 6)]
+reads[reads >= 12000]
+```
+
+::: {.lang-block .lang-it}
+Le parentesi quadre selezionano elementi. R conta le posizioni a partire da **1**, non da 0.
+
+La selezione logica conserva gli elementi per i quali la condizione è `TRUE`. Poiché un elemento è `NA`, anche il confronto corrispondente è `NA`.
+:::
+
+::: {.lang-block .lang-en}
+Square brackets select elements. R counts positions beginning at **1**, not 0.
+
+Logical selection keeps elements for which the condition is `TRUE`. Because one element is `NA`, its corresponding comparison is also `NA`.
+:::
+
+```{r}
+is.na(reads)
+sum(is.na(reads))
+reads[!is.na(reads) & reads >= 12000]
+```
+
+::: {.lang-block .lang-it}
+`is.na()` è il modo corretto per cercare valori mancanti. Non usare `reads == NA`, perché il risultato non può essere vero o falso quando il valore è sconosciuto.
+:::
+
+::: {.lang-block .lang-en}
+`is.na()` is the correct way to find missing values. Do not use `reads == NA`, because the result cannot be true or false when the value is unknown.
+:::
+
+---
+
+## 4. Data frame e valori mancanti / Data frames and missing values
+
+::: {.lang-block .lang-it}
+Un **data frame** è una tabella in cui:
+
+- ogni riga rappresenta normalmente un'osservazione o un campione;
+- ogni colonna rappresenta una variabile;
+- ogni colonna ha un tipo coerente.
+
+Creiamo una piccola tabella di campioni microbiologici.
+:::
+
+::: {.lang-block .lang-en}
+A **data frame** is a table in which:
+
+- each row normally represents an observation or sample;
+- each column represents a variable;
+- each column has a consistent type.
+
+We will create a small table of microbiological samples.
+:::
+
+```{r}
+samples <- data.frame(
+  sample_id = sample_ids,
+  group = treatment,
+  site = c("soil", "soil", "water", "soil", "water", "water"),
+  reads = reads,
+  observed_asvs = c(118, 96, 131, 145, 139, 152),
+  shannon = c(3.1, 2.7, 3.4, 3.8, 3.5, 4.0)
+)
+
+samples
+```
+
+### Conoscere la struttura prima di analizzare / Inspecting structure before analysis
+
+```{r}
+dim(samples)
+names(samples)
+head(samples)
+str(samples)
+summary(samples)
+```
+
+::: {.lang-block .lang-it}
+Questi comandi rispondono a domande differenti:
+
+| Comando | Domanda |
+|---|---|
+| `dim()` | quante righe e colonne? |
+| `names()` | come si chiamano le colonne? |
+| `head()` | come appaiono le prime righe? |
+| `str()` | quali tipi di dato contiene la tabella? |
+| `summary()` | quali sono i riepiloghi principali? |
+
+Prima di qualunque analisi, esegui almeno `dim()`, `names()` e `str()`.
+:::
+
+::: {.lang-block .lang-en}
+These commands answer different questions:
+
+| Command | Question |
+|---|---|
+| `dim()` | how many rows and columns? |
+| `names()` | what are the column names? |
+| `head()` | what do the first rows look like? |
+| `str()` | which data types are stored in the table? |
+| `summary()` | what are the main summaries? |
+
+Before any analysis, run at least `dim()`, `names()`, and `str()`.
+:::
+
+### Selezionare colonne e righe / Selecting columns and rows
+
+```{r}
+samples$reads
+samples[1:3, ]
+samples[, c("sample_id", "reads", "shannon")]
+samples[samples$group == "control", ]
+samples[!is.na(samples$reads) & samples$reads >= 12000, ]
+```
+
+::: {.lang-block .lang-it}
+Nella forma `tabella[righe, colonne]`, la virgola separa le due dimensioni:
+
+- prima della virgola selezioniamo le righe;
+- dopo la virgola selezioniamo le colonne;
+- lasciare uno spazio vuoto significa “tutte”.
+
+Il simbolo `$` estrae una colonna tramite il suo nome.
+:::
+
+::: {.lang-block .lang-en}
+In the form `table[rows, columns]`, the comma separates the two dimensions:
+
+- before the comma, we select rows;
+- after the comma, we select columns;
+- leaving a position empty means “all”.
+
+The `$` symbol extracts a column by name.
+:::
+
+### Riassunti e `NA` / Summaries and `NA`
+
+```{r}
+mean(samples$reads)
+mean(samples$reads, na.rm = TRUE)
+median(samples$reads, na.rm = TRUE)
+sum(samples$observed_asvs)
+```
+
+::: {.lang-block .lang-it}
+Il primo `mean()` restituisce `NA`, perché il vettore contiene un valore mancante. L'argomento `na.rm = TRUE` chiede di rimuovere gli `NA` durante il calcolo.
+
+Non aggiungere `na.rm = TRUE` senza riflettere: prima controlla quanti valori mancano e perché.
+:::
+
+::: {.lang-block .lang-en}
+The first `mean()` returns `NA` because the vector contains a missing value. The argument `na.rm = TRUE` asks R to remove `NA` values during the calculation.
+
+Do not add `na.rm = TRUE` without thinking: first check how many values are missing and why.
+:::
+
+```{r}
+sum(is.na(samples$reads))
+samples[is.na(samples$reads), ]
+```
+
+---
+
+## 5. Importare e salvare dati / Importing and saving data
+
+### Directory di lavoro e progetto RStudio / Working directory and RStudio Project
+
+```{r}
 getwd()
 list.files()
 ```
 
 ::: {.lang-block .lang-it}
-Per la lezione aprite il progetto dalla cartella decompressa di SEA4BLUE, invece di inserire percorsi assoluti personali con `setwd()`.
+`getwd()` mostra la directory di lavoro. I percorsi relativi vengono interpretati a partire da questa posizione.
 
-Se avete scaricato e decompresso lo zip nella vostra home, un esempio tipico e:
-
-```r
-setwd("~/Downloads/Sea4Blue")
-```
-
-Poi controllate subito con `getwd()`.
+Per le analisi reali, apri il file `.Rproj` del progetto e usa percorsi relativi. Evita di iniziare ogni script con un percorso assoluto personale come `setwd("C:/Users/...")`: funzionerà soltanto sul tuo computer.
 :::
 
 ::: {.lang-block .lang-en}
-For the lesson, open the project from the unpacked SEA4BLUE folder instead of typing personal absolute paths with `setwd()`.
+`getwd()` displays the working directory. Relative paths are interpreted from this location.
 
-If you downloaded and unpacked the zip in your home folder, a typical example is:
-
-```r
-setwd("~/Downloads/Sea4Blue")
-```
-
-Then immediately check with `getwd()`.
+For real analyses, open the project's `.Rproj` file and use relative paths. Avoid beginning every script with a personal absolute path such as `setwd("C:/Users/...")`: it will only work on your computer.
 :::
 
-## 2. Oggetti e vettori / Objects and vectors
+:::: {.lang-block .lang-it}
+::: {.callout-tip title="Una struttura semplice"}
+Una struttura utile contiene cartelle separate per dati originali, script, risultati e figure:
 
-```{r}
-#| eval: false
-profondita <- c(15200, 9800, 12400, 17100)
-profondita
-class(profondita)
-length(profondita)
-mean(profondita)
-profondita >= 10000
+```text
+project/
+├── data/
+├── scripts/
+├── output/
+└── figures/
 ```
+:::
+::::
 
-## 3. Data frame e indicizzazione / Data frames and indexing
+:::: {.lang-block .lang-en}
+::: {.callout-tip title="A simple structure"}
+A useful structure keeps original data, scripts, results, and figures in separate directories:
+
+```text
+project/
+├── data/
+├── scripts/
+├── output/
+└── figures/
+```
+:::
+::::
+
+### Creare un file tabulare di esercitazione / Creating a practice table
 
 ```{r}
-#| eval: false
-campioni <- data.frame(
-  sample = c("S1", "S2", "S3", "S4"),
-  zona = c("ANW", "ANW", "ANC", "ANE"),
-  reads = profondita
+dir.create("r-lab-data", showWarnings = FALSE)
+
+write.table(
+  samples,
+  file = "r-lab-data/samples.tsv",
+  sep = "\t",
+  row.names = FALSE,
+  quote = FALSE
 )
 
-campioni
-str(campioni)
-campioni$reads
-campioni[campioni$reads >= 10000, ]
-```
-
-## 4. Valori mancanti / Missing values
-
-```{r}
-#| eval: false
-x <- c(4, NA, 9, 12)
-is.na(x)
-sum(is.na(x))
-mean(x, na.rm = TRUE)
-```
-
-## 5. Pacchetti e help / Packages and help
-
-```{r}
-#| eval: false
-library(phyloseq)
-?readRDS
-sessionInfo()
+file.exists("r-lab-data/samples.tsv")
+list.files("r-lab-data")
 ```
 
 ::: {.lang-block .lang-it}
-`install.packages()` installa una libreria; `library()` la carica nella sessione. Durante il corso i pacchetti devono essere gia installati nell'ambiente Conda.
+Il file TSV è testo semplice con colonne separate da tabulazioni. `row.names = FALSE` evita di aggiungere una colonna artificiale con i numeri delle righe.
 :::
 
 ::: {.lang-block .lang-en}
-`install.packages()` installs a package; `library()` loads it into the session. During the course, packages must already be installed in the Conda environment.
+A TSV file is plain text with columns separated by tabs. `row.names = FALSE` prevents R from adding an artificial column containing row numbers.
 :::
 
-## 6. Preparare SEA4BLUE / Preparing SEA4BLUE
+### Importare con `readr` / Importing with `readr`
 
-1. Scaricate [Sea4Blue.zip](downloads/Sea4Blue.zip).
-2. Decomprimetelo una sola volta.
-3. Aprite `Sea4Blue.Rproj` con RStudio.
-4. Aprite `analysis_guided.R` e lavorate per sezioni, senza eseguire tutto il file in una volta.
+```{r}
+library(readr)
+
+samples_imported <- read_tsv(
+  "r-lab-data/samples.tsv",
+  show_col_types = FALSE
+)
+
+samples_imported
+str(samples_imported)
+```
+
+::: {.lang-block .lang-it}
+`library(readr)` carica il pacchetto nella sessione. Una forma alternativa, utile quando vogliamo indicare chiaramente la provenienza della funzione, è:
+:::
+
+::: {.lang-block .lang-en}
+`library(readr)` loads the package into the session. An alternative form, useful when we want to state clearly where a function comes from, is:
+:::
+
+```{r}
+samples_imported <- readr::read_tsv(
+  "r-lab-data/samples.tsv",
+  show_col_types = FALSE
+)
+```
+
+::: {.lang-block .lang-it}
+La sintassi `pacchetto::funzione()` usa una funzione senza caricare tutto il pacchetto.
+
+Durante il corso i pacchetti richiesti sono già installati nell'ambiente Conda. `install.packages()` installa un pacchetto una volta; `library()` lo carica in ogni nuova sessione. Non reinstallare i pacchetti all'inizio di ogni script.
+:::
+
+::: {.lang-block .lang-en}
+The syntax `package::function()` uses a function without loading the entire package.
+
+During the course, the required packages are already installed in the Conda environment. `install.packages()` installs a package once; `library()` loads it in each new session. Do not reinstall packages at the beginning of every script.
+:::
+
+### Salvare un oggetto R / Saving an R object
+
+```{r}
+saveRDS(samples, "r-lab-data/samples.rds")
+samples_from_rds <- readRDS("r-lab-data/samples.rds")
+identical(samples, samples_from_rds)
+```
+
+::: {.lang-block .lang-it}
+`saveRDS()` conserva un singolo oggetto R, incluse classi e attributi. È il formato che incontrerai spesso per oggetti complessi come quelli di `phyloseq`.
+:::
+
+::: {.lang-block .lang-en}
+`saveRDS()` stores one R object, including its classes and attributes. This is a format you will often encounter for complex objects such as `phyloseq` objects.
+:::
+
+---
+
+## 6. Filtrare e riassumere con `dplyr` / Filtering and summarising with `dplyr`
+
+::: {.lang-block .lang-it}
+`dplyr` fornisce verbi leggibili per manipolare tabelle. Le funzioni principali di questa lezione sono:
+
+| Funzione | Azione |
+|---|---|
+| `filter()` | seleziona righe |
+| `select()` | seleziona colonne |
+| `mutate()` | crea o modifica colonne |
+| `arrange()` | ordina righe |
+| `group_by()` | definisce gruppi |
+| `summarise()` | calcola riepiloghi |
+
+La pipe nativa `|>` passa il risultato di una riga alla funzione successiva.
+:::
+
+::: {.lang-block .lang-en}
+`dplyr` provides readable verbs for manipulating tables. The main functions in this lesson are:
+
+| Function | Action |
+|---|---|
+| `filter()` | selects rows |
+| `select()` | selects columns |
+| `mutate()` | creates or changes columns |
+| `arrange()` | sorts rows |
+| `group_by()` | defines groups |
+| `summarise()` | computes summaries |
+
+The native pipe `|>` passes the result of one line to the next function.
+:::
+
+```{r}
+library(dplyr)
+```
+
+### Filtrare e scegliere colonne / Filtering and selecting columns
+
+```{r}
+high_depth <- samples |>
+  filter(!is.na(reads), reads >= 12000) |>
+  select(sample_id, group, site, reads, shannon) |>
+  arrange(desc(reads))
+
+high_depth
+```
+
+::: {.lang-block .lang-it}
+Leggi il codice dall'alto verso il basso:
+
+1. parti da `samples`;
+2. conserva le righe con `reads` non mancanti e almeno pari a 12000;
+3. conserva cinque colonne;
+4. ordina le righe dal valore di `reads` più alto al più basso;
+5. assegna il risultato a `high_depth`.
+
+Ogni riga della pipe dovrebbe rappresentare un passaggio comprensibile.
+:::
+
+::: {.lang-block .lang-en}
+Read the code from top to bottom:
+
+1. start with `samples`;
+2. keep rows where `reads` is not missing and is at least 12000;
+3. keep five columns;
+4. sort rows from the highest to the lowest `reads` value;
+5. assign the result to `high_depth`.
+
+Each line of the pipe should represent one understandable step.
+:::
+
+### Creare una colonna / Creating a column
+
+```{r}
+samples_with_ratio <- samples |>
+  mutate(asvs_per_1000_reads = observed_asvs / reads * 1000)
+
+samples_with_ratio
+```
+
+::: {.lang-block .lang-it}
+`mutate()` crea una nuova colonna senza modificare l'oggetto originale, perché il risultato viene assegnato a un nome nuovo.
+:::
+
+::: {.lang-block .lang-en}
+`mutate()` creates a new column without changing the original object, because the result is assigned to a new name.
+:::
+
+### Riassumere per gruppo / Summarising by group
+
+```{r}
+group_summary <- samples |>
+  group_by(group) |>
+  summarise(
+    n_samples = n(),
+    missing_reads = sum(is.na(reads)),
+    mean_reads = mean(reads, na.rm = TRUE),
+    mean_shannon = mean(shannon, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+group_summary
+```
+
+::: {.lang-block .lang-it}
+`group_by(group)` non calcola ancora nulla: indica che il riepilogo successivo deve essere eseguito separatamente per ogni gruppo.
+
+Controlla sempre se il numero di campioni e i valori mancanti corrispondono alle aspettative prima di interpretare le medie.
+:::
+
+::: {.lang-block .lang-en}
+`group_by(group)` does not calculate anything yet: it specifies that the next summary must be computed separately for each group.
+
+Always check whether the number of samples and missing values matches expectations before interpreting means.
+:::
+
+:::: {.lang-block .lang-it}
+::: {.callout-warning title="Non sovrascrivere troppo presto"}
+Durante l'apprendimento evita di scrivere subito `samples <- samples |> ...`. Crea oggetti intermedi con nomi chiari, controllali e sovrascrivi l'originale soltanto quando sai esattamente che cosa stai eliminando o modificando.
+:::
+::::
+
+:::: {.lang-block .lang-en}
+::: {.callout-warning title="Do not overwrite too early"}
+While learning, avoid immediately writing `samples <- samples |> ...`. Create clearly named intermediate objects, inspect them, and overwrite the original only when you know exactly what you are removing or changing.
+:::
+::::
+
+---
+
+## 7. Un primo grafico con `ggplot2` / A first plot with `ggplot2`
+
+::: {.lang-block .lang-it}
+In `ggplot2` costruiamo un grafico aggiungendo strati con `+`:
+
+1. `ggplot()` definisce dati ed estetiche;
+2. una geometria, per esempio `geom_point()`, disegna i dati;
+3. scale, etichette e temi modificano la presentazione.
+:::
+
+::: {.lang-block .lang-en}
+In `ggplot2`, we build a plot by adding layers with `+`:
+
+1. `ggplot()` defines the data and aesthetics;
+2. a geometry, such as `geom_point()`, draws the data;
+3. scales, labels, and themes modify the presentation.
+:::
+
+```{r}
+library(ggplot2)
+
+p <- ggplot(
+  samples,
+  aes(x = reads, y = observed_asvs, colour = group)
+) +
+  geom_point(size = 3, na.rm = TRUE) +
+  labs(
+    x = "Sequencing depth",
+    y = "Observed ASVs",
+    colour = "Group"
+  ) +
+  theme_minimal()
+
+p
+```
+
+::: {.lang-block .lang-it}
+Dentro `aes()` colleghiamo colonne del data frame a proprietà visive:
+
+- `x = reads` controlla la posizione orizzontale;
+- `y = observed_asvs` controlla la posizione verticale;
+- `colour = group` associa il colore al gruppo.
+
+`na.rm = TRUE` evita che il punto con `reads` mancante venga disegnato; prima di farlo abbiamo già controllato la presenza dell'`NA`.
+:::
+
+::: {.lang-block .lang-en}
+Inside `aes()`, we connect data-frame columns to visual properties:
+
+- `x = reads` controls horizontal position;
+- `y = observed_asvs` controls vertical position;
+- `colour = group` maps colour to the group.
+
+`na.rm = TRUE` prevents the point with missing `reads` from being drawn; we already checked the missing value before doing this.
+:::
+
+### Salvare il grafico / Saving the plot
+
+```{r}
+dir.create("figures", showWarnings = FALSE)
+
+ggsave(
+  filename = "figures/reads-vs-asvs.png",
+  plot = p,
+  width = 7,
+  height = 5,
+  dpi = 300
+)
+```
+
+::: {.lang-block .lang-it}
+Salvare il grafico via codice rende riproducibili nome, dimensioni e risoluzione. Il file viene scritto nella directory indicata dal percorso relativo.
+:::
+
+::: {.lang-block .lang-en}
+Saving the plot through code makes its name, dimensions, and resolution reproducible. The file is written to the directory specified by the relative path.
+:::
+
+---
+
+## 8. Leggere gli errori / Reading errors
+
+::: {.lang-block .lang-it}
+Un errore non danneggia R: indica che il comando non è stato completato. Leggi il messaggio dalla prima riga e controlla il comando appena eseguito.
+
+| Messaggio o sintomo | Causa frequente | Controllo utile |
+|---|---|---|
+| `object 'x' not found` | l'oggetto non è stato creato o il nome è diverso | `ls()` e ortografia del nome |
+| `could not find function` | pacchetto non caricato o nome errato | `library(...)`, `?funzione` |
+| `unexpected symbol` | manca una virgola, parentesi o virgoletta | osserva il punto indicato e la riga precedente |
+| prompt `+` invece di `>` | il comando è incompleto | chiudi parentesi/virgolette oppure premi `Esc` |
+| `cannot open file` | percorso o directory di lavoro errati | `getwd()`, `list.files()`, `file.exists()` |
+| un risultato è `NA` | è presente almeno un valore mancante | `is.na()` e `sum(is.na(...))` |
+:::
+
+::: {.lang-block .lang-en}
+An error does not damage R: it means that the command was not completed. Read the message from its first line and inspect the command you just ran.
+
+| Message or symptom | Common cause | Useful check |
+|---|---|---|
+| `object 'x' not found` | the object was not created or the name differs | `ls()` and spelling of the name |
+| `could not find function` | package not loaded or function name incorrect | `library(...)`, `?function` |
+| `unexpected symbol` | missing comma, parenthesis, or quotation mark | inspect the indicated position and previous line |
+| `+` prompt instead of `>` | the command is incomplete | close parentheses/quotes or press `Esc` |
+| `cannot open file` | wrong path or working directory | `getwd()`, `list.files()`, `file.exists()` |
+| a result is `NA` | at least one value is missing | `is.na()` and `sum(is.na(...))` |
+:::
+
+::: {.lang-block .lang-it}
+Quando chiedi aiuto, comunica:
+
+1. il comando che hai eseguito;
+2. il messaggio completo;
+3. il risultato di `str()` sull'oggetto coinvolto;
+4. il risultato di `sessionInfo()` se il problema riguarda pacchetti o versioni.
+:::
+
+::: {.lang-block .lang-en}
+When asking for help, provide:
+
+1. the command you ran;
+2. the complete message;
+3. the result of `str()` on the object involved;
+4. the result of `sessionInfo()` if the problem concerns packages or versions.
+:::
+
+```{r}
+sessionInfo()
+```
+
+---
+
+## 9. Esercizio finale / Final exercise
+
+::: {.lang-block .lang-it}
+Senza guardare subito la soluzione:
+
+1. crea un oggetto chiamato `complete_samples` contenente soltanto i campioni senza `reads` mancanti;
+2. conserva le colonne `sample_id`, `group`, `reads`, `observed_asvs` e `shannon`;
+3. crea una colonna `thousands_reads` uguale a `reads / 1000`;
+4. calcola per ogni gruppo il numero di campioni e la media di `observed_asvs`;
+5. crea un grafico con `group` sull'asse x e `shannon` sull'asse y;
+6. salva il riepilogo come `r-lab-data/final-summary.tsv`.
+
+Controlla il risultato dopo ogni passaggio.
+:::
+
+::: {.lang-block .lang-en}
+Without looking at the solution immediately:
+
+1. create an object called `complete_samples` containing only samples without missing `reads`;
+2. keep the columns `sample_id`, `group`, `reads`, `observed_asvs`, and `shannon`;
+3. create a column `thousands_reads` equal to `reads / 1000`;
+4. for each group, calculate the number of samples and the mean `observed_asvs`;
+5. create a plot with `group` on the x axis and `shannon` on the y axis;
+6. save the summary as `r-lab-data/final-summary.tsv`.
+
+Inspect the result after every step.
+:::
+
+::: {.callout-tip title="Soluzione / Solution" collapse="true"}
+```{r}
+complete_samples <- samples |>
+  filter(!is.na(reads)) |>
+  select(sample_id, group, reads, observed_asvs, shannon) |>
+  mutate(thousands_reads = reads / 1000)
+
+complete_samples
+
+final_summary <- complete_samples |>
+  group_by(group) |>
+  summarise(
+    n_samples = n(),
+    mean_observed_asvs = mean(observed_asvs),
+    .groups = "drop"
+  )
+
+final_summary
+
+ggplot(complete_samples, aes(x = group, y = shannon)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.08, height = 0, size = 3) +
+  labs(x = "Group", y = "Shannon diversity") +
+  theme_minimal()
+
+readr::write_tsv(
+  final_summary,
+  "r-lab-data/final-summary.tsv"
+)
+
+file.exists("r-lab-data/final-summary.tsv")
+```
+:::
+
+---
+
+## Checklist
+
+::: {.lang-block .lang-it}
+- [ ] So distinguere lo script dalla console.
+- [ ] So eseguire una riga con `Ctrl+Enter`.
+- [ ] So creare un oggetto con `<-`.
+- [ ] So ispezionare un oggetto con `class()`, `str()` e `summary()`.
+- [ ] So riconoscere e contare gli `NA`.
+- [ ] So selezionare righe e colonne di un data frame.
+- [ ] So controllare la directory di lavoro e usare un percorso relativo.
+- [ ] So leggere e salvare una tabella TSV.
+- [ ] So leggere una pipe `|>` dall'alto verso il basso.
+- [ ] So creare e salvare un grafico con `ggplot2`.
+- [ ] So copiare il messaggio completo quando chiedo aiuto per un errore.
+:::
+
+::: {.lang-block .lang-en}
+- [ ] I can distinguish the script from the console.
+- [ ] I can run a line with `Ctrl+Enter`.
+- [ ] I can create an object with `<-`.
+- [ ] I can inspect an object with `class()`, `str()`, and `summary()`.
+- [ ] I can recognise and count `NA` values.
+- [ ] I can select rows and columns from a data frame.
+- [ ] I can check the working directory and use a relative path.
+- [ ] I can read and save a TSV table.
+- [ ] I can read a `|>` pipe from top to bottom.
+- [ ] I can create and save a plot with `ggplot2`.
+- [ ] I can copy the complete message when asking for help with an error.
+:::
+
+## Scheda rapida / Quick reference
+
+| Obiettivo / Goal | Codice / Code |
+|---|---|
+| Eseguire una riga / Run a line | `Ctrl+Enter` |
+| Assegnare un valore / Assign a value | `x <- 10` |
+| Combinare valori / Combine values | `c(1, 2, 3)` |
+| Ispezionare un oggetto / Inspect an object | `str(x)` |
+| Prime righe / First rows | `head(x)` |
+| Dimensioni / Dimensions | `dim(x)` |
+| Nomi delle colonne / Column names | `names(x)` |
+| Cercare valori mancanti / Find missing values | `is.na(x)` |
+| Selezionare una colonna / Select a column | `table$column` |
+| Selezionare righe / Select rows | `filter(table, condition)` |
+| Creare una colonna / Create a column | `mutate(table, new = expression)` |
+| Riassumere / Summarise | `summarise(table, result = function(column))` |
+| Directory corrente / Current directory | `getwd()` |
+| Elencare file / List files | `list.files()` |
+| Verificare un percorso / Check a path | `file.exists("path")` |
+| Consultare l'help / Read help | `?function_name` |
+| Informazioni sulla sessione / Session information | `sessionInfo()` |
+
+::: {.lang-block .lang-it}
+## Passaggio alla lezione successiva
+
+Questa introduzione fornisce il vocabolario minimo per lavorare con gli output di AmpWrap e con gli oggetti della sezione di biostatistica. Nelle analisi successive incontrerai tabelle più grandi, oggetti `phyloseq`, trasformazioni delle abbondanze, diversità alfa e beta e modelli statistici. La strategia resta la stessa:
+
+1. importa o crea un oggetto;
+2. controllane struttura e dimensioni;
+3. applica un solo passaggio comprensibile;
+4. ispeziona il risultato;
+5. conserva il codice nello script.
+:::
+
+::: {.lang-block .lang-en}
+## Moving to the next lesson
+
+This introduction provides the minimum vocabulary needed to work with AmpWrap outputs and the objects used in the biostatistics section. In later analyses, you will encounter larger tables, `phyloseq` objects, abundance transformations, alpha and beta diversity, and statistical models. The strategy remains the same:
+
+1. import or create an object;
+2. inspect its structure and dimensions;
+3. apply one understandable step;
+4. inspect the result;
+5. keep the code in the script.
+:::
